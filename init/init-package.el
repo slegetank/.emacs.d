@@ -11,12 +11,15 @@ swiper
 counsel
 smartparens
 evil
+evil-leader
+evil-nerd-commenter
 exec-path-from-shell
 popwin
 reveal-in-osx-finder
 iedit
 helm-ag
-evil-leader
+window-numbering
+which-key
 slime
 
            ))
@@ -49,9 +52,22 @@ slime
 
 (global-evil-leader-mode)
  (evil-leader/set-key
-  "e" 'find-file
-  "b" 'switch-to-buffer
-  "k" 'kill-buffer)
+  "ff" 'find-file
+  "bb" 'switch-to-buffer
+  "bk" 'kill-buffer
+  "pf" 'counsel-git
+  "ps" 'helm-do-ag-project-root
+  "0" 'select-window-0
+  "1" 'select-window-1
+  "2" 'select-window-2
+  "3" 'select-window-3
+  "wd" 'delete-other-windows
+  "w-" 'split-window-horizontally
+  "w/" 'split-window-vertically
+  )
+
+(evilnc-default-hotkeys)
+(global-set-key (kbd "s-/") 'evilnc-comment-or-uncomment-lines)
 
 (smartparens-global-mode t) ; smart paren
 
@@ -70,7 +86,12 @@ slime
 
 (global-set-key (kbd "C-c e") 'iedit-mode)
 
-(global-set-key (kbd "C-c p s") 'helm-do-ag-project-root)
+;;(global-set-key (kbd "C-c p s") 'helm-do-ag-project-root)
+
+(window-numbering-mode 1)
+
+(which-key-mode 1)
+(setq which-key-side-window-max-height 0.25)
 
 (setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
  (setq slime-contribs '(slime-fancy))

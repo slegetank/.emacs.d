@@ -17,12 +17,12 @@
 ;; 括号匹配
 (add-hook 'emacs-lisp-mode-hook 'show-paren-mode)
 
-(define-advice show-paren-function (:around (fn) fix-show-paren-function)
+(defadvice show-paren-function (around fix-show-paren-function activate)
   "Highlight enclosing parens."
-  (cond ((looking-at-p "\\s(") (funcall fn))
+  (cond ((looking-at-p "\\s(") ad-do-it)
 	(t (save-excursion
 	     (ignore-errors (backward-up-list))
-	     (funcall fn)))))
+	     ad-do-it))))
 
 (defun firefox-get-frontmost-url ()
   (let ((result
