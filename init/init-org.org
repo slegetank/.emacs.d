@@ -1,0 +1,5 @@
+* 高亮代码
+#+BEGIN_SRC emacs-lisp
+  (require 'org)
+  (setq org-src-fontify-natively t)
+#+END_SRC

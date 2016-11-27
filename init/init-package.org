@@ -1,0 +1,128 @@
+这个文件用来存储所有第三方库的相关配置。
+* 核心
+  这里使用package包来管理第三方库。注意，25.1版本之后才具有这个强大的能力。
+  
+  
+  1 首先，将安装源设为国内的，此处使用子龙山人提供的源：
+  #+BEGIN_SRC emacs-lisp
+(when (>= emacs-major-version 24)
+  (setq package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
+       ("melpa" . "http://elpa.zilongshanren.com/melpa/"))))
+  #+END_SRC
+  2 然后，将要加载的库加入package-selected-packages里。package库将使用这个变量来确认用户需要安装哪些包。
+  package-autoremove也依赖于这个列表来自动删除包。注意，这个变量是在25.1之后引入的。
+  #+BEGIN_SRC emacs-lisp
+(setq package-selected-packages '(
+	   company
+	   hungry-delete
+	   monokai-theme
+	   swiper
+	   counsel
+	   smartparens
+	   evil
+	   exec-path-from-shell
+	   popwin
+	   reveal-in-osx-finder
+	   iedit
+	   helm-ag
+	   slime
+
+	   ))
+  #+END_SRC
+  3 最后，检测所有列表里的库，如果未安装，则自动安装。
+  #+BEGIN_SRC emacs-lisp
+(require 'cl-lib)
+(defun slegtank/check-installed-packages ()
+  (cl-loop for pkg in package-selected-packages
+  when (not (package-installed-p pkg)) do (cl-return nil)
+  finally (cl-return t)))
+
+(unless (slegtank/check-installed-packages)
+  (message "%s" "Some packages missed, refreshing...")
+  (package-refresh-contents)
+  (dolist (pkg package-selected-packages)
+    (when (not (package-installed-p pkg))
+      (package-install pkg))))
+  #+END_SRC
+  4 当需要删除某个包时，就将package-selected-packages中的包去掉，然后调用M-x package-autoremove来自动删除包。
+  当然，别忘了将下面关于包的配置手动删除。
+  
+* 包
+  下面是所有上面的第三方库的配置。(org mode中编辑代码时，可以使用C-c '来在一个新的buffer中进行编辑；按C-x C-s来保存;再次按C-c '来退出)
+** company
+   company的意思是complete-anything。顾名思义，它可以对用户的输入进行补全。
+   #+BEGIN_SRC emacs-lisp
+     (global-company-mode t) ; company
+     (with-eval-after-load 'company
+       (define-key company-active-map (kbd "M-n") nil)
+       (define-key company-active-map (kbd "M-p") nil)
+       (define-key company-active-map (kbd "C-j") #'company-select-next)
+       (define-key company-active-map (kbd "C-k") #'company-select-previous))
+   #+END_SRC
+** monokai-theme
+   目前所用的风格。
+   #+BEGIN_SRC emacs-lisp
+(load-theme 'monokai t) ; theme
+   #+END_SRC
+** hungry-delete
+   自动删除行最后的空格。
+   #+BEGIN_SRC emacs-lisp
+(global-hungry-delete-mode t) ; hungry delete
+   #+END_SRC
+** evil
+   vim
+
+   manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
+   #+BEGIN_SRC emacs-lisp
+(evil-mode t) ; vim
+   #+END_SRC
+** smartparens
+   自动匹配括号、引号等。
+   #+BEGIN_SRC emacs-lisp
+(smartparens-global-mode t) ; smart paren
+   #+END_SRC
+** popwin
+   更好用的弹出窗口。
+   #+BEGIN_SRC emacs-lisp
+;; popwin
+(require 'popwin)
+(popwin-mode t)
+   #+END_SRC
+** swiper && counsel
+   强大的查找文件、搜索代码、执行命令的补全工具。
+   #+BEGIN_SRC emacs-lisp
+;; ivy
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+   #+END_SRC
+** exec-path-from-shell
+   使MacOS上的Emacs能正确的使用shell的环境变量。
+#+BEGIN_SRC emacs-lisp
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+#+END_SRC
+** reveal-in-osx-finder
+   C-c o 打开当前文件所在的Finder;
+   使用dired-x添加dired-jump C-c d 打开当前文件所在的dired
+   #+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-c o") 'reveal-in-osx-finder)
+   
+   #+END_SRC
+   
+** iedit
+   多处编辑; C-c e
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "C-c e") 'iedit-mode) 
+   #+END_SRC
+
+** helm-ag
+   工程内搜索工具。C-c C-e编辑结果。
+   #+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c p s") 'helm-do-ag-project-root) 
+   #+END_SRC
+
+** slime
+   #+BEGIN_SRC emacs-lisp
+(setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
+ (setq slime-contribs '(slime-fancy))
+   #+END_SRC
