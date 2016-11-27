@@ -4,19 +4,20 @@
        ("melpa" . "http://elpa.zilongshanren.com/melpa/"))))
 
 (setq package-selected-packages '(
-           company
-           hungry-delete
-           monokai-theme
-           swiper
-           counsel
-           smartparens
-           evil
-           exec-path-from-shell
-           popwin
-           reveal-in-osx-finder
-           iedit
-           helm-ag
-           slime
+company
+hungry-delete
+monokai-theme
+swiper
+counsel
+smartparens
+evil
+exec-path-from-shell
+popwin
+reveal-in-osx-finder
+iedit
+helm-ag
+evil-leader
+slime
 
            ))
 
@@ -45,6 +46,12 @@
 (global-hungry-delete-mode t) ; hungry delete
 
 (evil-mode t) ; vim
+
+(global-evil-leader-mode)
+ (evil-leader/set-key
+  "e" 'find-file
+  "b" 'switch-to-buffer
+  "k" 'kill-buffer)
 
 (smartparens-global-mode t) ; smart paren
 

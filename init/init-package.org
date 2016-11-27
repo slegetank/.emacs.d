@@ -13,19 +13,20 @@
   package-autoremove也依赖于这个列表来自动删除包。注意，这个变量是在25.1之后引入的。
   #+BEGIN_SRC emacs-lisp
 (setq package-selected-packages '(
-	   company
-	   hungry-delete
-	   monokai-theme
-	   swiper
-	   counsel
-	   smartparens
-	   evil
-	   exec-path-from-shell
-	   popwin
-	   reveal-in-osx-finder
-	   iedit
-	   helm-ag
-	   slime
+company
+hungry-delete
+monokai-theme
+swiper
+counsel
+smartparens
+evil
+exec-path-from-shell
+popwin
+reveal-in-osx-finder
+iedit
+helm-ag
+evil-leader
+slime
 
 	   ))
   #+END_SRC
@@ -70,12 +71,25 @@
 (global-hungry-delete-mode t) ; hungry delete
    #+END_SRC
 ** evil
+   #+BEGIN_VERSE
    vim
-
    manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
+   #+END_VERSE
    #+BEGIN_SRC emacs-lisp
 (evil-mode t) ; vim
    #+END_SRC
+   
+** evil-leader
+   #+BEGIN_VERSE
+   M-x customize-group -> 默认触发为\，改为SPC
+   #+END_VERSE
+  #+BEGIN_SRC emacs-lisp
+(global-evil-leader-mode)
+ (evil-leader/set-key
+  "e" 'find-file
+  "b" 'switch-to-buffer
+  "k" 'kill-buffer) 
+  #+END_SRC 
 ** smartparens
    自动匹配括号、引号等。
    #+BEGIN_SRC emacs-lisp
