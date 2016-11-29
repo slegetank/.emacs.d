@@ -5,6 +5,26 @@
 (package-initialize)
 (add-to-list 'load-path "~/.emacs.d/init/")
 
+;; python
+(defun add-py-breakpoint ()  
+  (interactive)
+  (let (start)
+    (save-excursion
+      (back-to-indentation)
+      (setq start (current-column)))
+    (move-end-of-line nil)
+    (insert "\n")
+    (move-to-column start t)
+    (insert "import pdb; pdb.set_trace();")
+    ))
+
+(defun my-python-config ()
+  "For python"
+  (local-set-key (kbd "s-\\") 'add-py-breakpoint)
+  )
+
+(add-hook 'python-mode-hook 'my-python-config)
+
 ;; 加载配置orgmode文件
 (org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))

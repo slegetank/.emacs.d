@@ -5,6 +5,7 @@
 
 (setq package-selected-packages '(
 company
+company-anaconda
 hungry-delete
 monokai-theme
 swiper
@@ -43,6 +44,10 @@ slime
   (define-key company-active-map (kbd "M-p") nil)
   (define-key company-active-map (kbd "C-j") #'company-select-next)
   (define-key company-active-map (kbd "C-k") #'company-select-previous))
+
+(add-hook 'python-mode-hook 'anaconda-mode)
+(eval-after-load "company"
+  '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
 
 (load-theme 'monokai t) ; theme
 

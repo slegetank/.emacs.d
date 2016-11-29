@@ -14,6 +14,7 @@
   #+BEGIN_SRC emacs-lisp
 (setq package-selected-packages '(
 company
+company-anaconda
 hungry-delete
 monokai-theme
 swiper
@@ -63,6 +64,12 @@ slime
        (define-key company-active-map (kbd "C-j") #'company-select-next)
        (define-key company-active-map (kbd "C-k") #'company-select-previous))
    #+END_SRC
+*** company-anaconda
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'python-mode-hook 'anaconda-mode)
+      (eval-after-load "company"
+        '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
+    #+END_SRC
 ** monokai-theme
    目前所用的风格。
    #+BEGIN_SRC emacs-lisp
