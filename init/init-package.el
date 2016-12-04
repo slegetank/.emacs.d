@@ -14,6 +14,7 @@ smartparens
 evil
 evil-leader
 evil-nerd-commenter
+evil-surround
 exec-path-from-shell
 popwin
 reveal-in-osx-finder
@@ -22,7 +23,6 @@ helm-ag
 window-numbering
 which-key
 slime
-
            ))
 
 (require 'cl-lib)
@@ -73,6 +73,9 @@ slime
 
 (evilnc-default-hotkeys)
 (global-set-key (kbd "s-/") 'evilnc-comment-or-uncomment-lines)
+
+(require 'evil-surround)
+(global-evil-surround-mode 1)
 
 (smartparens-global-mode t) ; smart paren
 

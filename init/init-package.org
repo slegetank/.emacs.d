@@ -1,4 +1,6 @@
+#+OPTIONS: \n:\n
 这个文件用来存储所有第三方库的相关配置。
+
 * 核心
   这里使用package包来管理第三方库。注意，25.1版本之后才具有这个强大的能力。
   
@@ -23,6 +25,7 @@ smartparens
 evil
 evil-leader
 evil-nerd-commenter
+evil-surround
 exec-path-from-shell
 popwin
 reveal-in-osx-finder
@@ -31,7 +34,6 @@ helm-ag
 window-numbering
 which-key
 slime
-
 	   ))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
@@ -81,18 +83,14 @@ slime
 (global-hungry-delete-mode t) ; hungry delete
    #+END_SRC
 ** evil
-   #+BEGIN_VERSE
    vim
    manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
-   #+END_VERSE
    #+BEGIN_SRC emacs-lisp
      (evil-mode t) ; vim
    #+END_SRC
 *** evil-leader
     快捷键
-    #+BEGIN_VERSE
     M-x customize-group -> 默认触发为\，改为SPC
-    #+END_VERSE
    #+BEGIN_SRC emacs-lisp
      (global-evil-leader-mode)
       (evil-leader/set-key
@@ -116,6 +114,12 @@ slime
       (evilnc-default-hotkeys)
       (global-set-key (kbd "s-/") 'evilnc-comment-or-uncomment-lines)
     #+END_SRC
+*** evil-surround
+    #+BEGIN_SRC emacs-lisp
+      (require 'evil-surround)
+      (global-evil-surround-mode 1)
+    #+END_SRC
+
 ** smartparens
    自动匹配括号、引号等。
    #+BEGIN_SRC emacs-lisp

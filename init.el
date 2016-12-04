@@ -5,18 +5,15 @@
 (package-initialize)
 (add-to-list 'load-path "~/.emacs.d/init/")
 
-;; python
 (defun add-py-breakpoint ()  
   (interactive)
-  (let (start)
-    (save-excursion
+  (let ((start))
       (back-to-indentation)
-      (setq start (current-column)))
+      (setq start (current-column))
     (move-end-of-line nil)
     (insert "\n")
     (move-to-column start t)
-    (insert "import pdb; pdb.set_trace();")
-    ))
+    (insert "import pdb; pdb.set_trace();")))
 
 (defun my-python-config ()
   "For python"
@@ -101,7 +98,7 @@
 
 ;; 更改显示字体大小 16pt
 ;; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
-(set-face-attribute 'default nil :height 140)
+;; (set-face-attribute 'default nil :height 140)
 
 (setq ring-bell-function 'ignore)
 
