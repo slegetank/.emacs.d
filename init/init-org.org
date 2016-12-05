@@ -1,3 +1,9 @@
+* 默认配置
+  #+BEGIN_SRC emacs-lisp
+    (setq org-startup-indented t) ; 行首缩进
+    (setq org-hide-leading-stars t) ; 只显示一颗星
+    (setq org-ellipsis " \u25bc" ) ; 题目缩略显示
+  #+END_SRC
 * 高亮代码
 #+BEGIN_SRC emacs-lisp
   (require 'org)
@@ -48,6 +54,7 @@
   (defun my-org-config ()
     (local-set-key (kbd "s-k") 'outline-previous-visible-heading)
     (local-set-key (kbd "s-j") 'outline-next-visible-heading)
+    (local-set-key (kbd "<s-return>") 'org-insert-heading-respect-content)
     )
 
   (add-hook 'org-mode-hook 'my-org-config)

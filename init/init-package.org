@@ -34,6 +34,7 @@ helm-ag
 window-numbering
 which-key
 slime
+elpy
 	   ))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
@@ -56,42 +57,17 @@ slime
   
 * 包
   下面是所有上面的第三方库的配置。(org mode中编辑代码时，可以使用C-c '来在一个新的buffer中进行编辑；按C-x C-s来保存;再次按C-c '来退出)
-** company
-   company的意思是complete-anything。顾名思义，它可以对用户的输入进行补全。
-   #+BEGIN_SRC emacs-lisp
-     (global-company-mode t) ; company
-     (with-eval-after-load 'company
-       (define-key company-active-map (kbd "M-n") nil)
-       (define-key company-active-map (kbd "M-p") nil)
-       (define-key company-active-map (kbd "C-j") #'company-select-next)
-       (define-key company-active-map (kbd "C-k") #'company-select-previous))
-   #+END_SRC
-*** company-anaconda
-    #+BEGIN_SRC emacs-lisp
-      (add-hook 'python-mode-hook 'anaconda-mode)
-      (eval-after-load "company"
-        '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
-    #+END_SRC
-** monokai-theme
-   目前所用的风格。
-   #+BEGIN_SRC emacs-lisp
-(load-theme 'monokai t) ; theme
-   #+END_SRC
-** hungry-delete
-   自动删除行最后的空格。
-   #+BEGIN_SRC emacs-lisp
-(global-hungry-delete-mode t) ; hungry delete
-   #+END_SRC
 ** evil
-   vim
-   manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
-   #+BEGIN_SRC emacs-lisp
-     (evil-mode t) ; vim
-   #+END_SRC
+vim
+manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
+#+BEGIN_SRC emacs-lisp
+  (evil-mode t) ; vim
+#+END_SRC
 *** evil-leader
     快捷键
     M-x customize-group -> 默认触发为\，改为SPC
    #+BEGIN_SRC emacs-lisp
+     (require 'evil-leader)
      (global-evil-leader-mode)
       (evil-leader/set-key
        "ff" 'find-file
@@ -119,7 +95,32 @@ slime
       (require 'evil-surround)
       (global-evil-surround-mode 1)
     #+END_SRC
-
+** company
+   company的意思是complete-anything。顾名思义，它可以对用户的输入进行补全。
+   #+BEGIN_SRC emacs-lisp
+     (global-company-mode t) ; company
+     (with-eval-after-load 'company
+       (define-key company-active-map (kbd "M-n") nil)
+       (define-key company-active-map (kbd "M-p") nil)
+       (define-key company-active-map (kbd "C-j") #'company-select-next)
+       (define-key company-active-map (kbd "C-k") #'company-select-previous))
+   #+END_SRC
+*** company-anaconda
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'python-mode-hook 'anaconda-mode)
+      (eval-after-load "company"
+        '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
+    #+END_SRC
+** monokai-theme
+   目前所用的风格。
+   #+BEGIN_SRC emacs-lisp
+(load-theme 'monokai t) ; theme
+   #+END_SRC
+** hungry-delete
+   自动删除行最后的空格。
+   #+BEGIN_SRC emacs-lisp
+(global-hungry-delete-mode t) ; hungry delete
+   #+END_SRC
 ** smartparens
    自动匹配括号、引号等。
    #+BEGIN_SRC emacs-lisp
@@ -174,6 +175,11 @@ slime
    #+BEGIN_SRC emacs-lisp
      (which-key-mode 1)
      (setq which-key-side-window-max-height 0.25)
+   #+END_SRC
+
+** elpy
+   #+BEGIN_SRC emacs-lisp
+     (elpy-enable)
    #+END_SRC
 ** slime
    #+BEGIN_SRC emacs-lisp

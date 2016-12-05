@@ -1,0 +1,17 @@
+* Learn Emacs
+** Blogs & Articles
+*** Planet Emacsen
+http://planet.emacsen.org
+*** MELPA
+https://melpa.org/#/
+*** Emacs China
+https://emacs-china.org
+*** 一年
+http://blog.csdn.net/redguardtoo/article/details/7222501
+** Other Configs
+*** purcell
+https://github.com/purcell/emacs.d
+*** prelude
+https://github.com/bbatsov/prelude
+*** emacs-starter-kit
+https://github.com/technomancy/emacs-starter-kit

@@ -5,23 +5,6 @@
 (package-initialize)
 (add-to-list 'load-path "~/.emacs.d/init/")
 
-(defun add-py-breakpoint ()  
-  (interactive)
-  (let ((start))
-      (back-to-indentation)
-      (setq start (current-column))
-    (move-end-of-line nil)
-    (insert "\n")
-    (move-to-column start t)
-    (insert "import pdb; pdb.set_trace();")))
-
-(defun my-python-config ()
-  "For python"
-  (local-set-key (kbd "s-\\") 'add-py-breakpoint)
-  )
-
-(add-hook 'python-mode-hook 'my-python-config)
-
 ;; 加载配置orgmode文件
 (org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))
@@ -40,37 +23,6 @@
 	(t (save-excursion
 	     (ignore-errors (backward-up-list))
 	     ad-do-it))))
-
-(defun firefox-get-frontmost-url ()
-  (let ((result
-	 (do-applescript
-	  (concat
-	   "set oldClipboard to the clipboard\n"
-	   "set frontmostApplication to path to frontmost application\n"
-	   "tell application \"Safari\"\n"
-	   "	activate\n"
-	   "	delay 0.15\n"
-	   "	tell application \"System Events\"\n"
-	   "		keystroke \"l\" using {command down}\n"
-	   "		keystroke \"a\" using {command down}\n"
-	   "		keystroke \"c\" using {command down}\n"
-	   "	end tell\n"
-	   "	delay 0.15\n"
-	   "	set theUrl to the clipboard\n"
-	   "	set the clipboard to oldClipboard\n"
-	   "	set theResult to (get theUrl) & \"::split::\" & (get name of window 1)\n"
-	   "end tell\n"
-	   "activate application (frontmostApplication as text)\n"
-	   "set links to {}\n"
-	   "copy theResult to the end of links\n"
-	   "return links as string\n"))))
-    (car (split-string result "[\r\n]+" t))))
-
-(defun interact-get-firefox-url ()
-  (interactive)
-  (print (firefox-get-frontmost-url)))
-
-(global-set-key (kbd "C-c u") 'interact-get-firefox-url)
 
 ;; 高亮当前行
 (global-hl-line-mode 1)
@@ -121,7 +73,22 @@
 (require 'dired-x)
 (global-set-key (kbd "C-c d") 'dired-jump)
 
-; ^ -> 上一级
+(defun add-py-breakpoint ()  
+  (interactive)
+  (let ((start))
+      (back-to-indentation)
+      (setq start (current-column))
+    (move-end-of-line nil)
+    (insert "\n")
+    (move-to-column start t)
+    (insert "import pdb; pdb.set_trace();")))
+
+(defun my-python-config ()
+  "For python"
+  (local-set-key (kbd "s-\\") 'add-py-breakpoint)
+  )
+
+(add-hook 'python-mode-hook 'my-python-config)
 
 ;; 快速打开配置文件
 (defun open-init-file()
@@ -142,3 +109,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(find-file "~/.emacs.d/initpage.org")

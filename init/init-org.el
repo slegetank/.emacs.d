@@ -1,4 +1,8 @@
 
+(setq org-startup-indented t) ; 行首缩进
+(setq org-hide-leading-stars t) ; 只显示一颗星
+(setq org-ellipsis " \u25bc" ) ; 题目缩略显示
+
 (require 'org)
 (setq org-src-fontify-natively t)
 
@@ -31,7 +35,7 @@
       (org-edit-src-save)
     (save-buffer)))
 
-(global-set-key (kbd "M-s") 'custom-save-buffer)
+(global-set-key (kbd "s-s") 'custom-save-buffer)
 
 (evil-leader/set-key
   "eq" 'custom-org-edit-src-exit
@@ -40,6 +44,7 @@
 (defun my-org-config ()
   (local-set-key (kbd "s-k") 'outline-previous-visible-heading)
   (local-set-key (kbd "s-j") 'outline-next-visible-heading)
+  (local-set-key (kbd "<s-return>") 'org-insert-heading-respect-content)
   )
 
 (add-hook 'org-mode-hook 'my-org-config)

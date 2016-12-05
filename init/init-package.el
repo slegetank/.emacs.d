@@ -23,6 +23,7 @@ helm-ag
 window-numbering
 which-key
 slime
+elpy
            ))
 
 (require 'cl-lib)
@@ -38,23 +39,9 @@ slime
     (when (not (package-installed-p pkg))
       (package-install pkg))))
 
-(global-company-mode t) ; company
-(with-eval-after-load 'company
-  (define-key company-active-map (kbd "M-n") nil)
-  (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "C-j") #'company-select-next)
-  (define-key company-active-map (kbd "C-k") #'company-select-previous))
-
-(add-hook 'python-mode-hook 'anaconda-mode)
-(eval-after-load "company"
-  '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
-
-(load-theme 'monokai t) ; theme
-
-(global-hungry-delete-mode t) ; hungry delete
-
 (evil-mode t) ; vim
 
+(require 'evil-leader)
 (global-evil-leader-mode)
  (evil-leader/set-key
   "ff" 'find-file
@@ -76,6 +63,21 @@ slime
 
 (require 'evil-surround)
 (global-evil-surround-mode 1)
+
+(global-company-mode t) ; company
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-j") #'company-select-next)
+  (define-key company-active-map (kbd "C-k") #'company-select-previous))
+
+(add-hook 'python-mode-hook 'anaconda-mode)
+(eval-after-load "company"
+  '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
+
+(load-theme 'monokai t) ; theme
+
+(global-hungry-delete-mode t) ; hungry delete
 
 (smartparens-global-mode t) ; smart paren
 
@@ -100,6 +102,8 @@ slime
 
 (which-key-mode 1)
 (setq which-key-side-window-max-height 0.25)
+
+(elpy-enable)
 
 (setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
  (setq slime-contribs '(slime-fancy))
