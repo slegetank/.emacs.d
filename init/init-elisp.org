@@ -1,8 +1,5 @@
 * defaults
 #+BEGIN_SRC emacs-lisp
-  ;; elisp单引号不自动配对
-  (sp-local-pair '(emacs-lisp-mode lisp-interaction-mode) "'" nil :actions nil)
-
   ;; 括号匹配
   (add-hook 'emacs-lisp-mode-hook 'show-paren-mode)
 

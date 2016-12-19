@@ -1,16 +1,13 @@
-* 默认配置
+* defaults
   #+BEGIN_SRC emacs-lisp
     (setq org-startup-indented t) ; 行首缩进
     (setq org-hide-leading-stars t) ; 只显示一颗星
     (setq org-ellipsis " \u25bc" ) ; 题目缩略显示
     (setq org-startup-truncated nil)
-  #+END_SRC
-* 高亮代码
-#+BEGIN_SRC emacs-lisp
-  (require 'org)
-  (setq org-src-fontify-natively t)
 
-#+END_SRC
+    (require 'org)
+    (setq org-src-fontify-natively t)
+  #+END_SRC
 * Edit code
   #+BEGIN_SRC emacs-lisp
     ;; For editing source code
