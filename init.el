@@ -6,102 +6,20 @@
 (add-to-list 'load-path "~/.emacs.d/init/")
 
 ;; 加载配置orgmode文件
+(org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-elisp.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-python.org" user-emacs-directory))
 
-(setq make-backup-files nil)
-
-;; elisp单引号不自动配对
-(sp-local-pair '(emacs-lisp-mode lisp-interaction-mode) "'" nil :actions nil)
-
-;; 括号匹配
-(add-hook 'emacs-lisp-mode-hook 'show-paren-mode)
-
-(defadvice show-paren-function (around fix-show-paren-function activate)
-  "Highlight enclosing parens."
-  (cond ((looking-at-p "\\s(") ad-do-it)
-	(t (save-excursion
-	     (ignore-errors (backward-up-list))
-	     ad-do-it))))
-
-;; 高亮当前行
-(global-hl-line-mode 1)
-
-;; 选中删除
-(delete-selection-mode 1)
-
-;; 全屏
-;;(setq initial-frame-alist (quote ((fullscreen . maximized))))
-
-;; 关闭工具栏
-(tool-bar-mode -1)
-
-;; 关闭文件滑动控件
-(scroll-bar-mode -1)
-
-;; 显示行号
-(global-linum-mode 1)
-
-;; 更改光标的样式
-(setq-default cursor-type 'bar)
-
-;; 关闭启动帮助画面
-(setq inhibit-splash-screen 1)
-
-;; 更改显示字体大小 16pt
-;; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
-;; (set-face-attribute 'default nil :height 140)
-
-(setq ring-bell-function 'ignore)
-
-;; 更好的滚动
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
-(setq mouse-wheel-progressive-speed nil)
-
-;; yes/no -> y/n
-(fset 'yes-or-no-p 'y-or-n-p)
-
-;;; dired
-(setq dired-recursive-copies 'always)
-(setq dired-recursive-deletes 'always)
-
-(put 'dired-find-alternate-file 'disabled nil)
-(with-eval-after-load 'dired
-    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
-
-;; C-c d打开当前文件的dired
-(require 'dired-x)
-(global-set-key (kbd "C-c d") 'dired-jump)
-
-(defun add-py-breakpoint ()  
-  (interactive)
-  (let ((start))
-      (back-to-indentation)
-      (setq start (current-column))
-    (move-end-of-line nil)
-    (insert "\n")
-    (move-to-column start t)
-    (insert "import pdb; pdb.set_trace();")))
-
-(defun my-python-config ()
-  "For python"
-  (local-set-key (kbd "s-\\") 'add-py-breakpoint)
-  )
-
-(add-hook 'python-mode-hook 'my-python-config)
-
-;; 快速打开配置文件
-(defun open-init-file()
-  (interactive)
-  (find-file "~/.emacs.d/init.el"))
-
-;; 这一行代码，将函数 open-init-file 绑定到 <f2> 键上
-(global-set-key (kbd "<f2>") 'open-init-file)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("42ba25fad91db26bfa0130161412d49804ff27e6a09bf45f1a8268511300d981" "3b333a6780005b5dbfd1b15525118fe37791387b994008c977c786cd9b464977" "51897d0e185a9d350a124afac8d5e95cda53e737f3b33befc44ab02f2b03dab1" default)))
  '(evil-leader/leader "SPC"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

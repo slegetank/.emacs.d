@@ -3,6 +3,7 @@
     (setq org-startup-indented t) ; 行首缩进
     (setq org-hide-leading-stars t) ; 只显示一颗星
     (setq org-ellipsis " \u25bc" ) ; 题目缩略显示
+    (setq org-startup-truncated nil)
   #+END_SRC
 * 高亮代码
 #+BEGIN_SRC emacs-lisp
@@ -20,9 +21,30 @@
         (indent-region (point-min) (point-max))
         (org-edit-src-exit)))
 
+    (defun wrap-region-into-code-block (start end)
+      "Custom method, wrap selected region into #+BEGIN_SRC emacs-lisp ... #+END_SRC"
+      (interactive "r")
+      (let ((region-content (buffer-substring start end))) 
+        (kill-region start end)
+        (deactivate-mark)
+        
+        (setq region-content (replace-regexp-in-string "‘" "'" region-content))
+        (setq region-content (replace-regexp-in-string "’" "'" region-content))
+        (setq region-content (replace-regexp-in-string "“" "\"" region-content))
+        (setq region-content (replace-regexp-in-string "”" "\"" region-content))
+        (setq region-content (replace-regexp-in-string "⇒" "->" region-content))
+
+        (insert-string (format "#+BEGIN_SRC emacs-lisp\n%s#+END_SRC\n" region-content))
+        (forward-line -2)
+        (org-edit-special)
+        (indent-region (point-min) (point-max))
+        (org-edit-src-exit)
+        (forward-line 2)))
+
     (evil-leader/set-key-for-mode 'org-mode 
       "ee" 'org-edit-special
-      "==" 'custom-indent-org-block-automatically)
+      "==" 'custom-indent-org-block-automatically
+      "ec" 'wrap-region-into-code-block)
 
     ;; If src come from org mode, use these functions
     (defun custom-org-edit-src-exit ()
@@ -46,8 +68,6 @@
     (evil-leader/set-key
       "eq" 'custom-org-edit-src-exit
       "es" 'custom-org-edit-src-save)
-
-
   #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp 

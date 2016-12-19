@@ -4,12 +4,11 @@
 * 核心
   这里使用package包来管理第三方库。注意，25.1版本之后才具有这个强大的能力。
   
-  
   1 首先，将安装源设为国内的，此处使用子龙山人提供的源：
   #+BEGIN_SRC emacs-lisp
     (when (>= emacs-major-version 24)
-      (setq package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
-           ("melpa" . "http://elpa.zilongshanren.com/melpa/"))))
+      (add-to-list 'package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
+                                      ("melpa" . "http://elpa.zilongshanren.com/melpa/"))))
   #+END_SRC
   2 然后，将要加载的库加入package-selected-packages里。package库将使用这个变量来确认用户需要安装哪些包。
   package-autoremove也依赖于这个列表来自动删除包。注意，这个变量是在25.1之后引入的。
@@ -18,7 +17,7 @@
 company
 company-anaconda
 hungry-delete
-monokai-theme
+leuven-theme
 swiper
 counsel
 smartparens
@@ -35,6 +34,7 @@ window-numbering
 which-key
 slime
 elpy
+darkokai-theme
 	   ))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
@@ -70,18 +70,24 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
      (require 'evil-leader)
      (global-evil-leader-mode)
       (evil-leader/set-key
+        ;; file & buffer
        "ff" 'find-file
        "bb" 'switch-to-buffer
        "bk" 'kill-buffer
+       ;; project
        "pf" 'counsel-git
        "ps" 'helm-do-ag-project-root
+       ;; window
        "0" 'select-window-0
        "1" 'select-window-1
        "2" 'select-window-2
        "3" 'select-window-3
-       "wd" 'delete-other-windows
-       "w-" 'split-window-horizontally
-       "w/" 'split-window-vertically
+       "wk" 'delete-other-windows
+       "ws" 'split-window-horizontally
+       "wv" 'split-window-vertically
+       ;; elisp
+       "er" 'eval-region
+       "eb" 'eval-buffer
        ) 
    #+END_SRC 
 *** evil-nerd-commenter
@@ -111,11 +117,6 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
       (eval-after-load "company"
         '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
     #+END_SRC
-** monokai-theme
-   目前所用的风格。
-   #+BEGIN_SRC emacs-lisp
-(load-theme 'monokai t) ; theme
-   #+END_SRC
 ** hungry-delete
    自动删除行最后的空格。
    #+BEGIN_SRC emacs-lisp
@@ -133,12 +134,21 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
 (require 'popwin)
 (popwin-mode t)
    #+END_SRC
-** swiper && counsel
+** Swiper && counsel
    强大的查找文件、搜索代码、执行命令的补全工具。
    #+BEGIN_SRC emacs-lisp
-;; ivy
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
+     ;; ivy
+     (ivy-mode 1)
+     (setq ivy-use-virtual-buffers t)
+
+     ;; (after-load 'ivy
+     ;; 	 (setq-default ivy-use-virtual-buffers t
+     ;; 		       ivy-count-format ""
+     ;;                   projectile-completion-system 'ivy
+     ;;                   ivy-initial-inputs-alist
+     ;;                   '((counsel-M-x . "^")
+     ;;                     (man . "^")
+     ;;                     (woman . "^")))
    #+END_SRC
 ** exec-path-from-shell
    使MacOS上的Emacs能正确的使用shell的环境变量。
@@ -180,6 +190,14 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
 ** elpy
    #+BEGIN_SRC emacs-lisp
      (elpy-enable)
+   #+END_SRC
+** rainbow-delimiters
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+   #+END_SRC
+** darkokai-theme
+   #+BEGIN_SRC emacs-lisp
+     (load-theme 'darkokai t)
    #+END_SRC
 ** slime
    #+BEGIN_SRC emacs-lisp

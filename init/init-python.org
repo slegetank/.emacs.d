@@ -1,0 +1,20 @@
+* defaults
+* keys
+#+BEGIN_SRC emacs-lisp
+  (defun add-py-breakpoint ()  
+    (interactive)
+    (let ((start))
+      (back-to-indentation)
+      (setq start (current-column))
+      (move-end-of-line nil)
+      (insert "\n")
+      (move-to-column start t)
+      (insert "import pdb; pdb.set_trace();")))
+
+  (defun my-python-config ()
+    "For python"
+    (local-set-key (kbd "s-\\") 'add-py-breakpoint)
+    )
+
+  (add-hook 'python-mode-hook 'my-python-config)
+#+END_SRC

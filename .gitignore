@@ -5,3 +5,4 @@ recentf
 *.html
 .cache
 *.pyc
+/init/*.el
