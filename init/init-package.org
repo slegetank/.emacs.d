@@ -7,35 +7,37 @@
   1 首先，将安装源设为国内的，此处使用子龙山人提供的源：
   #+BEGIN_SRC emacs-lisp
     (when (>= emacs-major-version 24)
-      (add-to-list 'package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
-                                      ("melpa" . "http://elpa.zilongshanren.com/melpa/"))))
+      (setq package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
+                               ("melpa" . "http://elpa.zilongshanren.com/melpa/"))))
   #+END_SRC
+
+  #+RESULTS:
+
   2 然后，将要加载的库加入package-selected-packages里。package库将使用这个变量来确认用户需要安装哪些包。
   package-autoremove也依赖于这个列表来自动删除包。注意，这个变量是在25.1之后引入的。
   #+BEGIN_SRC emacs-lisp
-(setq package-selected-packages '(
-company
-company-anaconda
-hungry-delete
-leuven-theme
-swiper
-counsel
-smartparens
-evil
-evil-leader
-evil-nerd-commenter
-evil-surround
-exec-path-from-shell
-popwin
-reveal-in-osx-finder
-iedit
-helm-ag
-window-numbering
-which-key
-slime
-elpy
-darkokai-theme
-           ))
+    (setq package-selected-packages '(company
+                                      company-anaconda
+                                      hungry-delete
+                                      swiper
+                                      counsel
+                                      smartparens
+                                      evil
+                                      evil-leader
+                                      evil-nerd-commenter
+                                      evil-surround
+                                      exec-path-from-shell
+                                      popwin
+                                      reveal-in-osx-finder
+                                      iedit
+                                      helm-ag
+                                      window-numbering
+                                      which-key
+                                      slime
+                                      elpy
+                                      darkokai-theme
+                                      better-defaults
+                                      golden-ratio))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
@@ -57,6 +59,11 @@ darkokai-theme
   
 * 包
 下面是所有上面的第三方库的配置。(org mode中编辑代码时，可以使用C-c '来在一个新的buffer中进行编辑；按C-x C-s来保存;再次按C-c '来退出)
+** better-defaults
+修正Emacs默认配置的一些不合理配置。
+#+BEGIN_SRC emacs-lisp
+  (require 'better-defaults)
+#+END_SRC
 ** evil
 vim
 manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
@@ -126,10 +133,20 @@ M-x customize-group -> 默认触发为\，改为SPC
 ** smartparens
    自动匹配括号、引号等。
    #+BEGIN_SRC emacs-lisp
-     ;; elisp单引号不自动配对
+     (require 'smartparens-config)
      (smartparens-global-mode t) ; smart paren
 
+     ;; elisp单引号不自动配对
      (sp-local-pair '(emacs-lisp-mode lisp-interaction-mode) "'" nil :actions nil)
+
+     ;; 括号匹配
+     (defadvice show-paren-function (around fix-show-paren-function activate)
+       "Highlight enclosing parens."
+       (cond ((looking-at-p "\\s(") ad-do-it)
+             (t (save-excursion
+                  (ignore-errors (backward-up-list))
+                  ad-do-it))))
+
 
    #+END_SRC
 ** popwin
@@ -156,42 +173,37 @@ M-x customize-group -> 默认触发为\，改为SPC
      ;;                     (woman . "^")))
    #+END_SRC
 ** exec-path-from-shell
-   使MacOS上的Emacs能正确的使用shell的环境变量。
+使MacOS上的Emacs能正确的使用shell的环境变量。
 #+BEGIN_SRC emacs-lisp
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 #+END_SRC
 ** reveal-in-osx-finder
-   C-c o 打开当前文件所在的Finder;
-   使用dired-x添加dired-jump C-c d 打开当前文件所在的dired
-   #+BEGIN_SRC emacs-lisp
+C-c o 打开当前文件所在的Finder;
+使用dired-x添加dired-jump C-c d 打开当前文件所在的dired
+#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c o") 'reveal-in-osx-finder)
-   
-   #+END_SRC
-   
+#+END_SRC
+
 ** iedit
-   多处编辑; C-c e
-   #+BEGIN_SRC emacs-lisp
+多处编辑; C-c e
+#+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-c e") 'iedit-mode) 
-   #+END_SRC
-
+#+END_SRC
 ** helm-ag
-   工程内搜索工具。C-c C-e编辑结果。
-   #+BEGIN_SRC emacs-lisp
+工程内搜索工具。C-c C-e编辑结果。
+#+BEGIN_SRC emacs-lisp
   ;;(global-set-key (kbd "C-c p s") 'helm-do-ag-project-root) 
-   #+END_SRC
-
+#+END_SRC
 ** window-numbering
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
    (window-numbering-mode 1)
-   #+END_SRC
-
+#+END_SRC
 ** which-key
    #+BEGIN_SRC emacs-lisp
      (which-key-mode 1)
      (setq which-key-side-window-max-height 0.25)
    #+END_SRC
-
 ** elpy
    #+BEGIN_SRC emacs-lisp
      (elpy-enable)
@@ -200,6 +212,15 @@ M-x customize-group -> 默认触发为\，改为SPC
    #+BEGIN_SRC emacs-lisp
      (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
    #+END_SRC
+** golden-ratio
+#+BEGIN_SRC emacs-lisp
+  (require 'golden-ratio)
+  (golden-ratio-mode 1)
+
+  (add-hook 'buffer-list-update-hook #'golden-ratio) 
+  (add-hook 'focus-in-hook           #'golden-ratio)
+  (add-hook 'focus-out-hook          #'golden-ratio)
+#+END_SRC
 ** darkokai-theme
    #+BEGIN_SRC emacs-lisp
      (load-theme 'darkokai t)

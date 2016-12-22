@@ -11,12 +11,6 @@
   ;; 全屏
   ;;(setq initial-frame-alist (quote ((fullscreen . maximized))))
 
-  ;; 关闭工具栏
-  (tool-bar-mode -1)
-
-  ;; 关闭文件滑动控件
-  (scroll-bar-mode -1)
-
   ;; 显示行号
   (global-linum-mode 1)
 
@@ -62,4 +56,7 @@
   (require 'dired-x)
   (global-set-key (kbd "C-c d") 'dired-jump)
 
+  (define-key 'help-command (kbd "C-k") 'find-function-on-key)
+  (define-key 'help-command (kbd "C-v") 'find-variable)
+  (define-key 'help-command (kbd "C-f") 'find-function)
 #+END_SRC
