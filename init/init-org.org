@@ -8,6 +8,206 @@
     (require 'org)
     (setq org-src-fontify-natively t)
   #+END_SRC
+* blog
+以下是我日常用来写博客的配置。
+首先定义source org和publish的路径：
+#+BEGIN_SRC emacs-lisp
+  (setq my-blog-post-base "/Users/hy/Work/github/MyBlogOrg")
+  (setq my-blog-publish-base  "~/Work/github/slegetank.github.io")
+#+END_SRC
+
+定义一些导出时要用到的变量及函数：
+#+BEGIN_SRC emacs-lisp
+  (defun my-blog-header (arg)
+    "插入到每个生成的网页的头部"
+    (with-temp-buffer
+      (insert-file-contents (concat my-blog-post-base "/template/header.html"))
+      (buffer-string)))
+
+  ;; 插入到每个生成的网页的尾部
+  (setq my-blog-footer
+        "<hr />\n
+                  <p>License: <a href= \"https://creativecommons.org/licenses/by-sa/4.0/\">CC BY-SA 4.0</a></p>\n
+                  <p><a href= \"mailto:slegetank@163.com\"> Contact</a></p>\n")
+#+END_SRC
+
+自定义获取博客预览内容的函数，即一个"#+BEGIN_COMMENT PREVIEW...#+END_COMMENT"块之间的内容。用comment块的原因是这些内容将会在org导出的时候被忽略掉：
+#+BEGIN_SRC emacs-lisp
+  (defun my-blog-get-preview (file)
+    "获得每篇博客的preview"
+    (with-temp-buffer
+      (insert-file-contents file)
+      (if (re-search-forward "^#\\+BEGIN_COMMENT PREVIEW$" nil t)
+          (progn (goto-char (point-min))
+                 (let ((beg (+ 1 (re-search-forward "^#\\+BEGIN_COMMENT PREVIEW$")))
+                       (end (progn (re-search-forward "^#\\+END_COMMENT")
+                                   (match-beginning 0))))
+                   (buffer-substring beg end)))
+        "")))
+#+END_SRC
+
+自定义获取文章类型的函数，例如iOS、Book...：
+#+BEGIN_SRC emacs-lisp
+  (defun my-blog-get-type (file)
+    "获得每篇博客的类型"
+    (let* ((org-inhibit-startup t)
+           (visiting (find-buffer-visiting file))
+           (buffer (or visiting (find-file-noselect file)))
+           (org-element (with-current-buffer buffer
+                          (org-element-map (org-element-parse-buffer 'element) 'keyword
+                            (lambda (keyword) (cons (org-element-property :key keyword)
+                                                    (org-element-property :value keyword)))))))
+      (or (cdr (assoc "BLOGTYPE" org-element)) "")))
+#+END_SRC
+
+自定义sitemap生成函数：
+#+BEGIN_SRC emacs-lisp
+    (defun my-blog-sitemap (project &optional sitemap-filename)
+      "Sitemap custom method"
+      (let* ((project-plist (cdr project))
+             (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
+             (publishdir (file-name-as-directory (plist-get project-plist :publishing-directory)))
+             (exclude-regexp (plist-get project-plist :exclude))
+             (files (nreverse
+                     (org-publish-get-base-files project exclude-regexp)))
+             (sitemap-filename (concat postdir (or sitemap-filename "index.org")))
+             (sitemap-sans-extension
+              (plist-get project-plist :sitemap-sans-extension))
+             (visiting (find-buffer-visiting sitemap-filename))
+             file sitemap-buffer)
+
+        (let ((org-inhibit-startup t))
+          (setq sitemap-buffer
+                (or visiting (find-file sitemap-filename)))
+          (with-current-buffer sitemap-buffer
+              (erase-buffer)
+
+            ;; loop through all of the files in the project
+            (while (setq file (pop files))
+              (let ((fn (file-name-nondirectory file))
+                    (link ;; changed this to fix links. see postprocessor.
+                   (file-relative-name file (file-name-as-directory
+                                             (expand-file-name (file-name-as-directory postdir)))))
+                  (oldlocal (file-name-directory postdir)))
+              (when sitemap-sans-extension
+                (setq link (file-name-sans-extension link)))
+              ;; sitemap shouldn't list itself
+              (unless (equal (file-truename sitemap-filename)
+                             (file-truename file))
+                (let (;; get the title and date of the current file
+                      (title (org-publish-format-file-entry "%t" file project-plist))
+                      (date (org-publish-format-file-entry "%d" file project-plist))
+                      ;; get the preview section from the current file
+                      (preview (my-blog-get-preview file))
+                      (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
+                      (type (my-blog-get-type file)))
+                  ;; insert a horizontal line before every post, kill the first one
+                  ;; before saving
+
+                  (insert "-----\n")
+                  (cond ((string-match-p regexp title)
+                         (string-match regexp title)
+                         ;; insert every post as headline
+                         (insert (concat"* " (match-string 1 title)
+                                        "[[file:" link "]["
+                                        (match-string 2 title)
+                                        "]]" (match-string 3 title) "\n")))
+                        (t (insert (concat "* [[file:" link "][" title "]]\n"))))
+                  (let ((rss-permalink (concat (file-name-sans-extension link) ".html"))
+                        (rss-pubdate (format-time-string
+                                      (car org-time-stamp-formats)
+                                      (org-publish-find-date file))))
+                    (org-set-property "RSS_PERMALINK" rss-permalink)
+                    (org-set-property "PUBDATE" rss-pubdate))
+
+
+                  (insert (format "%s | %s\n\n" date type))
+                  ;; (insert (concat date "\n\n"))
+                  (insert preview)
+                  (insert (concat "[[file:" link "][Read More...]]\n"))))))
+          ;; kill the first hrule to make this look OK
+          (goto-char (point-min))
+          (let ((kill-whole-line t)) (kill-line))
+          ;; add some header
+          (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
+          (insert "#+TITLE:Slegetank's Blog\n")
+          (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
+          (save-buffer)))
+        (or visiting (kill-buffer sitemap-buffer))))
+#+END_SRC
+
+自定义一个用来帮助新建博客的helper函数：
+#+BEGIN_SRC emacs-lisp
+  (defun custom-init-blog (filename)
+    "Init blog helper"
+    (interactive (list (read-string (format "Enter new blog name: %s%s-" (concat my-blog-post-base "/org/") (format-time-string "%Y%m%d" (current-time))))))
+    (if (or (string= "" filename) (not (string-match "\\.org$" filename)))
+        (message "Need a org filename")
+      (progn (setq filepath (format "%s%s-%s" (concat my-blog-post-base "/org/") (format-time-string "%Y%m%d" (current-time)) filename))
+       (find-file filepath)
+       (let ((custom-org-buffer (get-file-buffer filepath)))
+         (with-current-buffer custom-org-buffer
+           (insert (format "#+TITLE: \n#+AUTHOR: slegetank\n#+EMAIL: slege_tank@163.com\n#+DATE: %s\n#+SETUPFILE: ~/.emacs.d/org-template/level-1.org\n#+blogtype: \n\n#+BEGIN_COMMENT PREVIEW\n\n#+END_COMMENT\n" (format-time-string "<%Y-%m-%d %H:%M>" (current-time))))
+           (goto-char 9))))))
+
+  (global-set-key (kbd "C-c b") 'custom-init-blog)
+#+END_SRC
+
+导出参数的配置：
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/org-mode/contrib/lisp/")
+  (require 'ox-html)
+  (require 'ox-publish)
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
+  (setq org-publish-project-alist
+        `(("blog-content"
+           :base-directory ,my-blog-post-base
+           :base-extension "org"
+           :publishing-directory ,my-blog-publish-base
+           :publishing-function (org-html-publish-to-html)
+           ;; :preparation-function my-blog-articles-preprocessor
+           ;; :completion-function my-blog-articles-postprocessor
+           :with-author t
+           :with-creator nil
+           ;; :with-date t
+           :auto-sitemap t
+           :sitemap-filename "index.org"
+           :sitemap-title "index"
+           :sitemap-sort-files anti-chronologically
+           :html-preamble my-blog-header
+           :html-postamble ,my-blog-footer
+           ;; :sitemap-style list
+           :sitemap-function my-blog-sitemap
+           :recursive t
+           :section-numbers nil
+           :with-toc nil
+           :with-drawers t
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           ;; :html-link-home "/"
+           :html-head nil ;; cleans up anything that would have been in there.
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           :html-viewport nil
+           :with-sub-superscript nil
+           :exclude "blog.org\\|theindex.org\\|README.org")
+          ("blog-static"
+           :base-directory ,(concat my-blog-post-base "/static")
+           :base-extension "png\\|jpg\\|css"
+           :publishing-directory ,(concat my-blog-publish-base "/static")
+           :recursive t
+           :publishing-function org-publish-attachment)
+          ("blog"
+           :components ("blog-content" "blog-static"))))
+
+
+  ;; now I can init with this, so not neccessory
+  ;; ;; blog template
+  ;; (add-to-list 'org-structure-template-alist
+  ;;              '("b" "#+TITLE: ?\n#+AUTHOR: slegetank\n#+EMAIL: slege_tank@163.com\n#+DATE:\n#+SETUPFILE: ~/.emacs.d/org-template/level-1.org\n#+blogtype:\n\n#+BEGIN_COMMENT PREVIEW\n\n#+END_COMMENT\n"))
+
+#+END_SRC
 * Edit code
   #+BEGIN_SRC emacs-lisp
     ;; For editing source code
@@ -21,16 +221,15 @@
     (defun wrap-region-into-code-block (start end)
       "Custom method, wrap selected region into #+BEGIN_SRC emacs-lisp ... #+END_SRC"
       (interactive "r")
-      (let ((region-content (buffer-substring start end))) 
+      (let ((region-content (buffer-substring start end)))
         (kill-region start end)
         (deactivate-mark)
-        
+
         (setq region-content (replace-regexp-in-string "‘" "'" region-content))
         (setq region-content (replace-regexp-in-string "’" "'" region-content))
         (setq region-content (replace-regexp-in-string "“" "\"" region-content))
         (setq region-content (replace-regexp-in-string "”" "\"" region-content))
         (setq region-content (replace-regexp-in-string "⇒" "->" region-content))
-
         (insert-string (format "#+BEGIN_SRC emacs-lisp\n%s#+END_SRC\n" region-content))
         (forward-line -2)
         (org-edit-special)
@@ -38,7 +237,7 @@
         (org-edit-src-exit)
         (forward-line 2)))
 
-    (evil-leader/set-key-for-mode 'org-mode 
+    (evil-leader/set-key-for-mode 'org-mode
       "ee" 'org-edit-special
       "==" 'custom-indent-org-block-automatically
       "ec" 'wrap-region-into-code-block)
