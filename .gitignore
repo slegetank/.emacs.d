@@ -6,3 +6,4 @@ recentf
 .cache
 *.pyc
 /init/*.el
+backups

@@ -34,6 +34,7 @@
                                       window-numbering
                                       which-key
                                       slime
+                                      rainbow-delimiters
                                       elpy
                                       darkokai-theme
                                       better-defaults

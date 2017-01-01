@@ -1,6 +1,24 @@
 * defaults
+处理emacs自带的备份文件。备份文件大多数情况下并没有用而且很烦人。但这是有意义的。与其禁掉，不如对其更好的管理。
 #+BEGIN_SRC emacs-lisp
-  (setq make-backup-files nil)
+  ;; Write backup files to own directory
+  (setq backup-directory-alist
+        `(("." . ,(expand-file-name
+                   (concat user-emacs-directory "backups")))))
+
+  ;; Make backups of files, even when they're in version control
+  (setq vc-make-backup-files t)
+
+  ;; not good choice
+  ;; (setq make-backup-files nil)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; title show full path
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (abbreviate-file-name (buffer-file-name))
+                   "%b"))))
 
   ;; 高亮当前行
   (global-hl-line-mode 1)
@@ -8,8 +26,8 @@
   ;; 选中删除
   (delete-selection-mode 1)
 
-  ;; 全屏
-  ;;(setq initial-frame-alist (quote ((fullscreen . maximized))))
+  ;; max size
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
   ;; 显示行号
   (global-linum-mode 1)
@@ -19,6 +37,9 @@
 
   ;; 关闭启动帮助画面
   (setq inhibit-splash-screen 1)
+  (setq inhibit-splash-screen t)
+  (setq initial-scratch-message nil)
+  ;; (setq initial-buffer-choice "~/")
 
   ;; 更改显示字体大小 16pt
   ;; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
@@ -33,7 +54,7 @@
   ;; yes/no -> y/n
   (fset 'yes-or-no-p 'y-or-n-p)
 
-  ;;; dired
+    ;;; dired
   (setq dired-recursive-copies 'always)
   (setq dired-recursive-deletes 'always)
 
@@ -42,16 +63,30 @@
     (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
 
 #+END_SRC
+** trailing space
+#+BEGIN_SRC emacs-lisp
+  ;; Show trailing whitespace
+  (require 'whitespace)
+  (setq-default show-trailing-whitespace t)
+#+END_SRC
+
+有些模式下不需要显示末尾的空格
+#+BEGIN_SRC emacs-lisp
+  (defun no-trailing-whitespace ()
+    (setq show-trailing-whitespace nil))
+  (add-hook 'minibuffer-setup-hook
+            'no-trailing-whitespace)
+  (add-hook 'eww-mode-hook
+            'no-trailing-whitespace)
+  (add-hook 'ielm-mode-hook
+            'no-trailing-whitespace)
+  (add-hook 'gdb-mode-hook
+            'no-trailing-whitespace)
+  (add-hook 'help-mode-hook
+            'no-trailing-whitespace)
+#+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-  ;; 快速打开配置文件
-  (defun open-init-file()
-    (interactive)
-    (find-file "~/.emacs.d/initpage.org"))
-
-  ;; 这一行代码，将函数 open-init-file 绑定到 <f2> 键上
-  (global-set-key (kbd "<f2>") 'open-init-file)
-
   ;; C-c d打开当前文件的dired
   (require 'dired-x)
   (global-set-key (kbd "C-c d") 'dired-jump)

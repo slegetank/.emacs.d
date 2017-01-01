@@ -6,6 +6,12 @@
 (package-initialize)
 
 ;; 加载配置orgmode文件
-(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))
+(org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-elisp.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-python.org" user-emacs-directory))
 
-(find-file "~/.emacs.d/initpage.org")
+;;(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))
+
+;; (find-file "~/.emacs.d/initpage.org")
