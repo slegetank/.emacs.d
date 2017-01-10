@@ -1,5 +1,5 @@
 * defaults
-处理emacs自带的备份文件。备份文件大多数情况下并没有用而且很烦人。但这是有意义的。与其禁掉，不如对其更好的管理。
+处理emacs自带的备份文件。备份文件大多数情况下并没有用而且很烦人。但这是有意义的--我被这救过。不当的操作导致当前的buffer被覆盖，并且保存到了硬盘上。这时才明白，backup有多重要。
 #+BEGIN_SRC emacs-lisp
   ;; Write backup files to own directory
   (setq backup-directory-alist
@@ -12,6 +12,32 @@
   ;; not good choice
   ;; (setq make-backup-files nil)
 #+END_SRC
+
+保存文件的编辑位置。
+#+BEGIN_SRC emacs-lisp
+  ;; Save point position between sessions
+  (require 'saveplace)
+  (setq-default save-place t)
+  (setq save-place-file (expand-file-name ".places" user-emacs-directory))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; 隐藏行号 会导致org mode编辑代码卡顿
+  (global-linum-mode 0)
+
+  ;; 暂时显示行号
+  (global-set-key [remap goto-line] 'goto-line-with-feedback)
+
+  (defun goto-line-with-feedback ()
+    "Show line numbers temporarily, while prompting for the line number input"
+    (interactive)
+    (unwind-protect
+        (progn
+          (linum-mode 1)
+          (goto-line (read-number "Goto line: ")))
+      (linum-mode -1)))
+#+END_SRC
+
 
 #+BEGIN_SRC emacs-lisp
   ;; title show full path
@@ -28,9 +54,6 @@
 
   ;; max size
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-  ;; 显示行号
-  (global-linum-mode 1)
 
   ;; 更改光标的样式
   (setq-default cursor-type 'bar)
