@@ -1,9 +1,9 @@
 #+OPTIONS: \n:\n
 这个文件用来存储所有第三方库的相关配置。
 
-* 核心
+* QUOTE 核心
   这里使用package包来管理第三方库。注意，25.1版本之后才具有这个强大的能力。
-  
+
   1 首先，将安装源设为国内的，此处使用子龙山人提供的源：
   #+BEGIN_SRC emacs-lisp
     (when (>= emacs-major-version 24)
@@ -38,7 +38,10 @@
                                       elpy
                                       darkokai-theme
                                       better-defaults
-                                      golden-ratio))
+                                      golden-ratio
+                                      dired+
+                                      s
+                                      avy))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
@@ -57,7 +60,6 @@
   #+END_SRC
   4 当需要删除某个包时，就将package-selected-packages中的包去掉，然后调用M-x package-autoremove来自动删除包。
   当然，别忘了将下面关于包的配置手动删除。
-  
 * 包
 下面是所有上面的第三方库的配置。(org mode中编辑代码时，可以使用C-c '来在一个新的buffer中进行编辑；按C-x C-s来保存;再次按C-c '来退出)
 ** better-defaults
@@ -75,29 +77,32 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
 快捷键
 M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
-  (require 'evil-leader)
-  (global-evil-leader-mode)
-  (setq evil-leader/leader "SPC")
-  (evil-leader/set-key
-    ;; file & buffer
-    "ff" 'find-file
-    "bb" 'switch-to-buffer
-    "bk" 'kill-buffer
-    ;; project
-    "pf" 'counsel-git
-    "ps" 'helm-do-ag-project-root
-    ;; window
-    "0" 'select-window-0
-    "1" 'select-window-1
-    "2" 'select-window-2
-    "3" 'select-window-3
-    "wk" 'delete-other-windows
-    "ws" 'split-window-horizontally
-    "wv" 'split-window-vertically
-    ;; elisp
-    "er" 'eval-region
-    "eb" 'eval-buffer
-    ) 
+    (require 'evil-leader)
+    (global-evil-leader-mode)
+    (setq evil-leader/leader "SPC")
+    (evil-leader/set-key
+      ;; file & buffer
+      "ff" 'find-file
+      "bb" 'switch-to-buffer
+      "bk" 'kill-buffer
+      ;; project
+      "pf" 'counsel-git
+      "ps" 'helm-do-ag-project-root
+      ;; window
+      "0" 'select-window-0
+      "1" 'select-window-1
+      "2" 'select-window-2
+      "3" 'select-window-3
+      "wk" 'delete-other-windows
+      "ws" 'split-window-horizontally
+      "wv" 'split-window-vertically
+      ;; elisp
+      "er" 'eval-region
+      "eb" 'eval-buffer
+      ;; dired
+      ;; dired finder
+      "df" '(lambda () (interactive) (dired (file-name-as-directory (s-trim (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
+      )
 #+END_SRC 
 *** evil-nerd-commenter
     注释
@@ -164,15 +169,32 @@ M-x customize-group -> 默认触发为\，改为SPC
      (ivy-mode 1)
      (setq ivy-use-virtual-buffers t)
 
+     (defun custom-goto-recent-directory ()
+       "Open recent directory with dired"
+       (interactive)
+       (unless recentf-mode (recentf-mode 1))
+       (let ((collection
+              (delete-dups
+               (append (mapcar 'file-name-directory recentf-list)
+                       ;; fasd history
+                       (if (executable-find "fasd")
+                           (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+         (ivy-read "directories:" collection :action 'dired)))
+
      ;; (after-load 'ivy
-     ;; 	 (setq-default ivy-use-virtual-buffers t
-     ;; 		       ivy-count-format ""
+     ;;          (setq-default ivy-use-virtual-buffers t
+     ;;                        ivy-count-format ""
      ;;                   projectile-completion-system 'ivy
      ;;                   ivy-initial-inputs-alist
      ;;                   '((counsel-M-x . "^")
      ;;                     (man . "^")
      ;;                     (woman . "^")))
    #+END_SRC
+** avy
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c g") 'avy-goto-line)
+#+END_SRC
+
 ** exec-path-from-shell
 使MacOS上的Emacs能正确的使用shell的环境变量。
 #+BEGIN_SRC emacs-lisp
@@ -208,6 +230,15 @@ C-c o 打开当前文件所在的Finder;
 ** elpy
    #+BEGIN_SRC emacs-lisp
      (elpy-enable)
+
+     (defun elpy-key-bind-method ()
+       "Custom key binding"
+       (define-key elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
+       (define-key elpy-mode-map (kbd "s->") 'elpy-goto-definition-other-window)
+       (define-key elpy-mode-map (kbd "s-\,") 'pop-tag-mark)
+       )
+
+     (add-hook 'elpy-mode-hook 'elpy-key-bind-method)
    #+END_SRC
 ** rainbow-delimiters
    #+BEGIN_SRC emacs-lisp
