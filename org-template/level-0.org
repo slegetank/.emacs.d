@@ -1,1 +1,1 @@
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="static/code.css" /><link rel="stylesheet" type="text/css" href="static/test.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="static/org.css" />
