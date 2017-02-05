@@ -62,6 +62,17 @@
 
 自定义sitemap生成函数：
 #+BEGIN_SRC emacs-lisp
+  ;; (defun my-blog-generate-index-list (files)
+  ;;   (while (setq file (pop files))
+  ;;     (let ((title (org-publish-format-file-entry "%t" file project-plist))
+  ;;           (date (org-publish-format-file-entry "%d" file project-plist))
+  ;;           (preview (my-blog-get-preview file))
+  ;;           (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
+  ;;           (type (my-blog-get-type file)))
+  ;;       )
+  ;;     )
+  ;;   )
+
   (defun my-blog-sitemap (project &optional sitemap-filename)
     "Sitemap custom method"
     (let* ((project-plist (cdr project))

@@ -7,3 +7,6 @@ recentf
 *.pyc
 /init/*.el
 backups
+/.emacs.desktop*
+/tutorial/Chinese-GBK.tut
+/eshell*

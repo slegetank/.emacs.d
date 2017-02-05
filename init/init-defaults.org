@@ -15,10 +15,7 @@
 
 保存文件的编辑位置。
 #+BEGIN_SRC emacs-lisp
-  ;; Save point position between sessions
-  (require 'saveplace)
-  (setq-default save-place t)
-  (setq save-place-file (expand-file-name ".places" user-emacs-directory))
+(desktop-save-mode 1)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -77,14 +74,16 @@
   ;; yes/no -> y/n
   (fset 'yes-or-no-p 'y-or-n-p)
 
+  (setq url-gateway-method 'socks)
+  (setq socks-server '("ss" "127.0.0.1" 1080 5))
+
     ;;; dired
-  (setq dired-recursive-copies 'always)
-  (setq dired-recursive-deletes 'always)
+  ;; (setq dired-recursive-copies 'always)
+  ;; (setq dired-recursive-deletes 'always)
 
-  (put 'dired-find-alternate-file 'disabled nil)
-  (with-eval-after-load 'dired
-    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
-
+  ;; (put 'dired-find-alternate-file 'disabled nil)
+  ;; (with-eval-after-load 'dired
+  ;;   (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
 #+END_SRC
 ** trailing space
 #+BEGIN_SRC emacs-lisp
@@ -97,24 +96,148 @@
 #+BEGIN_SRC emacs-lisp
   (defun no-trailing-whitespace ()
     (setq show-trailing-whitespace nil))
-  (add-hook 'minibuffer-setup-hook
-            'no-trailing-whitespace)
-  (add-hook 'eww-mode-hook
-            'no-trailing-whitespace)
-  (add-hook 'ielm-mode-hook
-            'no-trailing-whitespace)
-  (add-hook 'gdb-mode-hook
-            'no-trailing-whitespace)
-  (add-hook 'help-mode-hook
-            'no-trailing-whitespace)
+
+  (setq no-trailing-modes '(minibuffer-setup-hook eww-mode-hook ielm-mode-hook gdb-mode-hook help-mode-hook artist-mode-hook term-mode-hook))
+  (dolist (element no-trailing-modes nil)
+    (add-hook element 'no-trailing-whitespace))
+#+END_SRC
+** dired
+#+BEGIN_SRC emacs-lisp
+  (defun custom-dired-open-file-with-osx ()
+    "In Dired, try to open files by osx"
+    (interactive)
+    (shell-command (format "open \"%s\"" (dired-get-file-for-visit))))
+
+  (define-key dired-mode-map (kbd "O") 'custom-dired-open-file-with-osx)
+  (define-key dired-mode-map (kbd "V") nil)
+
+#+END_SRC
+* w3m
+#+BEGIN_SRC emacs-lisp
+  (setq browse-url-browser-function 'w3m-browse-url)
+  (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+  ;; optional keyboard short-cut
+  (global-set-key "\C-xm" 'browse-url-at-point)
+  (setq w3m-use-cookies t)
+
+  (require 'w3m-search)
+  (add-to-list 'w3m-search-engine-alist
+               '("emacs-wiki" "http://www.emacswiki.org/cgi-bin/wiki.pl?search=%s"))
+#+END_SRC
+
+快捷键定义来自[[http://sachachua.com/blog/2008/08/why-browse-the-web-in-emacs/][sacha的博客]], 进行了更符合vi习惯的修改：
+#+BEGIN_SRC emacs-lisp
+  (defun sacha/w3m-setup-keymap ()
+    "Use my heavily customized map."
+    (interactive)
+    ;; Undefine this key and use the advice instead so that my ido doesn't get
+    ;; overridden
+    (define-key w3m-mode-map (kbd "C-x b") nil)
+    (define-key w3m-mode-map "C" 'w3m-print-this-url)
+    (define-key w3m-mode-map "A" 'w3m-bookmark-add-current-url)
+    (define-key w3m-mode-map "w" 'w3m-download-with-wget)
+    (define-key w3m-mode-map "d" 'w3m-download-with-wget)
+    (define-key w3m-mode-map "D" 'w3m-download-this-url)
+    ;; Do not override my ever so handy ERC binding
+    (define-key w3m-mode-map (kbd "C-c C-SPC") nil)
+    (define-key w3m-mode-map "m" 'sacha/w3m-mirror-current-page)
+    (define-key w3m-mode-map "M" 'sacha/w3m-mirror-link)
+
+    (define-key w3m-mode-map "s" 'w3m-search)
+    (define-key w3m-mode-map "h" 'w3m-history)
+    (define-key w3m-mode-map "t" 'w3m-scroll-down-or-previous-url)
+    (define-key w3m-mode-map "n" 'w3m-scroll-up-or-next-url)
+    ;; I don't often w3m to edit pages, so I'm borrowing o and e (right
+    ;; below , / . for tab navigation) for page navigation instead.
+    (define-key w3m-mode-map "o" 'w3m-view-previous-page)
+    (define-key w3m-mode-map "e" 'w3m-view-next-page)
+    ;; i is a more useful mnemonic for toggling images
+    (define-key w3m-mode-map "i" 'w3m-toggle-inline-image)
+    (define-key w3m-mode-map "I" 'w3m-toggle-inline-images)
+    ;; and X for closing the buffer
+    (define-key w3m-mode-map "X" 'w3m-delete-buffer)
+    (define-key w3m-mode-map "x" 'w3m-delete-buffer)
+    (define-key w3m-mode-map "z" 'w3m-delete-buffer)
+    ;; and b for bookmarks
+    (define-key w3m-mode-map "b" 'w3m-bookmark-view)
+    ;; I don't use the Qwerty keymap, so hjkl is useless for me
+    ;; I'll use HTNS, though
+    (define-key w3m-mode-map "h" 'backward-char)
+    (define-key w3m-mode-map "k" 'previous-line)
+    (define-key w3m-mode-map "j" 'next-line)
+    (define-key w3m-mode-map "l" 'forward-char)
+    ;; Browse in new sessions by default
+    (define-key w3m-mode-map (kbd "RET") 'w3m-view-this-url)
+    (define-key w3m-mode-map [(shift return)] 'w3m-view-this-url-new-session)
+    (define-key w3m-mode-map "g" 'w3m-goto-url)
+    (define-key w3m-mode-map "G" 'w3m-goto-url-new-session)
+    ;; f for forward? I want to be able to follow links without removing
+    ;; most of my fingers from home row. My fingers are too short to hit
+    ;; Enter.
+    (define-key w3m-mode-map "f" 'w3m-view-this-url-new-session)
+    (define-key w3m-mode-map "F" 'w3m-view-this-url)
+    ;; Use cursor keys to scroll
+    (define-key w3m-mode-map [(left)] 'backward-char)
+    (define-key w3m-mode-map [(right)] 'forward-char)
+    (define-key w3m-mode-map [(shift left)] 'w3m-shift-right)
+    (define-key w3m-mode-map [(shift right)] 'w3m-shift-left)
+    ;; Which means I can now use , and . to switch pages
+    (define-key w3m-mode-map "." 'w3m-next-buffer)
+    (define-key w3m-mode-map "," 'w3m-previous-buffer)
+    ;; IBM stuff
+    (define-key w3m-mode-map "i" nil)
+    (define-key w3m-mode-map "ib" 'sacha/ibm-blog)
+    (define-key w3m-mode-map "id" 'sacha/dogear-url)
+    (define-key w3m-mode-map "f" 'sacha/w3m-open-in-firefox)
+    )
+#+END_SRC
+* terminal
+F12快速打开terminal; q退出；exit之后自动删除buffer。
+#+BEGIN_SRC emacs-lisp
+  (defun fast-terminal ()
+    "fastway to access terminal. Only open one."
+    (interactive)
+    (unless (get-buffer-window "*terminal*" 'visible)
+      (unless (get-buffer "*terminal*")
+        (make-term "terminal" (getenv "SHELL")))
+      (split-window-sensibly)
+      (other-window 1)
+      (set-buffer "*terminal*")
+      (term-mode)
+      (term-char-mode)
+      (switch-to-buffer "*terminal*")
+      (goto-char (point-max))
+      ))
+
+  ;; auto delete window when process exit
+  (add-hook 'term-exec-hook (lambda ()
+                              (let* ((buff (current-buffer))
+                                     (proc (get-buffer-process buff)))
+                                (lexical-let ((buff buff))
+                                  (set-process-sentinel proc (lambda (process event)
+                                                               (if (string= event "finished\n")
+                                                                   (kill-buffer-and-window))))))))
+
+  (global-set-key (kbd "<f12>") 'fast-terminal)
+  (add-hook 'term-mode-hook '(lambda () (evil-define-key 'normal term-raw-map (kbd "q") '(lambda () (interactive) (other-window -1) (delete-window (get-buffer-window "*terminal*"))))))
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
   ;; C-c d打开当前文件的dired
-  (require 'dired-x)
+  ;; (require 'dired-x)
   (global-set-key (kbd "C-c d") 'dired-jump)
 
+  ;; help
   (define-key 'help-command (kbd "C-k") 'find-function-on-key)
   (define-key 'help-command (kbd "C-v") 'find-variable)
   (define-key 'help-command (kbd "C-f") 'find-function)
+
+  ;; replace eval command from alt-x
+  (global-set-key (kbd "C-x C-m") 'execute-extended-command)
+
+  ;; cd finder current path
+  (defun fcd ()
+    "Dired current finder dir"
+    (interactive)
+    (dired (file-name-as-directory (s-trim-right (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
 #+END_SRC

@@ -1,20 +1,44 @@
 * defaults
 * keys
 #+BEGIN_SRC emacs-lisp
-  (defun add-py-breakpoint ()  
+    (defun add-py-breakpoint ()  
+      (interactive)
+      (let ((start))
+        (back-to-indentation)
+        (setq start (current-column))
+        (move-end-of-line nil)
+        (insert "\n")
+        (move-to-column start t)
+        (insert "import pdb; pdb.set_trace();")))
+
+    (defun my-python-config ()
+      "For python"
+      (local-set-key (kbd "s-\\") 'add-py-breakpoint)
+      )
+
+    (add-hook 'python-mode-hook 'my-python-config)
+
+  (defun custom-eval-python-buffer-in-eshell ()
     (interactive)
-    (let ((start))
-      (back-to-indentation)
-      (setq start (current-column))
-      (move-end-of-line nil)
-      (insert "\n")
-      (move-to-column start t)
-      (insert "import pdb; pdb.set_trace();")))
+    (let ((py-file-name (file-name-nondirectory buffer-file-name)))
+      (split-window-vertically)
+      (other-window 1)
+      (eshell)
+      (eshell-interrupt-process)
+      (insert-and-inherit (format "python %s" py-file-name)))
+    (evil-insert 1))
 
-  (defun my-python-config ()
-    "For python"
-    (local-set-key (kbd "s-\\") 'add-py-breakpoint)
-    )
+  (defun custom-back-from-eshell-to-python ()
+    (interactive)
+      (kill-buffer-and-window))
 
-  (add-hook 'python-mode-hook 'my-python-config)
+  (eval-after-load 'evil-leader
+    (evil-leader/set-key-for-mode 'python-mode
+      "eb" 'custom-eval-python-buffer-in-eshell))
+
+  (eval-after-load 'evil-leader
+    (evil-leader/set-key-for-mode 'eshell-mode
+      "eq" 'custom-back-from-eshell-to-python))
+
+  ;; (eval-after-load 'eshell (define-key eshell-mode-map (kbd "q") 'custom-back-from-eshell-to-python))
 #+END_SRC
