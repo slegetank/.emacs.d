@@ -18,61 +18,51 @@
 
 定义一些导出时要用到的变量及函数：
 #+BEGIN_SRC emacs-lisp
-    (defun my-blog-header (arg)
-      "插入到每个生成的网页的头部"
-      (with-temp-buffer
-        (insert-file-contents (concat my-blog-post-base "/template/header.html"))
-        (buffer-string)))
+  (defun my-blog-header (arg)
+    "插入到每个生成的网页的头部"
+    (with-temp-buffer
+      (insert-file-contents (concat my-blog-post-base "/template/header.html"))
+      (buffer-string)))
 
-    ;; 插入到每个生成的网页的尾部
-    (setq my-blog-footer
-          "<hr />\n
-                    <p>License: <a href= \"https://creativecommons.org/licenses/by-sa/4.0/\">CC BY-SA 4.0</a></p>\n
-                    <p><a href= \"mailto:slegetank@163.com\"> Contact</a></p>\n")
+  ;; 插入到每个生成的网页的尾部
+  (setq my-blog-footer
+        "<hr />\n
+                  <p>License: <a href= \"https://creativecommons.org/licenses/by-sa/4.0/\">CC BY-SA 4.0</a></p>\n
+                  <p><a href= \"mailto:slegetank@163.com\"> Contact</a></p>\n")
 #+END_SRC
 
 自定义获取博客预览内容的函数，即一个"#+BEGIN_COMMENT PREVIEW...#+END_COMMENT"块之间的内容。用comment块的原因是这些内容将会在org导出的时候被忽略掉：
 #+BEGIN_SRC emacs-lisp
-  (defun my-blog-get-preview (file)
-    "获得每篇博客的preview"
-    (with-temp-buffer
-      (insert-file-contents file)
-      (if (re-search-forward "^#\\+BEGIN_COMMENT PREVIEW$" nil t)
-          (progn (goto-char (point-min))
-                 (let ((beg (+ 1 (re-search-forward "^#\\+BEGIN_COMMENT PREVIEW$")))
-                       (end (progn (re-search-forward "^#\\+END_COMMENT")
-                                   (match-beginning 0))))
-                   (buffer-substring beg end)))
-        "")))
-#+END_SRC
-
-自定义获取文章类型的函数，例如iOS、Book...：
-#+BEGIN_SRC emacs-lisp
-  (defun my-blog-get-type (file)
-    "获得每篇博客的类型"
+  (defun my-blog-get-custom-property (file)
+    "获得每篇博客的自定义属性"
     (let* ((org-inhibit-startup t)
            (visiting (find-buffer-visiting file))
-           (buffer (or visiting (find-file-noselect file)))
-           (org-element (with-current-buffer buffer
-                          (org-element-map (org-element-parse-buffer 'element) 'keyword
-                            (lambda (keyword) (cons (org-element-property :key keyword)
-                                                    (org-element-property :value keyword)))))))
-      (or (cdr (assoc "BLOGTYPE" org-element)) "")))
+           (file-buf (or visiting (find-file-noselect file nil)))
+           (preview-str "")
+           (type ""))
+
+      (with-current-buffer file-buf
+        ;; preview
+        (goto-char (point-min))
+        (when (re-search-forward "^#\\+BEGIN_COMMENT PREVIEW$" nil t)
+          (goto-char (point-min))
+          (let ((beg (+ 1 (re-search-forward "^#\\+BEGIN_COMMENT PREVIEW$")))
+                (end (progn (re-search-forward "^#\\+END_COMMENT")
+                            (match-beginning 0))))
+
+            (setq preview-str (buffer-substring beg end))))
+        ;; property
+        (let ((org-properties (org-element-map (org-element-parse-buffer 'element) 'keyword
+                                (lambda (keyword) (cons (org-element-property :key keyword)
+                                                        (org-element-property :value keyword))))))
+          (setq type (or (cdr (assoc "BLOGTYPE" org-properties)) ""))))
+
+      (unless visiting (kill-buffer file-buf))
+      `(("preview" . ,preview-str) ("type" . ,type))))
 #+END_SRC
 
 自定义sitemap生成函数：
 #+BEGIN_SRC emacs-lisp
-  ;; (defun my-blog-generate-index-list (files)
-  ;;   (while (setq file (pop files))
-  ;;     (let ((title (org-publish-format-file-entry "%t" file project-plist))
-  ;;           (date (org-publish-format-file-entry "%d" file project-plist))
-  ;;           (preview (my-blog-get-preview file))
-  ;;           (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
-  ;;           (type (my-blog-get-type file)))
-  ;;       )
-  ;;     )
-  ;;   )
-
   (defun my-blog-sitemap (project &optional sitemap-filename)
     "Sitemap custom method"
     (let* ((project-plist (cdr project))
@@ -95,25 +85,21 @@
 
           ;; loop through all of the files in the project
           (while (setq file (pop files))
-            (let ((fn (file-name-nondirectory file))
-                  (link ;; changed this to fix links. see postprocessor.
-                 (file-relative-name file (file-name-as-directory
-                                           (expand-file-name (file-name-as-directory postdir)))))
-                (oldlocal (file-name-directory postdir)))
+            (let ((link (file-relative-name file (file-name-as-directory
+                                           (expand-file-name (file-name-as-directory postdir))))))
             (when sitemap-sans-extension
               (setq link (file-name-sans-extension link)))
             ;; sitemap shouldn't list itself
             (unless (equal (file-truename sitemap-filename)
                            (file-truename file))
-              (let (;; get the title and date of the current file
-                    (title (org-publish-format-file-entry "%t" file project-plist))
+              (let* ((title (org-publish-format-file-entry "%t" file project-plist))
                     (date (org-publish-format-file-entry "%d" file project-plist))
-                    ;; get the preview section from the current file
-                    (preview (my-blog-get-preview file))
                     (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
-                    (type (my-blog-get-type file)))
-                ;; insert a horizontal line before every post, kill the first one
-                ;; before saving
+                    (properties (my-blog-get-custom-property file))
+
+                    (preview (cdr (assoc "preview" properties)))
+                    (type (cdr (assoc "type" properties)))
+                    )
 
                 (insert "-----\n")
                 (cond ((string-match-p regexp title)

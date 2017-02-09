@@ -14,37 +14,39 @@
   2 然后，将要加载的库加入package-selected-packages里。package库将使用这个变量来确认用户需要安装哪些包。
   package-autoremove也依赖于这个列表来自动删除包。注意，这个变量是在25.1之后引入的。
   #+BEGIN_SRC emacs-lisp
-        (setq package-selected-packages '(company
-                                          company-anaconda
-                                          hungry-delete
-                                          swiper
-                                          counsel
-                                          smartparens
-                                          evil
-                                          evil-leader
-                                          evil-nerd-commenter
-                                          evil-surround
-                                          exec-path-from-shell
-                                          popwin
-                                          reveal-in-osx-finder
-                                          iedit
-                                          helm-ag
-                                          window-numbering
-                                          which-key
-                                          slime
-                                          rainbow-delimiters
-                                          elpy
-                                          darkokai-theme
-                                          better-defaults
-                                          golden-ratio
-                                          dired+
-                                          s
-                                          avy
-                                          evil-cleverparens
-                                          osx-dictionary
-                                          nyan-mode
-                                          magit
-                                          evil-magit))
+    (setq package-selected-packages '(company
+                                      company-anaconda
+                                      hungry-delete
+                                      swiper
+                                      counsel
+                                      smartparens
+                                      evil
+                                      evil-leader
+                                      evil-nerd-commenter
+                                      evil-surround
+                                      exec-path-from-shell
+                                      popwin
+                                      reveal-in-osx-finder
+                                      iedit
+                                      helm-ag
+                                      window-numbering
+                                      which-key
+                                      slime
+                                      rainbow-delimiters
+                                      elpy
+                                      darkokai-theme
+                                      better-defaults
+                                      dired+
+                                      s
+                                      avy
+                                      evil-cleverparens
+                                      osx-dictionary
+                                      nyan-mode
+                                      magit
+                                      evil-magit
+                                      js2-mode
+                                      web-mode
+                                      emmet-mode))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
@@ -106,9 +108,9 @@ M-x customize-group -> 默认触发为\，改为SPC
     ;; dired
     ;; dired finder
     "df" '(lambda () (interactive) (dired (file-name-as-directory (s-trim (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
-    "dd" 'custom-goto-recent-directory
+    "dd" 'dired-jump
     )
-#+END_SRC 
+#+END_SRC
 *** evil-nerd-commenter
     注释
     #+BEGIN_SRC emacs-lisp
@@ -174,18 +176,6 @@ M-x customize-group -> 默认触发为\，改为SPC
      (ivy-mode 1)
      (setq ivy-use-virtual-buffers t)
 
-     (defun custom-goto-recent-directory ()
-       "Open recent directory with dired"
-       (interactive)
-       (unless recentf-mode (recentf-mode 1))
-       (let ((collection
-              (delete-dups
-               (append (mapcar 'file-name-directory recentf-list)
-                       ;; fasd history
-                       (if (executable-find "fasd")
-                           (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
-         (ivy-read "directories:" collection :action 'dired)))
-
      (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
      (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
 
@@ -211,7 +201,6 @@ M-x customize-group -> 默认触发为\，改为SPC
 #+END_SRC
 ** reveal-in-osx-finder
 C-c o 打开当前文件所在的Finder;
-使用dired-x添加dired-jump C-c d 打开当前文件所在的dired
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c o") 'reveal-in-osx-finder)
 #+END_SRC
@@ -252,41 +241,6 @@ C-c o 打开当前文件所在的Finder;
    #+BEGIN_SRC emacs-lisp
      (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
    #+END_SRC
-** golden-ratio
-#+BEGIN_SRC emacs-lisp
-  (require 'golden-ratio)
-  (golden-ratio-mode 1)
-
-  ;; The following code use to resize window when select window
-  ;; https://github.com/roman/golden-ratio.el/issues/57 for details
-  (defvar golden-ratio-selected-window
-    (frame-selected-window)
-    "Selected window.")
-
-  (defun golden-ratio-set-selected-window
-      (&optional window)
-    "Set selected window to WINDOW."
-    (setq-default
-      golden-ratio-selected-window (or window (frame-selected-window))))
-
-  (defun golden-ratio-selected-window-p
-      (&optional window)
-    "Return t if WINDOW is selected window."
-    (eq (or window (selected-window))
-        (default-value 'golden-ratio-selected-window)))
-
-  (defun golden-ratio-maybe
-      (&optional arg)
-    "Run `golden-ratio' if `golden-ratio-selected-window-p' returns nil."
-    (interactive "p")
-    (unless (golden-ratio-selected-window-p)
-      (golden-ratio-set-selected-window)
-      (golden-ratio arg)))
-
-  (add-hook 'buffer-list-update-hook #'golden-ratio-maybe)
-  (add-hook 'focus-in-hook           #'golden-ratio)
-  (add-hook 'focus-out-hook          #'golden-ratio)
-#+END_SRC
 ** dired+
 #+BEGIN_SRC emacs-lisp
   ; only use one buffer
@@ -331,4 +285,21 @@ C-c o 打开当前文件所在的Finder;
   (evil-leader/set-key
     "gs" 'magit-status
     "gm" 'magit-dispatch-popup)
+#+END_SRC
+** web-mode
+#+BEGIN_SRC emacs-lisp
+  (require 'web-mode)
+  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+#+END_SRC
+** emmet-mode
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.jsx$" . 'web-mode))
+  (add-hook 'web-mode-hook 'emmet-mode)
 #+END_SRC

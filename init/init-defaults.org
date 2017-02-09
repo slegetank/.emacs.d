@@ -114,82 +114,82 @@
 #+END_SRC
 * w3m
 #+BEGIN_SRC emacs-lisp
-  (setq browse-url-browser-function 'w3m-browse-url)
-  (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
-  ;; optional keyboard short-cut
-  (global-set-key "\C-xm" 'browse-url-at-point)
-  (setq w3m-use-cookies t)
+  ;; (setq browse-url-browser-function 'w3m-browse-url)
+  ;; (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+  ;; ;; optional keyboard short-cut
+  ;; (global-set-key "\C-xm" 'browse-url-at-point)
+  ;; (setq w3m-use-cookies t)
 
-  (require 'w3m-search)
-  (add-to-list 'w3m-search-engine-alist
-               '("emacs-wiki" "http://www.emacswiki.org/cgi-bin/wiki.pl?search=%s"))
+  ;; (require 'w3m-search)
+  ;; (add-to-list 'w3m-search-engine-alist
+  ;;              '("emacs-wiki" "http://www.emacswiki.org/cgi-bin/wiki.pl?search=%s"))
 #+END_SRC
 
 快捷键定义来自[[http://sachachua.com/blog/2008/08/why-browse-the-web-in-emacs/][sacha的博客]], 进行了更符合vi习惯的修改：
 #+BEGIN_SRC emacs-lisp
-  (defun sacha/w3m-setup-keymap ()
-    "Use my heavily customized map."
-    (interactive)
-    ;; Undefine this key and use the advice instead so that my ido doesn't get
-    ;; overridden
-    (define-key w3m-mode-map (kbd "C-x b") nil)
-    (define-key w3m-mode-map "C" 'w3m-print-this-url)
-    (define-key w3m-mode-map "A" 'w3m-bookmark-add-current-url)
-    (define-key w3m-mode-map "w" 'w3m-download-with-wget)
-    (define-key w3m-mode-map "d" 'w3m-download-with-wget)
-    (define-key w3m-mode-map "D" 'w3m-download-this-url)
-    ;; Do not override my ever so handy ERC binding
-    (define-key w3m-mode-map (kbd "C-c C-SPC") nil)
-    (define-key w3m-mode-map "m" 'sacha/w3m-mirror-current-page)
-    (define-key w3m-mode-map "M" 'sacha/w3m-mirror-link)
+  ;; (defun sacha/w3m-setup-keymap ()
+  ;;   "Use my heavily customized map."
+  ;;   (interactive)
+  ;;   ;; Undefine this key and use the advice instead so that my ido doesn't get
+  ;;   ;; overridden
+  ;;   (define-key w3m-mode-map (kbd "C-x b") nil)
+  ;;   (define-key w3m-mode-map "C" 'w3m-print-this-url)
+  ;;   (define-key w3m-mode-map "A" 'w3m-bookmark-add-current-url)
+  ;;   (define-key w3m-mode-map "w" 'w3m-download-with-wget)
+  ;;   (define-key w3m-mode-map "d" 'w3m-download-with-wget)
+  ;;   (define-key w3m-mode-map "D" 'w3m-download-this-url)
+  ;;   ;; Do not override my ever so handy ERC binding
+  ;;   (define-key w3m-mode-map (kbd "C-c C-SPC") nil)
+  ;;   (define-key w3m-mode-map "m" 'sacha/w3m-mirror-current-page)
+  ;;   (define-key w3m-mode-map "M" 'sacha/w3m-mirror-link)
 
-    (define-key w3m-mode-map "s" 'w3m-search)
-    (define-key w3m-mode-map "h" 'w3m-history)
-    (define-key w3m-mode-map "t" 'w3m-scroll-down-or-previous-url)
-    (define-key w3m-mode-map "n" 'w3m-scroll-up-or-next-url)
-    ;; I don't often w3m to edit pages, so I'm borrowing o and e (right
-    ;; below , / . for tab navigation) for page navigation instead.
-    (define-key w3m-mode-map "o" 'w3m-view-previous-page)
-    (define-key w3m-mode-map "e" 'w3m-view-next-page)
-    ;; i is a more useful mnemonic for toggling images
-    (define-key w3m-mode-map "i" 'w3m-toggle-inline-image)
-    (define-key w3m-mode-map "I" 'w3m-toggle-inline-images)
-    ;; and X for closing the buffer
-    (define-key w3m-mode-map "X" 'w3m-delete-buffer)
-    (define-key w3m-mode-map "x" 'w3m-delete-buffer)
-    (define-key w3m-mode-map "z" 'w3m-delete-buffer)
-    ;; and b for bookmarks
-    (define-key w3m-mode-map "b" 'w3m-bookmark-view)
-    ;; I don't use the Qwerty keymap, so hjkl is useless for me
-    ;; I'll use HTNS, though
-    (define-key w3m-mode-map "h" 'backward-char)
-    (define-key w3m-mode-map "k" 'previous-line)
-    (define-key w3m-mode-map "j" 'next-line)
-    (define-key w3m-mode-map "l" 'forward-char)
-    ;; Browse in new sessions by default
-    (define-key w3m-mode-map (kbd "RET") 'w3m-view-this-url)
-    (define-key w3m-mode-map [(shift return)] 'w3m-view-this-url-new-session)
-    (define-key w3m-mode-map "g" 'w3m-goto-url)
-    (define-key w3m-mode-map "G" 'w3m-goto-url-new-session)
-    ;; f for forward? I want to be able to follow links without removing
-    ;; most of my fingers from home row. My fingers are too short to hit
-    ;; Enter.
-    (define-key w3m-mode-map "f" 'w3m-view-this-url-new-session)
-    (define-key w3m-mode-map "F" 'w3m-view-this-url)
-    ;; Use cursor keys to scroll
-    (define-key w3m-mode-map [(left)] 'backward-char)
-    (define-key w3m-mode-map [(right)] 'forward-char)
-    (define-key w3m-mode-map [(shift left)] 'w3m-shift-right)
-    (define-key w3m-mode-map [(shift right)] 'w3m-shift-left)
-    ;; Which means I can now use , and . to switch pages
-    (define-key w3m-mode-map "." 'w3m-next-buffer)
-    (define-key w3m-mode-map "," 'w3m-previous-buffer)
-    ;; IBM stuff
-    (define-key w3m-mode-map "i" nil)
-    (define-key w3m-mode-map "ib" 'sacha/ibm-blog)
-    (define-key w3m-mode-map "id" 'sacha/dogear-url)
-    (define-key w3m-mode-map "f" 'sacha/w3m-open-in-firefox)
-    )
+  ;;   (define-key w3m-mode-map "s" 'w3m-search)
+  ;;   (define-key w3m-mode-map "h" 'w3m-history)
+  ;;   (define-key w3m-mode-map "t" 'w3m-scroll-down-or-previous-url)
+  ;;   (define-key w3m-mode-map "n" 'w3m-scroll-up-or-next-url)
+  ;;   ;; I don't often w3m to edit pages, so I'm borrowing o and e (right
+  ;;   ;; below , / . for tab navigation) for page navigation instead.
+  ;;   (define-key w3m-mode-map "o" 'w3m-view-previous-page)
+  ;;   (define-key w3m-mode-map "e" 'w3m-view-next-page)
+  ;;   ;; i is a more useful mnemonic for toggling images
+  ;;   (define-key w3m-mode-map "i" 'w3m-toggle-inline-image)
+  ;;   (define-key w3m-mode-map "I" 'w3m-toggle-inline-images)
+  ;;   ;; and X for closing the buffer
+  ;;   (define-key w3m-mode-map "X" 'w3m-delete-buffer)
+  ;;   (define-key w3m-mode-map "x" 'w3m-delete-buffer)
+  ;;   (define-key w3m-mode-map "z" 'w3m-delete-buffer)
+  ;;   ;; and b for bookmarks
+  ;;   (define-key w3m-mode-map "b" 'w3m-bookmark-view)
+  ;;   ;; I don't use the Qwerty keymap, so hjkl is useless for me
+  ;;   ;; I'll use HTNS, though
+  ;;   (define-key w3m-mode-map "h" 'backward-char)
+  ;;   (define-key w3m-mode-map "k" 'previous-line)
+  ;;   (define-key w3m-mode-map "j" 'next-line)
+  ;;   (define-key w3m-mode-map "l" 'forward-char)
+  ;;   ;; Browse in new sessions by default
+  ;;   (define-key w3m-mode-map (kbd "RET") 'w3m-view-this-url)
+  ;;   (define-key w3m-mode-map [(shift return)] 'w3m-view-this-url-new-session)
+  ;;   (define-key w3m-mode-map "g" 'w3m-goto-url)
+  ;;   (define-key w3m-mode-map "G" 'w3m-goto-url-new-session)
+  ;;   ;; f for forward? I want to be able to follow links without removing
+  ;;   ;; most of my fingers from home row. My fingers are too short to hit
+  ;;   ;; Enter.
+  ;;   (define-key w3m-mode-map "f" 'w3m-view-this-url-new-session)
+  ;;   (define-key w3m-mode-map "F" 'w3m-view-this-url)
+  ;;   ;; Use cursor keys to scroll
+  ;;   (define-key w3m-mode-map [(left)] 'backward-char)
+  ;;   (define-key w3m-mode-map [(right)] 'forward-char)
+  ;;   (define-key w3m-mode-map [(shift left)] 'w3m-shift-right)
+  ;;   (define-key w3m-mode-map [(shift right)] 'w3m-shift-left)
+  ;;   ;; Which means I can now use , and . to switch pages
+  ;;   (define-key w3m-mode-map "." 'w3m-next-buffer)
+  ;;   (define-key w3m-mode-map "," 'w3m-previous-buffer)
+  ;;   ;; IBM stuff
+  ;;   (define-key w3m-mode-map "i" nil)
+  ;;   (define-key w3m-mode-map "ib" 'sacha/ibm-blog)
+  ;;   (define-key w3m-mode-map "id" 'sacha/dogear-url)
+  ;;   (define-key w3m-mode-map "f" 'sacha/w3m-open-in-firefox)
+  ;;   )
 #+END_SRC
 * terminal
 F12快速打开terminal; q退出；exit之后自动删除buffer。
@@ -206,6 +206,7 @@ F12快速打开terminal; q退出；exit之后自动删除buffer。
       (term-mode)
       (term-char-mode)
       (switch-to-buffer "*terminal*")
+      (and default-directory (term-send-raw-string (format "cd %s\n" default-directory)))
       (goto-char (point-max))
       ))
 
@@ -225,7 +226,19 @@ F12快速打开terminal; q退出；exit之后自动删除buffer。
 #+BEGIN_SRC emacs-lisp
   ;; C-c d打开当前文件的dired
   ;; (require 'dired-x)
-  (global-set-key (kbd "C-c d") 'dired-jump)
+  (defun custom-goto-recent-directory ()
+    "Open recent directory with dired"
+    (interactive)
+    (unless recentf-mode (recentf-mode 1))
+    (let ((collection
+           (delete-dups
+            (append (mapcar 'file-name-directory recentf-list)
+                    ;; fasd history
+                    (if (executable-find "fasd")
+                        (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+      (ivy-read "directories:" collection :action 'dired)))
+
+  (global-set-key (kbd "C-c d") 'custom-goto-recent-directory)
 
   ;; help
   (define-key 'help-command (kbd "C-k") 'find-function-on-key)
