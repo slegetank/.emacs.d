@@ -253,4 +253,14 @@ F12快速打开terminal; q退出；exit之后自动删除buffer。
     "Dired current finder dir"
     (interactive)
     (dired (file-name-as-directory (s-trim-right (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
+
+  (defun clean-message-buffer ()
+    "Fast way to clean message buffer's output"
+    (interactive)
+    (let ((messagebuffer (get-buffer "*Messages*")))
+      (when messagebuffer
+        (kill-buffer "*Messages*"))
+      (view-echo-area-messages)))
+
+  (global-set-key (kbd "C-c m c") 'clean-message-buffer)
 #+END_SRC

@@ -60,46 +60,59 @@
       (unless visiting (kill-buffer file-buf))
       `(("preview" . ,preview-str) ("type" . ,type))))
 #+END_SRC
+读取目录下博客org文件的信息：
+#+BEGIN_SRC emacs-lisp
+  (defun my-blog-org-files-info (project)
+    "Generate info list for org files"
+    (let* ((project-plist (cdr project))
+           (files (org-publish-get-base-files project (plist-get project-plist :exclude)))
+           (sitemap-sans-extension (plist-get project-plist :sitemap-sans-extension))
+           (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
+           file
+           (infolist '()))
+      (while (setq file (pop files))
+        (unless (or (s-ends-with? "index.org" (file-truename file)) (s-ends-with? "archive.org" (file-truename file)) (s-ends-with? "tag.org" (file-truename file)))
+          (let ((link (file-relative-name file (file-name-as-directory
+                                                (expand-file-name (file-name-as-directory postdir))))))
+            (when sitemap-sans-extension
+              (setq link (file-name-sans-extension link)))
+            (let* ((title (org-publish-format-file-entry "%t" file project-plist))
+                   (date (org-publish-format-file-entry "%d" file project-plist))
+                   (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
+                   (properties (my-blog-get-custom-property file))
+
+                   (preview (cdr (assoc "preview" properties)))
+                   (type (cdr (assoc "type" properties)))
+                   )
+              (setq infolist (cons `(("link" . ,(or link "")) ("title" . ,(or title "")) ("date" . ,(or date "")) ("preview" . ,(or preview "")) ("type" . ,(or type ""))) infolist))))))
+      infolist))
+#+END_SRC
 
 自定义sitemap生成函数：
 #+BEGIN_SRC emacs-lisp
-  (defun my-blog-sitemap (project &optional sitemap-filename)
-    "Sitemap custom method"
-    (let* ((project-plist (cdr project))
-           (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
-           (publishdir (file-name-as-directory (plist-get project-plist :publishing-directory)))
-           (exclude-regexp (plist-get project-plist :exclude))
-           (files (nreverse
-                   (org-publish-get-base-files project exclude-regexp)))
-           (sitemap-filename (concat postdir (or sitemap-filename "index.org")))
-           (sitemap-sans-extension
-            (plist-get project-plist :sitemap-sans-extension))
-           (visiting (find-buffer-visiting sitemap-filename))
-           file sitemap-buffer)
+    (defun my-blog-sitemap (project &optional sitemap-filename)
+      "Sitemap custom method"
+      (let* ((project-plist (cdr project))
+             (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
+             (sitemap-filename (concat postdir (or sitemap-filename "index.org")))
+             (visiting (find-buffer-visiting sitemap-filename))
+             (bloginfos (my-blog-org-files-info project))
+             (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
+             sitemap-buffer)
 
-      (let ((org-inhibit-startup t))
-        (setq sitemap-buffer
-              (or visiting (find-file sitemap-filename)))
-        (with-current-buffer sitemap-buffer
+        (my-blog-archive project bloginfos)
+        (let ((org-inhibit-startup t))
+          (setq sitemap-buffer
+                (or visiting (find-file sitemap-filename)))
+          (with-current-buffer sitemap-buffer
             (erase-buffer)
 
-          ;; loop through all of the files in the project
-          (while (setq file (pop files))
-            (let ((link (file-relative-name file (file-name-as-directory
-                                           (expand-file-name (file-name-as-directory postdir))))))
-            (when sitemap-sans-extension
-              (setq link (file-name-sans-extension link)))
-            ;; sitemap shouldn't list itself
-            (unless (equal (file-truename sitemap-filename)
-                           (file-truename file))
-              (let* ((title (org-publish-format-file-entry "%t" file project-plist))
-                    (date (org-publish-format-file-entry "%d" file project-plist))
-                    (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
-                    (properties (my-blog-get-custom-property file))
-
-                    (preview (cdr (assoc "preview" properties)))
-                    (type (cdr (assoc "type" properties)))
-                    )
+            (while (setq bloginfo (pop bloginfos))
+              (let* ((link (cdr (assoc "link" bloginfo)))
+                     (title (cdr (assoc "title" bloginfo)))
+                     (date (cdr (assoc "date" bloginfo)))
+                     (preview (cdr (assoc "preview" bloginfo)))
+                     (type (cdr (assoc "type" bloginfo))))
 
                 (insert "-----\n")
                 (cond ((string-match-p regexp title)
@@ -111,35 +124,124 @@
                                       "]]" (match-string 3 title) "\n")))
                       (t (insert (concat "* [[file:" link "][" title "]]\n"))))
                 (let ((rss-permalink (concat (file-name-sans-extension link) ".html"))
-                      (rss-pubdate (format-time-string
-                                    (car org-time-stamp-formats)
-                                    (org-publish-find-date file))))
+                      (rss-pubdate date))
                   (org-set-property "RSS_PERMALINK" rss-permalink)
                   (org-set-property "PUBDATE" rss-pubdate))
 
-
                 (insert (format "%s | %s\n\n" date type))
-                ;; (insert (concat date "\n\n"))
                 (insert preview)
-                (insert (concat "[[file:" link "][Read More...]]\n"))))))
-        ;; kill the first hrule to make this look OK
-        (goto-char (point-min))
-        (let ((kill-whole-line t)) (kill-line))
-        ;; add some header
-        (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
-        (insert "#+TITLE:Slegetank's Blog\n")
-        (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
-        (save-buffer)))
-      (or visiting (kill-buffer sitemap-buffer))))
+                (insert (concat "[[file:" link "][Read More...]]\n"))))
+
+            ;; kill the first hrule to make this look OK
+            (goto-char (point-min))
+            (let ((kill-whole-line t)) (kill-line))
+            ;; add some header
+            (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
+            (insert "#+TITLE:Slegetank's Blog\n")
+            (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
+            (save-buffer)))
+        (or visiting (kill-buffer sitemap-buffer)))
+  )
+#+END_SRC
+
+自定义archive生成函数：
+#+BEGIN_SRC emacs-lisp
+  (defun my-blog-archive (project bloginfos)
+    "Archive custom method"
+    (let* ((project-plist (cdr project))
+           (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
+           (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
+           archive-buffer
+           typelist '()
+           datelist '())
+
+      (dotimes (index (length bloginfos) nil)
+        (let* ((bloginfo (car (nthcdr index bloginfos)))
+               (date (cdr (assoc "date" bloginfo)))
+               (year (car (s-split-words date)))
+               (type (cdr (assoc "type" bloginfo))))
+
+          (let ((yearlist (assoc year datelist)))
+            (if yearlist
+                (progn (setq datelist (delq (assoc year datelist) datelist))
+                       (add-to-list 'datelist `(,year . ,(cons index (cdr yearlist)))))
+              (setq datelist (acons year (cons index '()) datelist))))
+
+          (let ((templist (assoc type typelist)))
+            (if templist
+                (progn (setq typelist (delq (assoc type typelist) typelist))
+                       (add-to-list 'typelist `(,type . ,(cons index (cdr templist)))))
+              (setq typelist (acons type (cons index '()) typelist))))
+          ))
+
+      (let ((org-inhibit-startup t))
+        (with-current-buffer (find-file (concat postdir "archive.org"))
+          (erase-buffer)
+
+          (dolist (year (reverse datelist) nil)
+            (insert "\n")
+            (insert (concat "* " (car year)))
+            (insert "\n")
+            (dolist (index (reverse (cdr year)) nil)
+              (let* ((bloginfo (car (nthcdr index bloginfos)))
+                     (title (cdr (assoc "title" bloginfo)))
+                     (date (cdr (assoc "date" bloginfo)))
+                     (link (cdr (assoc "link" bloginfo))))
+                (cond ((string-match-p regexp title)
+                       (string-match regexp title)
+                       (insert (concat"** " (match-string 1 title)
+                                      "[[file:" link "]["
+                                      (match-string 2 title)
+                                      "]]" (match-string 3 title) "\n")))
+                      (t (insert (concat "** [[file:" link "][" date " " title "]]\n"))))
+                )))
+
+          (goto-char (point-min))
+          (let ((kill-whole-line t)) (kill-line))
+          (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
+          (insert "#+TITLE:Slegetank's Blog\n")
+          (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
+          (save-buffer)))
+
+      (let ((org-inhibit-startup t))
+        (with-current-buffer (find-file (concat postdir "tag.org"))
+          (erase-buffer)
+
+          (dolist (type (reverse typelist) nil)
+            (insert "\n")
+            (insert (concat "* " (car type)))
+            (insert "\n")
+            (dolist (index (reverse (cdr type)) nil)
+              (let* ((bloginfo (car (nthcdr index bloginfos)))
+                     (title (cdr (assoc "title" bloginfo)))
+                     (date (cdr (assoc "date" bloginfo)))
+                     (link (cdr (assoc "link" bloginfo))))
+                (cond ((string-match-p regexp title)
+                       (string-match regexp title)
+                       (insert (concat"** " (match-string 1 title)
+                                      "[[file:" link "]["
+                                      (match-string 2 title)
+                                      "]]" (match-string 3 title) "\n")))
+                      (t (insert (concat "** [[file:" link "][" date " " title "]]\n"))))
+                )))
+
+          (goto-char (point-min))
+          (let ((kill-whole-line t)) (kill-line))
+          (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
+          (insert "#+TITLE:Slegetank's Blog\n")
+          (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
+          (save-buffer)))
+      ))
 #+END_SRC
 
 自定义用来帮助新建文章模板的helper函数：
 #+BEGIN_SRC emacs-lisp
-  (defun custom-init-blog (filename)
+  (defun custom-blog-init (filename)
     "Init blog helper"
     (interactive (list (read-string (format "Enter new blog name: %s%s-" (concat my-blog-post-base "/draft/") (format-time-string "%Y%m%d" (current-time))))))
-    (if (or (string= "" filename) (not (string-match "\\.org$" filename)))
-        (message "Need a org filename")
+    (if (string= "" filename)
+        (message "Need a filename")
+      (or (string-match "\\.org$" filename) (setq filename (concat (file-name-sans-extension filename) ".org")))
       (progn (setq filepath (format "%s%s-%s" (concat my-blog-post-base "/draft/") (format-time-string "%Y%m%d" (current-time)) filename))
        (find-file filepath)
        (let ((custom-org-buffer (get-file-buffer filepath)))
@@ -149,9 +251,8 @@
 #+END_SRC
 
 自定义用来更新remote博客的函数：
-
 #+BEGIN_SRC emacs-lisp
-  (defun custom-sync-blog ()
+  (defun custom-blog-sync ()
     "add commit push"
     (interactive)
     (org-publish "blog")
@@ -162,10 +263,47 @@
       ))
 #+END_SRC
 
+在#+blogtype行按"s-right"会根据已有的标签进行提示
+#+BEGIN_SRC emacs-lisp
+  (setq custom-blog-current-type "")
+  (defun custom-blog-modify-type (direction)
+    "Modify blog file type"
+    (when (string-match "^#\\+blogtype:" (thing-at-point 'line t))
+      (let* ((files (directory-files (concat my-blog-post-base "/org") 1 "\\.org$"))
+             file
+             (infolist '()))
+        (while (setq file (pop files))
+          (let ((file-buf (find-file-noselect file nil)))
+            (with-current-buffer file-buf
+              (goto-char (point-min))
+              (let* ((beg (re-search-forward "^#\\+blogtype:"))
+                     (end (progn (goto-char beg) (line-end-position)))
+                     (type (s-trim (buffer-substring beg end))))
+                (unless (cl-position type infolist :test 'equal)
+                  (setq infolist (cons type infolist)))))))
+        (if (equal custom-blog-current-type "")
+            (setq custom-blog-current-type (car infolist))
+          (let ((beginindex (+ (cl-position custom-blog-current-type infolist :test 'equal) direction)))
+            (when (= beginindex (length infolist))
+              (setq beginindex 0))
+            (when (= beginindex -1)
+              (setq beginindex (1- (length infolist))))
+
+            (setq custom-blog-current-type (car (nthcdr beginindex infolist)))))))
+    (with-current-buffer (current-buffer)
+      (goto-char (point-min))
+      (search-forward-regexp "^#\\+blogtype:.*?$")
+      (replace-match (concat "#+blogtype: " custom-blog-current-type))
+      (save-buffer)))
+
+  (define-key org-mode-map (kbd "<s-right>") (lambda () (interactive) (custom-blog-modify-type 1)))
+  (define-key org-mode-map (kbd "<s-left>") (lambda () (interactive) (custom-blog-modify-type -1)))
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
-    "bs" 'custom-sync-blog
-    "bi" 'custom-init-blog)
+    "bs" 'custom-blog-sync
+    "bi" 'custom-blog-init)
 #+END_SRC
 
 导出参数的配置：
@@ -206,7 +344,7 @@
            :html-head-include-scripts nil
            :html-viewport nil
            :with-sub-superscript nil
-           :exclude "archive.org\\|README.org\\|draft/*.*")
+           :exclude "README.org\\|draft/*.*")
           ("blog-static"
            :base-directory ,(concat my-blog-post-base "/static")
            :base-extension "png\\|jpg\\|css"

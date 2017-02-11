@@ -109,6 +109,7 @@ M-x customize-group -> 默认触发为\，改为SPC
     ;; dired finder
     "df" '(lambda () (interactive) (dired (file-name-as-directory (s-trim (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
     "dd" 'dired-jump
+    "zd" 'custom-goto-recent-directory
     )
 #+END_SRC
 *** evil-nerd-commenter
