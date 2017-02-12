@@ -10,3 +10,4 @@ backups
 /.emacs.desktop*
 /tutorial/Chinese-GBK.tut
 /eshell*
+/url

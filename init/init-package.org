@@ -1,4 +1,4 @@
-#+OPTIONS: \n:\n
+t#+OPTIONS: \n:\n
 这个文件用来存储所有第三方库的相关配置。
 
 * 核心
@@ -46,7 +46,8 @@
                                       evil-magit
                                       js2-mode
                                       web-mode
-                                      emmet-mode))
+                                      emmet-mode
+                                      git-gutter))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
@@ -303,4 +304,8 @@ C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.jsx$" . 'web-mode))
   (add-hook 'web-mode-hook 'emmet-mode)
+#+END_SRC
+** git-gutter
+#+BEGIN_SRC emacs-lisp
+  (global-git-gutter-mode +1)
 #+END_SRC
