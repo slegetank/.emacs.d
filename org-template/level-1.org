@@ -1,2 +1,2 @@
-#+OPTIONS: \n:\n
+#+OPTIONS: \n:\n ^:nil
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../static/org.css" />

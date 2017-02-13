@@ -8,6 +8,12 @@
 * Main
 定义一些导出时要用到的变量及函数：
 #+BEGIN_SRC emacs-lisp
+  (defun my-blog-home-header (arg)
+    "插入到每个生成的网页的头部"
+    (with-temp-buffer
+      (insert-file-contents (concat my-blog-post-base "/template/homeheader.html"))
+      (buffer-string)))
+
   (defun my-blog-header (arg)
     "插入到每个生成的网页的头部"
     (with-temp-buffer
@@ -23,59 +29,81 @@
 
 导出参数的配置：
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "~/org-mode/contrib/lisp/")
-  (require 'ox-html)
-  (require 'ox-publish)
-  (require 'ox-extra)
-  (ox-extras-activate '(ignore-headlines))
-  (setq org-publish-project-alist
-        `(("blog-content"
-           :base-directory ,my-blog-post-base
-           :base-extension "org"
-           :publishing-directory ,my-blog-publish-base
-           :publishing-function (org-html-publish-to-html)
-           ;; :preparation-function my-blog-articles-preprocessor
-           ;; :completion-function my-blog-articles-postprocessor
-           :with-author t
-           :with-creator nil
-           ;; :with-date t
-           :auto-sitemap t
-           :sitemap-filename "index.org"
-           :sitemap-title "index"
-           :sitemap-sort-files anti-chronologically
-           :html-preamble my-blog-header
-           :html-postamble ,my-blog-footer
-           ;; :sitemap-style list
-           :sitemap-function my-blog-sitemap
-           :recursive t
-           :section-numbers nil
-           :with-toc nil
-           :with-drawers t
-           :html-head-include-default-style nil
-           :html-head-include-scripts nil
-           ;; :html-link-home "/"
-           :html-head nil ;; cleans up anything that would have been in there.
-           :html-head-include-default-style nil
-           :html-head-include-scripts nil
-           :html-viewport nil
-           :with-sub-superscript nil
-           :exclude "README.org\\|draft/*.*")
-          ("blog-static"
-           :base-directory ,(concat my-blog-post-base "/static")
-           :base-extension "png\\|jpg\\|css"
-           :publishing-directory ,(concat my-blog-publish-base "/static")
-           :recursive t
-           :publishing-function org-publish-attachment)
-          ("blog"
-           :components ("blog-content" "blog-static"))))
+    (add-to-list 'load-path "~/org-mode/contrib/lisp/")
+    (require 'ox-html)
+    (require 'ox-publish)
+    (require 'ox-extra)
+    (ox-extras-activate '(ignore-headlines))
+    (setq org-publish-project-alist
+          `(
+            ("blog-home"
+             :base-directory ,my-blog-post-base
+             :base-extension "org"
+             :publishing-directory ,my-blog-publish-base
+             :publishing-function (org-html-publish-to-html)
+             :with-author t
+             :with-creator nil
+             :auto-sitemap t
+             :sitemap-filename "index.org"
+             :sitemap-title "index"
+             :sitemap-sort-files anti-chronologically
+             :html-preamble my-blog-home-header
+             :html-postamble ,my-blog-footer
+             :sitemap-function my-blog-sitemap
+             :recursive t
+             :section-numbers nil
+             :with-toc nil
+             :with-drawers t
+             :html-head-include-default-style nil
+             :html-head-include-scripts nil
+             ;; :html-link-home "/"
+             :html-head nil ;; cleans up anything that would have been in there.
+             :html-head-include-default-style nil
+             :html-head-include-scripts nil
+             :html-viewport nil
+             :with-sub-superscript nil
+             :exclude "org/*.*\\|README.org\\|draft/*.*"
+             )
+            ("blog-content"
+             :base-directory ,(concat my-blog-post-base "/org")
+             :base-extension "org"
+             :publishing-directory ,(concat my-blog-publish-base "/org")
+             :publishing-function (org-html-publish-to-html)
+             ;; :preparation-function my-blog-articles-preprocessor
+             ;; :completion-function my-blog-articles-postprocessor
+             :with-author t
+             :with-creator nil
+             :html-preamble my-blog-header
+             :html-postamble ,my-blog-footer
+             :recursive t
+             :section-numbers nil
+             :with-toc nil
+             :with-drawers t
+             :html-head-include-default-style nil
+             :html-head-include-scripts nil
+             ;; :html-link-home "/"
+             :html-head nil ;; cleans up anything that would have been in there.
+             :html-head-include-default-style nil
+             :html-head-include-scripts nil
+             :html-viewport nil
+             :with-sub-superscript nil)
+            ("blog-static"
+             :base-directory ,(concat my-blog-post-base "/static")
+             :base-extension "gif\\|png\\|jpg\\|css"
+             :publishing-directory ,(concat my-blog-publish-base "/static")
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("blog"
+             :components ("blog-home" "blog-content" "blog-static"))))
 #+END_SRC
 
 * Export
 ** Keys
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key
-    "bs" 'custom-blog-sync
-    "bi" 'custom-blog-init)
+    (evil-leader/set-key
+      "bc" 'custom-blog-commit
+      "bi" 'custom-blog-init
+      "bp" 'custom-blog-publish)
 #+END_SRC
 
 ** Functions
@@ -114,7 +142,7 @@
   (defun my-blog-org-files-info (project)
     "Generate info list for org files"
     (let* ((project-plist (cdr project))
-           (files (org-publish-get-base-files project (plist-get project-plist :exclude)))
+           (files (org-publish-get-base-files project "README.org\\|draft/*.*"))
            (sitemap-sans-extension (plist-get project-plist :sitemap-sans-extension))
            (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
            file
@@ -291,6 +319,16 @@
 #+END_SRC
 
 ** Functions
+判断是否为博客org文件：
+#+BEGIN_SRC emacs-lisp
+    (defun custom-blog-org-file-p ()
+      "Judege if current file is blog file"
+      (and (buffer-file-name)
+           (or (s-suffix? "/draft/" (file-name-directory (buffer-file-name)))
+               (s-suffix? "/org/" (file-name-directory (buffer-file-name))))
+           (s-suffix? ".org" (buffer-file-name))))
+#+END_SRC
+
 自定义用来帮助新建文章模板的helper函数：
 #+BEGIN_SRC emacs-lisp
   (defun custom-blog-init (filename)
@@ -307,12 +345,48 @@
            (goto-char 9))))))
 #+END_SRC
 
+自定义草稿发布函数：
+#+BEGIN_SRC emacs-lisp
+  (defun custom-blog-publish ()
+    (interactive)
+    (if (custom-blog-org-file-p)
+        (progn (dired-rename-file (buffer-file-name) (concat my-blog-post-base "/org/" (file-name-nondirectory (buffer-file-name))) 1)
+               (if (y-or-n-p "File move finished. Need to commit?")
+                   (custom-blog-commit)
+                 (message "\"%s\" publish finished." (buffer-file-name))))
+      (message "\"%s\" is not a valid draft blog file." (buffer-file-name))))
+#+END_SRC
+
+自定义插入图片链接函数：
+#+BEGIN_SRC emacs-lisp
+  (defun custom-blog-insert-image (event)
+    (interactive "e")
+    (x-focus-frame nil)
+    (let* ((payload (car (last event)))
+           (type (car payload))
+           (fromname (cadr payload))
+           (img-regexp "\\(gif\\|png\\|jp[e]?g\\)\\>")
+           (destname fromname))
+      (when (and  (eq 'drag-n-drop (car event))
+                  (eq 'file type)
+                  (string-match img-regexp fromname))
+        (when (custom-blog-org-file-p)
+          (let ((filebasename (file-name-base (buffer-file-name))))
+            (setq destname (concat my-blog-post-base "/static/" filebasename "-" (progn (goto-char (point-min)) (number-to-string (count-matches (format "%s-" filebasename)))) "." (file-name-extension fromname)))
+            (rename-file fromname destname t)))
+
+        (goto-char (nth 1 (event-start event)))
+        (insert (format "[[file:%s]]" (file-relative-name destname (file-name-directory (buffer-file-name))))))))
+
+  (define-key org-mode-map (kbd "<drag-n-drop>") 'custom-blog-insert-image)
+#+END_SRC
+
 自定义用来更新remote博客的函数：
 #+BEGIN_SRC emacs-lisp
-  (defun custom-blog-sync ()
+  (defun custom-blog-commit ()
     "add commit push"
     (interactive)
-    (org-publish "blog")
+    (org-publish "blog" t)
     (let ((default-directory my-blog-publish-base))
       (shell-command "git add .")
       (shell-command (format "git commit -m \"Blog updated: %s\"" (format-time-string "%Y-%m-%d %H:%M:%S" (current-time))))
@@ -346,12 +420,13 @@
             (when (= beginindex -1)
               (setq beginindex (1- (length infolist))))
 
-            (setq custom-blog-current-type (car (nthcdr beginindex infolist)))))))
-    (with-current-buffer (current-buffer)
-      (goto-char (point-min))
-      (search-forward-regexp "^#\\+blogtype:.*?$")
-      (replace-match (concat "#+blogtype: " custom-blog-current-type))
-      (save-buffer)))
+            (setq custom-blog-current-type (car (nthcdr beginindex infolist))))))
+
+      (with-current-buffer (current-buffer)
+        (goto-char (point-min))
+        (search-forward-regexp "^#\\+blogtype:.*?$")
+        (replace-match (concat "#+blogtype: " custom-blog-current-type))
+        (save-buffer))))
 
 #+END_SRC
 
