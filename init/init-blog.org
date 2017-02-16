@@ -43,7 +43,6 @@
              :publishing-function (org-html-publish-to-html)
              :with-author t
              :with-creator nil
-             :auto-sitemap t
              :sitemap-filename "index.org"
              :sitemap-title "index"
              :sitemap-sort-files anti-chronologically
