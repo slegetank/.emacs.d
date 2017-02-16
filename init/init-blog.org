@@ -62,12 +62,12 @@
              :html-head-include-scripts nil
              :html-viewport nil
              :with-sub-superscript nil
-             :exclude "org/*.*\\|README.org\\|draft/*.*"
+             :exclude "blog/*.*\\|README.org\\|draft/*.*"
              )
             ("blog-content"
-             :base-directory ,(concat my-blog-post-base "/org")
+             :base-directory ,(concat my-blog-post-base "/blog")
              :base-extension "org"
-             :publishing-directory ,(concat my-blog-publish-base "/org")
+             :publishing-directory ,(concat my-blog-publish-base "/blog")
              :publishing-function (org-html-publish-to-html)
              ;; :preparation-function my-blog-articles-preprocessor
              ;; :completion-function my-blog-articles-postprocessor
@@ -112,12 +112,11 @@
   (defun my-blog-get-custom-property (file)
     "获得每篇博客的自定义属性"
     (let* ((org-inhibit-startup t)
-           (visiting (find-buffer-visiting file))
-           (file-buf (or visiting (find-file-noselect file nil)))
+           (tempbuffer (find-file file))
            (preview-str "")
            (type ""))
 
-      (with-current-buffer file-buf
+      (with-current-buffer tempbuffer
         ;; preview
         (goto-char (point-min))
         (when (re-search-forward "^#\\+BEGIN_COMMENT PREVIEW$" nil t)
@@ -131,9 +130,9 @@
         (let ((org-properties (org-element-map (org-element-parse-buffer 'element) 'keyword
                                 (lambda (keyword) (cons (org-element-property :key keyword)
                                                         (org-element-property :value keyword))))))
-          (setq type (or (cdr (assoc "BLOGTYPE" org-properties)) ""))))
+          (setq type (or (cdr (assoc "BLOGTYPE" org-properties)) "")))
+        (kill-buffer tempbuffer))
 
-      (unless visiting (kill-buffer file-buf))
       `(("preview" . ,preview-str) ("type" . ,type))))
 #+END_SRC
 
@@ -278,7 +277,8 @@
           (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
           (insert "#+TITLE:Slegetank's Blog\n")
           (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
-          (save-buffer)))
+          (save-buffer)
+          (kill-buffer)))
 
       (let ((org-inhibit-startup t))
         (with-current-buffer (find-file (concat postdir "tag.org"))
@@ -307,7 +307,8 @@
           (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
           (insert "#+TITLE:Slegetank's Blog\n")
           (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
-          (save-buffer)))
+          (save-buffer)
+          (kill-buffer)))
       ))
 #+END_SRC
 
@@ -325,7 +326,7 @@
       "Judege if current file is blog file"
       (and (buffer-file-name)
            (or (s-suffix? "/draft/" (file-name-directory (buffer-file-name)))
-               (s-suffix? "/org/" (file-name-directory (buffer-file-name))))
+               (s-suffix? "/blog/" (file-name-directory (buffer-file-name))))
            (s-suffix? ".org" (buffer-file-name))))
 #+END_SRC
 
@@ -350,7 +351,7 @@
   (defun custom-blog-publish ()
     (interactive)
     (if (custom-blog-org-file-p)
-        (progn (dired-rename-file (buffer-file-name) (concat my-blog-post-base "/org/" (file-name-nondirectory (buffer-file-name))) 1)
+        (progn (dired-rename-file (buffer-file-name) (concat my-blog-post-base "/blog/" (file-name-nondirectory (buffer-file-name))) 1)
                (if (y-or-n-p "File move finished. Need to commit?")
                    (custom-blog-commit)
                  (message "\"%s\" publish finished." (buffer-file-name))))
@@ -400,7 +401,7 @@
   (defun custom-blog-modify-type (direction)
     "Modify blog file type"
     (when (string-match "^#\\+blogtype:" (thing-at-point 'line t))
-      (let* ((files (directory-files (concat my-blog-post-base "/org") 1 "\\.org$"))
+      (let* ((files (directory-files (concat my-blog-post-base "/blog") 1 "\\.org$"))
              file
              (infolist '()))
         (while (setq file (pop files))
