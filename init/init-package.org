@@ -47,7 +47,8 @@
                                       js2-mode
                                       web-mode
                                       emmet-mode
-                                      git-gutter))
+                                      git-gutter
+                                      sr-speedbar))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
@@ -308,4 +309,26 @@ C-c o 打开当前文件所在的Finder;
 ** git-gutter
 #+BEGIN_SRC emacs-lisp
   (global-git-gutter-mode +1)
+#+END_SRC
+** sr-speedbar
+#+BEGIN_SRC emacs-lisp
+  (require 'sr-speedbar)
+  (evil-leader/set-key
+    "fs" 'custom-open-speedbar)
+
+  (defun custom-open-speedbar ()
+    "Open & select & expand"
+    (interactive)
+    (unless (member 'speedbar-mode minor-mode-list)
+      (let ((current-file (buffer-file-name)))
+        (unless (sr-speedbar-exist-p)
+          (sr-speedbar-open))
+        (sr-speedbar-select-window)
+        (speedbar-find-selected-file current-file)
+        (speedbar-expand-line))))
+
+  (define-key speedbar-key-map (kbd "<tab>") 'speedbar-toggle-line-expansion)
+  (define-key speedbar-key-map (kbd "q") 'sr-speedbar-close)
+  (define-key speedbar-key-map (kbd "^") 'speedbar-up-directory)
+  (sr-speedbar-refresh-turn-on)
 #+END_SRC
