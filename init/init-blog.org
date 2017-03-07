@@ -407,11 +407,12 @@
           (let ((file-buf (find-file-noselect file nil)))
             (with-current-buffer file-buf
               (goto-char (point-min))
-              (let* ((beg (re-search-forward "^#\\+blogtype:"))
-                     (end (progn (goto-char beg) (line-end-position)))
-                     (type (s-trim (buffer-substring beg end))))
-                (unless (cl-position type infolist :test 'equal)
-                  (setq infolist (cons type infolist)))))))
+              (let ((beg (re-search-forward "^#\\+blogtype:" nil t)))
+                (when beg
+                  (let* ((end (progn (goto-char beg) (line-end-position)))
+                         (type (s-trim (buffer-substring beg end))))
+                    (unless (cl-position type infolist :test 'equal)
+                      (setq infolist (cons type infolist)))))))))
         (if (equal custom-blog-current-type "")
             (setq custom-blog-current-type (car infolist))
           (let ((beginindex (+ (cl-position custom-blog-current-type infolist :test 'equal) direction)))
@@ -420,7 +421,8 @@
             (when (= beginindex -1)
               (setq beginindex (1- (length infolist))))
 
-            (setq custom-blog-current-type (car (nthcdr beginindex infolist))))))
+            (setq custom-blog-current-type (car (nthcdr beginindex infolist)))))
+        )
 
       (with-current-buffer (current-buffer)
         (goto-char (point-min))
