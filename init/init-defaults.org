@@ -74,16 +74,6 @@
   ;; yes/no -> y/n
   (fset 'yes-or-no-p 'y-or-n-p)
 
-  (setq url-gateway-method 'socks)
-  (setq socks-server '("ss" "127.0.0.1" 1080 5))
-
-    ;;; dired
-  ;; (setq dired-recursive-copies 'always)
-  ;; (setq dired-recursive-deletes 'always)
-
-  ;; (put 'dired-find-alternate-file 'disabled nil)
-  ;; (with-eval-after-load 'dired
-  ;;   (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
 #+END_SRC
 ** trailing space
 #+BEGIN_SRC emacs-lisp
@@ -101,16 +91,13 @@
   (dolist (element no-trailing-modes nil)
     (add-hook element 'no-trailing-whitespace))
 #+END_SRC
-** dired
+* TRAMP
 #+BEGIN_SRC emacs-lisp
-  (defun custom-dired-open-file-with-osx ()
-    "In Dired, try to open files by osx"
-    (interactive)
-    (shell-command (format "open \"%s\"" (dired-get-file-for-visit))))
+  (tramp-set-completion-function "sshx"
+                                 '((tramp-parse-sconfig "/etc/ssh_config")
+                                   (tramp-parse-sconfig "~/.ssh/config")))
 
-  (define-key dired-mode-map (kbd "O") 'custom-dired-open-file-with-osx)
-  (define-key dired-mode-map (kbd "V") nil)
-
+  (setq tramp-default-method "sshx")
 #+END_SRC
 * w3m
 #+BEGIN_SRC emacs-lisp
@@ -224,22 +211,6 @@ F12快速打开terminal; q退出；exit之后自动删除buffer。
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-  ;; C-c d打开当前文件的dired
-  ;; (require 'dired-x)
-  (defun custom-goto-recent-directory ()
-    "Open recent directory with dired"
-    (interactive)
-    (unless recentf-mode (recentf-mode 1))
-    (let ((collection
-           (delete-dups
-            (append (mapcar 'file-name-directory recentf-list)
-                    ;; fasd history
-                    (if (executable-find "fasd")
-                        (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
-      (ivy-read "directories:" collection :action 'dired)))
-
-  (global-set-key (kbd "C-c d") 'custom-goto-recent-directory)
-
   ;; help
   (define-key 'help-command (kbd "C-k") 'find-function-on-key)
   (define-key 'help-command (kbd "C-v") 'find-variable)
@@ -247,12 +218,6 @@ F12快速打开terminal; q退出；exit之后自动删除buffer。
 
   ;; replace eval command from alt-x
   (global-set-key (kbd "C-x C-m") 'execute-extended-command)
-
-  ;; cd finder current path
-  (defun fcd ()
-    "Dired current finder dir"
-    (interactive)
-    (dired (file-name-as-directory (s-trim-right (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
 
   (defun clean-message-buffer ()
     "Fast way to clean message buffer's output"
