@@ -178,6 +178,19 @@
   ;;   (define-key w3m-mode-map "f" 'sacha/w3m-open-in-firefox)
   ;;   )
 #+END_SRC
+* bookmark
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "bookmark"
+    (define-key bookmark-bmenu-mode-map (kbd "j") 'next-line)
+    (define-key bookmark-bmenu-mode-map (kbd "k") 'previous-line))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key
+    "rm" 'bookmark-set
+    "rl" 'bookmark-bmenu-list
+    "rb" 'bookmark-jump)
+#+END_SRC
 * terminal
 F12快速打开terminal; q退出；exit之后自动删除buffer。
 #+BEGIN_SRC emacs-lisp
