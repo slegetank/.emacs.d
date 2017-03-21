@@ -1,27 +1,40 @@
+* Packages
+** dired+
+#+BEGIN_SRC emacs-lisp
+  ; only use one buffer
+  (diredp-toggle-find-file-reuse-dir 1)
+#+END_SRC
+** dired-icon
+#+BEGIN_SRC emacs-lisp
+  ;; (add-hook 'dired-mode-hook 'dired-icon-mode)
+#+END_SRC
+** diredful
+#+BEGIN_SRC emacs-lisp
+  (diredful-mode 1)
+#+END_SRC
 * Defaults
+better defaults
+#+BEGIN_SRC emacs-lisp
+  (setq dired-recursive-copies 'always)
+  (setq dired-recursive-deletes 'always)
+  (setq dired-dwim-target t)
+#+END_SRC
+
 在单个buffer里打开文件：
 #+BEGIN_SRC emacs-lisp
-    (setq dired-recursive-copies 'always)
-    (setq dired-recursive-deletes 'always)
-    (setq dired-dwim-target t)
-
     (put 'dired-find-alternate-file 'disabled nil)
     (with-eval-after-load 'dired
       (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
       (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file ".."))))  ; was dired-up-directory)
 
-  (setq-default dired-omit-files-p t) ; this is buffer-local variable
+#+END_SRC
+忽略文件
+#+BEGIN_SRC emacs-lisp
+  (setq-default dired-omit-files-p t)
   (setq dired-omit-files
         (concat dired-omit-files "\\.pyc$"))
 #+END_SRC
-将文件夹放到前面：
-#+BEGIN_SRC emacs-lisp
-  ;; (setq dired-listing-switches "-aBhl  --group-directories-first")
-#+END_SRC
 
-* Packages
-#+BEGIN_SRC emacs-lisp
-#+END_SRC
 * Inside
 #+BEGIN_SRC emacs-lisp
   (defun custom-dired-open-file-with-osx ()
@@ -34,6 +47,52 @@
   (define-key dired-mode-map (kbd "E") 'wdired-change-to-wdired-mode)
 
   (add-hook 'view-mode-hook '(lambda () (evil-define-key 'normal view-mode-map (kbd "q") 'View-quit)))
+
+#+END_SRC
+** sort
+使用ls-lisp，解决MacOS不支持ls -X排序的问题。
+#+BEGIN_SRC emacs-lisp
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil)
+  (setq ls-lisp-verbosity nil)
+#+END_SRC
+
+目录在文件前面：
+#+BEGIN_SRC emacs-lisp
+  (defun custom-dired-sort-dir-first ()
+    "Dired sort hook to list directories first."
+    (save-excursion
+      (let (buffer-read-only)
+        (forward-line 2) ;; beyond dir. header
+        (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max))))
+    (and (featurep 'xemacs)
+         (fboundp 'dired-insert-set-properties)
+         (dired-insert-set-properties (point-min) (point-max)))
+    (set-buffer-modified-p nil))
+
+  (add-hook 'dired-after-readin-hook 'custom-dired-sort-dir-first)
+#+END_SRC
+
+自定义s排序：
+#+BEGIN_SRC emacs-lisp
+  (setq custom-dired-sort-seq-list `((,(concat dired-listing-switches "h") . "Name")
+                                     (,(concat dired-listing-switches "cth") . "Create Time")
+                                     (,(concat dired-listing-switches "uth") . "Modify Time")
+                                     (,(concat dired-listing-switches "Xh") . "Extension")
+                                     (,(concat dired-listing-switches "Sh") . "Size")))
+
+  (defun custom-dired-sort-next ()
+    "In dired mode, sort"
+    (interactive)
+    (let ((nextpos (1+ (or (cl-position
+                            (assoc dired-actual-switches custom-dired-sort-seq-list)
+                            custom-dired-sort-seq-list :test 'equal) 0))))
+      (when (= (length custom-dired-sort-seq-list) nextpos)
+        (setq nextpos 0))
+      (dired-sort-other (car (car (nthcdr nextpos custom-dired-sort-seq-list))))
+      (message "SORTBY - \"%s\"" (cdr (car (nthcdr nextpos custom-dired-sort-seq-list))))))
+
+  (define-key dired-mode-map (kbd "s") 'custom-dired-sort-next)
 
 #+END_SRC
 

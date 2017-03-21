@@ -38,8 +38,6 @@
                                       dired+
                                       diredful
                                       ;; dired-icon
-                                      dired-single
-                                      dired-sort
                                       s
                                       avy
                                       evil-cleverparens
@@ -242,62 +240,6 @@ C-c o 打开当前文件所在的Finder;
    #+BEGIN_SRC emacs-lisp
      (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
    #+END_SRC
-** dired
-*** dired+
-#+BEGIN_SRC emacs-lisp
-  ; only use one buffer
-  (diredp-toggle-find-file-reuse-dir 1)
-#+END_SRC
-*** dired-icon
-#+BEGIN_SRC emacs-lisp
-  ;; (add-hook 'dired-mode-hook 'dired-icon-mode)
-#+END_SRC
-*** diredful
-#+BEGIN_SRC emacs-lisp
-  (diredful-mode 1)
-#+END_SRC
-*** dired-single
-#+BEGIN_SRC emacs-lisp
-  (require 'dired-single)
-#+END_SRC
-*** dired-sort
-#+BEGIN_SRC emacs-lisp
-  (setq custom-dired-sort-seq-list `((,(concat dired-listing-switches "h") . "Name")
-                                     (,(concat dired-listing-switches "cth") . "Create Time")
-                                     (,(concat dired-listing-switches "uth") . "Modify Time")
-                                     (,(concat dired-listing-switches "Xh") . "Extension")
-                                     (,(concat dired-listing-switches "Sh") . "Size")))
-
-  (defun custom-dired-sort-next ()
-    "In dired mode, sort"
-    (interactive)
-    (let ((nextpos (1+ (or (cl-position
-                        (assoc dired-actual-switches custom-dired-sort-seq-list)
-                        custom-dired-sort-seq-list :test 'equal) 0))))
-      (when (= (length custom-dired-sort-seq-list) nextpos)
-        (setq nextpos 0))
-      (dired-sort-other (car (car (nthcdr nextpos custom-dired-sort-seq-list))))
-      (message "SORTBY - \"%s\"" (cdr (car (nthcdr nextpos custom-dired-sort-seq-list))))))
-
-  (define-key dired-mode-map (kbd "s") 'custom-dired-sort-next)
-
-  (defun custom-dired-sort-dir-first ()
-    "Dired sort hook to list directories first."
-    (save-excursion
-     (let (buffer-read-only)
-       (forward-line 2) ;; beyond dir. header
-       (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max))))
-    (and (featurep 'xemacs)
-         (fboundp 'dired-insert-set-properties)
-         (dired-insert-set-properties (point-min) (point-max)))
-    (set-buffer-modified-p nil))
-
-   (add-hook 'dired-after-readin-hook 'custom-dired-sort-dir-first)
-
-  (require 'ls-lisp)
-  (setq ls-lisp-use-insert-directory-program nil)
-  (setq ls-lisp-verbosity nil)
-#+END_SRC
 ** darkokai-theme
    #+BEGIN_SRC emacs-lisp
      (load-theme 'darkokai t)
