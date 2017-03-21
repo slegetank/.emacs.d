@@ -99,10 +99,11 @@
 * Export
 ** Keys
 #+BEGIN_SRC emacs-lisp
-    (evil-leader/set-key
-      "bc" 'custom-blog-commit
-      "bi" 'custom-blog-init
-      "bp" 'custom-blog-publish)
+  (evil-leader/set-key
+    "bc" 'custom-blog-commit
+    "bi" 'custom-blog-init
+    "bp" 'custom-blog-publish
+    "bd" 'custom-blog-deploy)
 #+END_SRC
 
 ** Functions
@@ -355,6 +356,18 @@
                    (custom-blog-commit)
                  (message "\"%s\" publish finished." (buffer-file-name))))
       (message "\"%s\" is not a valid draft blog file." (buffer-file-name))))
+#+END_SRC
+
+自定义部署函数：
+#+BEGIN_SRC emacs-lisp
+  (defun custom-blog-deploy ()
+    (interactive)
+    (let ((default-directory my-blog-publish-base))
+      (message "push to static blog...")
+      (shell-command "git push"))
+    (message "update blog.slegetank database...")
+    (shell-command "ssh root@slegetank.com \"source updateblog.sh\""))
+
 #+END_SRC
 
 自定义插入图片链接函数：
