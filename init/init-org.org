@@ -9,6 +9,7 @@
     (setq org-src-fontify-natively t)
   #+END_SRC
 * Edit code
+org mode code blocks supported languages: http://orgmode.org/manual/Languages.html#Languages
   #+BEGIN_SRC emacs-lisp
     ;; For editing source code
     (defun custom-indent-org-block-automatically ()

@@ -168,13 +168,18 @@ M-x customize-group -> 默认触发为\，改为SPC
 (require 'popwin)
 (popwin-mode t)
    #+END_SRC
-** Swiper && counsel
+** ivy && Swiper && counsel
    强大的查找文件、搜索代码、执行命令的补全工具。
    #+BEGIN_SRC emacs-lisp
      ;; ivy
      (ivy-mode 1)
-     (setq ivy-use-virtual-buffers t)
 
+     (setq counsel-find-file-at-point t)
+     (setq ivy-use-virtual-buffers t)
+     (setq ivy-display-style 'fancy)
+     (setq ivy-initial-inputs-alist nil)
+
+     (define-key ivy-minibuffer-map (kbd "s-<return>") 'ivy-immediate-done)
      (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
      (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
 
