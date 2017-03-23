@@ -1,0 +1,39 @@
+#+BEGIN_SRC emacs-lisp
+  (setq custom-help-local-dir "/Users/hy/Work/github/MyBlogOrg/blog/")
+  (setq custom-help-remote-url "http://blog.slegetank.com/article/%s?blogtype=%s")
+
+
+  (setq custom-help-article-list '(("blog" "20170108-blogWithEmacs.org" "Emacs")
+                                   ("dired" "20170106-dired.org" "Emacs")
+                                   ("tramp" "20170318-tramp.org" "Emacs")
+                                   ))
+
+  (defun custom-help-open-article (remote)
+    "Open help article for some topic"
+    (interactive)
+    (let* ((info (ivy-completing-read (if (equal remote "remote") "Open remote topic: " "Open local topic: ") custom-help-article-list nil t))
+           (name (car (cdr (assoc info custom-help-article-list))))
+           (type (car (nthcdr 2 (assoc info custom-help-article-list)))))
+      (if (equal remote "remote")
+          (let ((remoteurl (format custom-help-remote-url name type)))
+            (browse-url remoteurl))
+        (if (file-exists-p custom-help-local-dir)
+            (progn (shell-command (format "cd %s && git fetch && git rebase" custom-help-local-dir))
+                   (find-file (concat custom-help-local-dir name)))
+          (message (format "Found no help article! %s" custom-help-article-list))))))
+
+  (defun custom-help-open-local-article ()
+    "Open local help article"
+    (interactive)
+    (custom-help-open-article "local"))
+
+  (defun custom-help-open-remote-article ()
+    "Open remote help article"
+    (interactive)
+    (custom-help-open-article "remote"))
+
+  (evil-leader/set-key
+    "hl" 'custom-help-open-local-article
+    "hr" 'custom-help-open-remote-article)
+#+END_SRC
+
