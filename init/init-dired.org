@@ -28,11 +28,14 @@ better defaults
       (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file ".."))))  ; was dired-up-directory)
 
 #+END_SRC
-忽略文件
+
+忽略文件:
 #+BEGIN_SRC emacs-lisp
   (setq-default dired-omit-files-p t)
   (setq dired-omit-files
         (concat dired-omit-files "\\.pyc$"))
+#+END_SRC
+
 dired会被加入recentf-list:
 #+BEGIN_SRC emacs-lisp
   (defun recentd-track-opened-file ()
@@ -54,16 +57,27 @@ dired会被加入recentf-list:
 
 * Inside
 #+BEGIN_SRC emacs-lisp
-  (defun custom-dired-open-file-with-osx ()
-    "In Dired, try to open files by osx"
-    (interactive)
-    (shell-command (format "open \"%s\"" (dired-get-file-for-visit))))
+    (defun custom-dired-open-file-with-osx ()
+      "In Dired, try to open files by osx"
+      (interactive)
+      (shell-command (format "open \"%s\"" (dired-get-file-for-visit))))
 
-  (define-key dired-mode-map (kbd "O") 'custom-dired-open-file-with-osx)
-  (define-key dired-mode-map (kbd "V") nil)
-  (define-key dired-mode-map (kbd "E") 'wdired-change-to-wdired-mode)
+    (defun custom-dired-temp-hide-files ()
+      "Hide marked files temporary."
+      (interactive)
+      (make-local-variable 'dired-omit-files)
+      (dolist (item (dired-get-marked-files))
+        (setq dired-omit-files
+              (concat dired-omit-files (format "\\|%s" (file-name-nondirectory item)))))
+      (dired-unmark-all-marks)
+      (revert-buffer))
 
-  (add-hook 'view-mode-hook '(lambda () (evil-define-key 'normal view-mode-map (kbd "q") 'View-quit)))
+    (define-key dired-mode-map (kbd "H") 'custom-dired-temp-hide-files)
+    (define-key dired-mode-map (kbd "O") 'custom-dired-open-file-with-osx)
+    (define-key dired-mode-map (kbd "V") nil)
+    (define-key dired-mode-map (kbd "E") 'wdired-change-to-wdired-mode)
+
+    (add-hook 'view-mode-hook '(lambda () (evil-define-key 'normal view-mode-map (kbd "q") 'View-quit)))
 
 #+END_SRC
 ** sort
