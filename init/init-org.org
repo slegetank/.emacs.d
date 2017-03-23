@@ -67,7 +67,7 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
       "es" 'custom-org-edit-src-save)
   #+END_SRC
 * keys
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
   (defun my-org-config ()
     (local-set-key (kbd "s-k") 'outline-previous-visible-heading)
     (local-set-key (kbd "s-j") 'outline-next-visible-heading)

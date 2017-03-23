@@ -317,9 +317,23 @@
 #+BEGIN_SRC emacs-lisp
   (define-key org-mode-map (kbd "<s-right>") (lambda () (interactive) (custom-blog-modify-type 1)))
   (define-key org-mode-map (kbd "<s-left>") (lambda () (interactive) (custom-blog-modify-type -1)))
+
+  (evil-leader/set-key
+    "bu" 'custom-blog-timestamp-update)
 #+END_SRC
 
 ** Functions
+自定义时间戳更新方法：
+#+BEGIN_SRC emacs-lisp
+  (defun custom-blog-timestamp-update ()
+    (interactive)
+    (with-current-buffer (current-buffer)
+      (goto-char (point-min))
+      (search-forward-regexp "^#\\+DATE:.*?$")
+      (replace-match (concat "#+DATE: " (format-time-string "<%Y-%m-%d %H:%M>")))
+      (save-buffer)))
+#+END_SRC
+
 判断是否为博客org文件：
 #+BEGIN_SRC emacs-lisp
     (defun custom-blog-org-file-p ()
