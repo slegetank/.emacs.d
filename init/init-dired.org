@@ -98,16 +98,15 @@ better defaults
 
 * Outside
 #+BEGIN_SRC emacs-lisp
+  (require 'ivy) ; swiper 7.0+ should be installed
+
   (defun custom-goto-recent-directory ()
     "Open recent directory with dired"
     (interactive)
     (unless recentf-mode (recentf-mode 1))
     (let ((collection
            (delete-dups
-            (append (mapcar 'file-name-directory recentf-list)
-                    ;; fasd history
-                    (if (executable-find "fasd")
-                        (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+            (append (mapcar 'file-name-directory recentf-list)))))
       (ivy-read "directories:" collection :action 'dired)))
 
   (defun custom-goto-finder-directory ()
@@ -149,8 +148,7 @@ better defaults
   (evil-leader/set-key
     "dd" 'dired-jump
     "do" 'dired-jump-other-window
-    ;; "dr" 'custom-goto-recent-directory
-    "dr" 'diredp-dired-recent-dirs
+    "dr" 'custom-goto-recent-directory
     "df" 'custom-goto-finder-directory
     "dx" 'custom-goto-xcode-project
     "fx" 'custom-open-xcode-file

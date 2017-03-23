@@ -91,6 +91,32 @@
   (dolist (element no-trailing-modes nil)
     (add-hook element 'no-trailing-whitespace))
 #+END_SRC
+** recentf
+最近文件列表里只保存确实显示过的文件，来源[[https://www.emacswiki.org/emacs/RecentFiles][wiki]] ,因为有的插件会在后台访问文件，然后recentf-list就被这些文件充满了，而这不是我需要的。
+#+BEGIN_SRC emacs-lisp
+  (require 'recentf)
+  (recentf-mode 1)
+
+  (defsubst file-was-visible-p (file)
+    "Return non-nil if FILE's buffer exists and has been displayed."
+    (let ((buf (find-buffer-visiting file)))
+      (if buf
+          (let ((display-count (buffer-local-value 'buffer-display-count buf)))
+            (if (> display-count 0) display-count nil)))))
+
+  (let ((r-list recentf-list))
+    (defsubst keep-default-old-and-visible-recentf-p (file)
+      "Decide whether to keep file in recentf-list.
+  Return non-nil if recentf would, by default, keep FILE, and
+  either FILE name was loaded from recentf file on disk or FILE
+  has been displayed in this session."
+      (if (recentf-keep-default-predicate file)
+        (or (member file r-list)
+        (file-was-visible-p file)))))
+
+  (setf recentf-keep '(keep-default-old-and-visible-recentf-p))
+#+END_SRC
+
 * TRAMP
 #+BEGIN_SRC emacs-lisp
   (tramp-set-completion-function "sshx"
@@ -193,6 +219,40 @@
 #+END_SRC
 * terminal
 F12快速打开terminal; q退出；exit之后自动删除buffer。
+
+make-term version:
+#+BEGIN_SRC emacs-lisp
+  ;; make-term version
+  (defun fast-terminal ()
+    "fastway to access terminal. Only open one."
+    (interactive)
+    (unless (get-buffer-window "*terminal*" 'visible)
+      (unless (get-buffer "*terminal*")
+        (make-term "terminal" (getenv "SHELL")))
+      (split-window-sensibly)
+      (other-window 1)
+      (set-buffer "*terminal*")
+      (term-mode)
+      (term-char-mode)
+      (switch-to-buffer "*terminal*")
+      (and default-directory (term-send-raw-string (format "cd %s\n" default-directory)))
+      (goto-char (point-max))
+      ))
+
+  ;; auto delete window when process exit
+  (add-hook 'term-exec-hook (lambda ()
+                              (let* ((buff (current-buffer))
+                                     (proc (get-buffer-process buff)))
+                                (lexical-let ((buff buff))
+                                  (set-process-sentinel proc (lambda (process event)
+                                                               (if (string= event "finished\n")
+                                                                   (kill-buffer-and-window))))))))
+
+  (global-set-key (kbd "<f12>") 'fast-terminal)
+  (add-hook 'term-mode-hook '(lambda () (evil-define-key 'normal term-raw-map (kbd "q") '(lambda () (interactive) (other-window -1) (delete-window (get-buffer-window "*terminal*"))))))
+#+END_SRC
+
+eshell version:
 #+BEGIN_SRC emacs-lisp
     (defun fast-terminal-eshell ()
       "Opens up a new shell in the directory associated with the current buffer's file."
@@ -221,42 +281,9 @@ F12快速打开terminal; q退出；exit之后自动删除buffer。
             (delete-frame)
           (delete-window (selected-window)))))
 
-    (global-set-key (kbd "<f12>") 'fast-terminal-eshell)
-    (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'quit-eshell-window)))
+    ;; (global-set-key (kbd "<f12>") 'fast-terminal-eshell)
+    ;; (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'quit-eshell-window)))
 #+END_SRC
-
-make-term version。
-#+BEGIN_SRC emacs-lisp
-  ;; make-term version
-  (defun fast-terminal ()
-    "fastway to access terminal. Only open one."
-    (interactive)
-    (unless (get-buffer-window "*terminal*" 'visible)
-      (unless (get-buffer "*terminal*")
-        (make-term "terminal" (getenv "SHELL")))
-      (split-window-sensibly)
-      (other-window 1)
-      (set-buffer "*terminal*")
-      (term-mode)
-      (term-char-mode)
-      (switch-to-buffer "*terminal*")
-      (and default-directory (term-send-raw-string (format "cd %s\n" default-directory)))
-      (goto-char (point-max))
-      ))
-
-  ;; auto delete window when process exit
-  (add-hook 'term-exec-hook (lambda ()
-                              (let* ((buff (current-buffer))
-                                     (proc (get-buffer-process buff)))
-                                (lexical-let ((buff buff))
-                                  (set-process-sentinel proc (lambda (process event)
-                                                               (if (string= event "finished\n")
-                                                                   (kill-buffer-and-window))))))))
-
-  ;; (global-set-key (kbd "<f12>") 'fast-terminal)
-  (add-hook 'term-mode-hook '(lambda () (evil-define-key 'normal term-raw-map (kbd "q") '(lambda () (interactive) (other-window -1) (delete-window (get-buffer-window "*terminal*"))))))
-#+END_SRC
-
 * keys
 #+BEGIN_SRC emacs-lisp
   ;; help
