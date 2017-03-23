@@ -95,6 +95,7 @@
 最近文件列表里只保存确实显示过的文件，来源[[https://www.emacswiki.org/emacs/RecentFiles][wiki]] ,因为有的插件会在后台访问文件，然后recentf-list就被这些文件充满了，而这不是我需要的。
 #+BEGIN_SRC emacs-lisp
   (require 'recentf)
+  (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
   (recentf-mode 1)
 
   (defsubst file-was-visible-p (file)
@@ -107,12 +108,12 @@
   (let ((r-list recentf-list))
     (defsubst keep-default-old-and-visible-recentf-p (file)
       "Decide whether to keep file in recentf-list.
-  Return non-nil if recentf would, by default, keep FILE, and
-  either FILE name was loaded from recentf file on disk or FILE
-  has been displayed in this session."
+    Return non-nil if recentf would, by default, keep FILE, and
+    either FILE name was loaded from recentf file on disk or FILE
+    has been displayed in this session."
       (if (recentf-keep-default-predicate file)
-        (or (member file r-list)
-        (file-was-visible-p file)))))
+          (or (member file r-list)
+              (file-was-visible-p file)))))
 
   (setf recentf-keep '(keep-default-old-and-visible-recentf-p))
 #+END_SRC

@@ -38,6 +38,7 @@
                                       dired+
                                       diredful
                                       ;; dired-icon
+                                      recentf-ext
                                       s
                                       avy
                                       evil-cleverparens
@@ -327,4 +328,8 @@ C-c o 打开当前文件所在的Finder;
   (define-key speedbar-key-map (kbd "q") 'sr-speedbar-close)
   (define-key speedbar-key-map (kbd "^") 'speedbar-up-directory)
   (sr-speedbar-refresh-turn-on)
+#+END_SRC
+** recentf-ext
+#+BEGIN_SRC emacs-lisp
+  (require 'recentf-ext)
 #+END_SRC
