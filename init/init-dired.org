@@ -33,7 +33,7 @@ better defaults
 #+BEGIN_SRC emacs-lisp
   (setq-default dired-omit-files-p t)
   (setq dired-omit-files
-        (concat dired-omit-files "\\.pyc$"))
+        (concat dired-omit-files "\\.pyc$\\|.DS_Store"))
 #+END_SRC
 
 dired会被加入recentf-list:
@@ -137,7 +137,9 @@ dired会被加入recentf-list:
     (unless recentf-mode (recentf-mode 1))
     (let ((collection
            (delete-dups
-            (append (mapcar 'file-name-directory recentf-list)))))
+            (append (mapcar 'file-name-directory recentf-list)
+                    (if (file-exists-p "~/.z") ; append top 20 dirs
+                        (mapcar (lambda (directory) (concat directory "/")) (split-string (shell-command-to-string "cat ~/.z | sort -r -n -k 2 -t \"|\" | cut -f 1 -d \"|\" | head -n 20") "\n" t)))))))
       (ivy-read "directories:" collection :action 'dired)))
 
   (defun custom-goto-finder-directory ()

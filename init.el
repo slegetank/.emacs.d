@@ -12,7 +12,9 @@
 (org-babel-load-file (expand-file-name "init/init-blog.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-elisp.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-python.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-js.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-dired.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-mu4e.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-help.org" user-emacs-directory))
 
 ;;(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))

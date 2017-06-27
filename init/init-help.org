@@ -8,6 +8,8 @@
                                    ("tramp" "20170318-tramp.org" "Emacs")
                                    ("magit" "20170206-magit.org" "Emacs")
                                    ("s" "https://github.com/magnars/s.el" "Emacs")
+                                   ("RN-github" "https://github.com/jondot/awesome-react-native" "RN")
+                                   ("emmet" "https://github.com/smihica/emmet-mode" "js")
                                    ))
 
   (defun custom-help-open-article (remote)

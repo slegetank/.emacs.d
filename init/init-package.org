@@ -13,8 +13,10 @@
   2 然后，将要加载的库加入package-selected-packages里。package库将使用这个变量来确认用户需要安装哪些包。
   package-autoremove也依赖于这个列表来自动删除包。注意，这个变量是在25.1之后引入的。
   #+BEGIN_SRC emacs-lisp
-    (setq package-selected-packages '(company
+    (setq package-selected-packages '(use-package
+                                      company
                                       company-anaconda
+                                      company-tern
                                       hungry-delete
                                       swiper
                                       counsel
@@ -49,11 +51,24 @@
                                       nyan-mode
                                       magit
                                       evil-magit
+                                      ;; js
                                       js2-mode
                                       web-mode
+                                      rjsx-mode
+                                      simple-httpd
+                                      skewer-mode
                                       emmet-mode
                                       git-gutter
-                                      sr-speedbar))
+                                      mu4e-alert
+                                      mu4e-maildirs-extension
+                                      sr-speedbar
+                                      flycheck
+                                      yasnippet
+                                      react-snippets
+                                      impatient-mode
+                                      imenu-list
+                                      neotree
+                                      switch-buffer-functions))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
@@ -74,6 +89,13 @@
   当然，别忘了将下面关于包的配置手动删除。
 * 包
 下面是所有上面的第三方库的配置。(org mode中编辑代码时，可以使用C-c '来在一个新的buffer中进行编辑；按C-x C-s来保存;再次按C-c '来退出)
+** use-package
+#+BEGIN_SRC emacs-lisp
+  (eval-when-compile
+    (require 'use-package))
+  (require 'diminish)                ;; if you use :diminish
+  (require 'bind-key)                ;; if you use any :bind variant
+#+END_SRC
 ** better-defaults
 修正Emacs默认配置的一些不合理配置。
 #+BEGIN_SRC emacs-lisp
@@ -111,6 +133,7 @@ M-x customize-group -> 默认触发为\，改为SPC
     ;; elisp
     "er" 'eval-region
     "eb" 'eval-buffer
+    "." 'repeat
     )
 
   ;; q for kill-buffer, not for exit emacss
@@ -160,6 +183,11 @@ M-x customize-group -> 默认触发为\，改为SPC
       (eval-after-load "company"
         '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
     #+END_SRC
+*** company-tern
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'company-backends 'company-tern)
+  (add-hook 'rjsx-mode-hook (lambda () (tern-mode t)))
+#+END_SRC
 ** hungry-delete
    自动删除行最后的空格。
    #+BEGIN_SRC emacs-lisp
@@ -233,9 +261,9 @@ C-c o 打开当前文件所在的Finder;
 #+END_SRC
 
 ** iedit
-多处编辑; C-c e
+多处编辑; C-;激活，C-'只显示高亮行
 #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "C-c e") 'iedit-mode) 
+  (require 'iedit)
 #+END_SRC
 ** helm-ag
 工程内搜索工具。C-c C-e编辑结果。
@@ -308,22 +336,10 @@ C-c o 打开当前文件所在的Finder;
     "gs" 'magit-status
     "gm" 'magit-dispatch-popup)
 #+END_SRC
-** web-mode
-#+BEGIN_SRC emacs-lisp
-  (require 'web-mode)
-  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-#+END_SRC
 ** emmet-mode
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'auto-mode-alist '("\\.jsx$" . 'web-mode))
   (add-hook 'web-mode-hook 'emmet-mode)
+  (add-hook 'rjsx-mode-hook 'emmet-mode)
 #+END_SRC
 ** git-gutter
 #+BEGIN_SRC emacs-lisp
@@ -354,4 +370,115 @@ C-c o 打开当前文件所在的Finder;
 ** recentf-ext
 #+BEGIN_SRC emacs-lisp
   (require 'recentf-ext)
+#+END_SRC
+** mu4e-alert
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'mu4e
+    ;; (mu4e-alert-set-default-style 'notifier)
+    ;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+    (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display))
+#+END_SRC
+
+** mu4e-maildirs-extension
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'mu4e
+    (require 'mu4e-maildirs-extension)
+    (mu4e-maildirs-extension)
+    (evil-define-key 'motion mu4e-main-mode-map (kbd "<tab>") 'mu4e-maildirs-extension-toggle-maildir-at-point))
+
+    ;; (setq mu4e-maildirs-extension-custom-list '("/slege_tank@163.com/INBOX"))
+    ;; (setq mu4e-maildirs-extension-default-collapse-level 1)
+#+END_SRC
+** flycheck
+#+BEGIN_SRC emacs-lisp
+  (require 'flycheck)
+
+  ;; turn on flychecking globally
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+
+  ;; customize flycheck temp file prefix
+  (setq-default flycheck-temp-prefix ".flycheck")
+
+  (evil-leader/set-key
+    "cn" 'flycheck-next-error
+    "cp" 'flycheck-previous-error
+    "cl" 'flycheck-list-errors)
+#+END_SRC
+** yasnippet
+#+BEGIN_SRC emacs-lisp
+  (require 'yasnippet)
+  (yas-global-mode 1)
+#+END_SRC
+*** react
+#+BEGIN_SRC emacs-lisp
+  (require 'react-snippets)
+#+END_SRC
+** skewer-mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'rjsx-mode-hook 'skewer-mode)
+  (add-hook 'css-mode-hook 'skewer-css-mode)
+  (add-hook 'web-mode-hook 'skewer-html-mode)
+
+#+END_SRC
+** impatient-mode
+#+BEGIN_SRC emacs-lisp
+  ;; (require 'impatient-mode)
+
+  ;; (add-hook 'web-mode-hook 'impatient-mode)
+
+  ;; (defun custom-browse-this-file-impatient ()
+  ;;   (interactive)
+  ;;   (if (s-ends-with? ".html" (buffer-file-name))
+  ;;       (progn (unless (process-status "httpd")
+  ;;                (httpd-start))
+  ;;              (imp-visit-buffer))
+  ;;     (message "Not a valide html file.")))
+
+#+END_SRC
+** neotree
+#+BEGIN_SRC emacs-lisp
+  (require 'neotree)
+  (use-package neotree
+    :ensure t
+    :config
+    (evil-leader/set-key
+      "dn"  'custom-neotree-toggle-project-dir)
+
+    (setq neo-smart-open t)
+
+    ;; (setq projectile-switch-project-action 'neotree-projectile-action)
+
+    (add-hook 'neotree-mode-hook
+              (lambda ()
+                (define-key evil-normal-state-local-map (kbd "<tab>") (neotree-make-executor :dir-fn 'neo-open-dir))
+                (define-key evil-normal-state-local-map (kbd "u") 'neotree-select-up-node)
+                (define-key evil-normal-state-local-map (kbd "v") 'neotree-quick-look)
+                (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+                (define-key evil-normal-state-local-map (kbd "I") 'neotree-hidden-file-toggle)
+                (define-key evil-normal-state-local-map (kbd "z") 'neotree-stretch-toggle)
+                (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
+                (define-key evil-normal-state-local-map (kbd "r") 'neotree-rename-node)
+                (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
+                (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node)
+                (define-key evil-normal-state-local-map (kbd "o") (lambda () (interactive) (shell-command (format "open %s" (neo-buffer--get-filename-current-line)))))
+
+                (define-key evil-normal-state-local-map (kbd "s") 'neotree-enter-vertical-split)
+                (define-key evil-normal-state-local-map (kbd "S") 'neotree-enter-horizontal-split)
+
+                (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter))))
+
+  (use-package find-file-in-project :ensure t)
+
+  (defun custom-neotree-toggle-project-dir ()
+    "Open NeoTree using the git root."
+    (interactive)
+    (if (neo-global--window-exists-p)
+        (neotree-hide)
+      (let ((project-dir (or (ffip-project-root) (file-name-directory (or (buffer-file-name) ""))))
+            (file-name (buffer-file-name)))
+        (if project-dir
+            (progn
+              (neotree-dir project-dir)
+              (neotree-find file-name))
+          (message "Buffer is invalid.")))))
 #+END_SRC

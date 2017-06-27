@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: React Create Class
+# key: rcc
+# --
+class $0 extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {};
+    }
+
+    render() {
+        return (
+            <View>
+            </View>
+        );
+    }
+}
+

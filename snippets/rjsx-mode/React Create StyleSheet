@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: React Create StyleSheet
+# key: rcs
+# --
+const styles = StyleSheet.create({
+    $0
+});
