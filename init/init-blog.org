@@ -29,7 +29,6 @@
 
 导出参数的配置：
 #+BEGIN_SRC emacs-lisp
-    (add-to-list 'load-path "~/org-mode/contrib/lisp/")
     (require 'ox-html)
     (require 'ox-publish)
     (require 'ox-extra)
@@ -100,10 +99,10 @@
 ** Keys
 #+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
-    "bc" 'custom-blog-commit
-    "bi" 'custom-blog-init
-    "bp" 'custom-blog-publish
-    "bd" 'custom-blog-deploy)
+    "blc" 'custom-blog-commit
+    "bli" 'custom-blog-init
+    "blp" 'custom-blog-publish
+    "bld" 'custom-blog-deploy)
 #+END_SRC
 
 ** Functions
@@ -319,7 +318,7 @@
   (define-key org-mode-map (kbd "<s-left>") (lambda () (interactive) (custom-blog-modify-type -1)))
 
   (evil-leader/set-key
-    "bu" 'custom-blog-timestamp-update)
+    "blu" 'custom-blog-timestamp-update)
 #+END_SRC
 
 ** Functions

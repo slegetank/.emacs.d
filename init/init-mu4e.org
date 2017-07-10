@@ -1,34 +1,357 @@
-
+* default
 #+BEGIN_SRC emacs-lisp
   (require 'mu4e)
-
-  ;; default
   (setq mu4e-maildir "~/.Mail")
-  (setq mu4e-drafts-folder "/[slege_tank@163.com]/.Drafts")
-  (setq mu4e-sent-folder   "/[slege_tank@163.com]/.Sent Mail")
-  (setq mu4e-trash-folder  "/[slege_tank@163.com]/.Trash")
-  (setq mu4e-refile-folder  "/[slege_tank@163.com]/.All Mail")
+  (setq mail-user-agent 'mu4e-user-agent)
+#+END_SRC
 
-  ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-  (setq mu4e-sent-messages-behavior 'delete)
-
-  ;; (See the documentation for `mu4e-sent-messages-behavior' if you have
-  ;; additional non-Gmail addresses and want assign them different
-  ;; behavior.)
-
-  ;; setup some handy shortcuts
-  ;; you can quickly switch to your Inbox -- press ``ji''
-  ;; then, when you want archive some messages, move them to
-  ;; the 'All Mail' folder by pressing ``ma''.
-
-  (setq mu4e-maildir-shortcuts
-        '( ("/slege_tank@163.com/INBOX"               . ?i)
-           ("/[slege_tank@163.com]/.Sent Mail"   . ?s)
-           ("/[slege_tank@163.com]/.Trash"       . ?t)
-           ("/[slege_tank@163.com]/.All Mail"    . ?a)))
-
-  ;; allow for updating mail using 'U' in the main view:
+定义main view中U所调用的更新本地邮件的命令：
+#+BEGIN_SRC emacs-lisp
   (setq mu4e-get-mail-command "offlineimap")
+#+END_SRC
 
+同步邮件的时间间隔：
+#+BEGIN_SRC emacs-lisp
   (setq mu4e-update-interval 300)
+#+END_SRC
+
+不储存已发送的邮件；服务器会处理这件事：
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-sent-messages-behavior 'delete)
+#+END_SRC
+
+对富文本html的处理：
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-view-show-images t
+        mu4e-show-images t
+        mu4e-view-image-max-width 800)
+  (when (fboundp 'imagemagick-register-types)
+    (imagemagick-register-types))
+  (setq mu4e-view-prefer-html t)
+#+END_SRC
+
+将html转换为文本的命令，文档里推荐html2text，但实际上并不好用；用下面的方法效果更好：
+#+BEGIN_SRC emacs-lisp
+(require 'mu4e-contrib)
+(setq mu4e-html2text-command 'mu4e-shr2text)
+#+END_SRC
+
+message compose view's head format:
+#+BEGIN_SRC emacs-lisp
+  (setq message-citation-line-format "%N @ %Y-%m-%d %H:%M %Z:\n")
+  (setq message-citation-line-function 'message-insert-formatted-citation-line)
+#+END_SRC
+
+附件保存地址：
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-attachment-dir  "~/MU4EMail/")
+#+END_SRC
+
+发送配置：
+#+BEGIN_SRC emacs-lisp
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-stream-service 25
+        smtpmail-stream-type 'starttls
+        message-kill-buffer-on-exit t)
+#+END_SRC
+
+通知
+#+BEGIN_SRC emacs-lisp
+  (mu4e-alert-set-default-style 'notifier)
+  (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+  (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+  (setq mu4e-alert-email-notification-types '(count))
+#+END_SRC
+
+在dired中C-c enter C-a向mail中加入附件：
+#+BEGIN_SRC emacs-lisp
+  (require 'gnus-dired)
+  (defun gnus-dired-mail-buffers ()
+    "Return a list of active message buffers."
+    (let (buffers)
+      (save-current-buffer
+        (dolist (buffer (buffer-list t))
+          (set-buffer buffer)
+          (when (and (derived-mode-p 'message-mode)
+                  (null message-sent-message-via))
+            (push (buffer-name buffer) buffers))))
+      (nreverse buffers)))
+
+  (setq gnus-dired-mail-mode 'mu4e-user-agent)
+  (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
+#+END_SRC
+* view
+** Main view
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-bookmarks
+        '( ("flag:unread AND NOT flag:trashed" "Unread messages"      ?u)
+           ("date:today..now"                  "Today's messages"     ?t)
+           ("date:2d..now"                     "Last 2 days"          ?r)
+           ))
+#+END_SRC
+** Headers view
+header list时间戳：
+#+BEGIN_SRC emacs-lisp
+  (setq  mu4e-headers-date-format "%Y-%m-%d %H:%M")
+#+END_SRC
+
+headers view列表域及其宽度，nil表示无限制：
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-headers-fields
+        '( (:date          .  20)
+           (:flags         .   6)
+           (:from-or-to    .  40)
+           (:subject       .  nil)))
+#+END_SRC
+
+** Message
+头部展示的域：
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-view-fields '(:from :to :cc :subject :date :attachments))
+#+END_SRC
+
+aV在浏览器中打开：
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'mu4e-view-actions
+               '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+#+END_SRC
+
+更好的输入：
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'mu4e-compose-mode-hook 'orgstruct++-mode 'append)
+  (add-hook 'mu4e-compose-mode-hook 'turn-on-auto-fill 'append)
+  (add-hook 'mu4e-compose-mode-hook 'orgtbl-mode 'append)
+  (add-hook 'mu4e-compose-mode-hook
+            '(lambda () (setq fill-column 72))
+            'append)
+#+END_SRC
+* contexts
+#+BEGIN_SRC emacs-lisp
+
+  (let ((163-mailaddr "slege_tank@163.com")
+        (work-mailaddr "shuai.zhao@linkplay.com"))
+    (setq mu4e-contexts
+          `(,(make-mu4e-context
+              :name "work"
+              :match-func (lambda (msg)
+                            (when msg
+                              (mu4e-message-contact-field-matches msg
+                                                                  :to ,work-mailaddr)))
+              :vars `( (user-mail-address      . ,work-mailaddr)
+                       (user-full-name         . "shuai.zhao" )
+                       (smtpmail-smtp-server   . "smtp.exmail.qq.com")
+                       (mu4e-maildir-shortcuts .
+                                               ( (,(format "/%s/INBOX" work-mailaddr) . ?i)
+                                                 (,(format "/[%s]/.Sent Mail" work-mailaddr) . ?s)
+                                                 (,(format "/[%s]/.Trash" work-mailaddr) . ?t)
+                                                 (,(format "/[%s]/.All Mail" work-mailaddr) . ?a)))
+                       (mu4e-drafts-folder     . ,(format "/[%s]/.Drafts" work-mailaddr))
+                       (mu4e-sent-folder       . ,(format "/[%s]/.Sent Mail" work-mailaddr))
+                       (mu4e-trash-folder      . ,(format "/[%s]/.Trash" work-mailaddr) )
+                       (mu4e-refile-folder     . ,(format "/[%s]/.All Mail" work-mailaddr) )
+                       (mu4e-compose-signature . ,(concat
+                                                  "赵帅 (Shuai Zhao)\n"
+                                                  (format "Email: %s\n" work-mailaddr)
+                                                  "\n"))))
+            ,(make-mu4e-context
+              :name "163"
+              :match-func (lambda (msg)
+                            (when msg
+                              (mu4e-message-contact-field-matches msg
+                                                                  :to ,163-mailaddr)))
+              :vars `( (user-mail-address      . ,163-mailaddr)
+                       (user-full-name         . "slegetank" )
+                       (smtpmail-smtp-server   . "smtp.163.com")
+                       (mu4e-maildir-shortcuts .
+                                               ( (,(format "/%s/INBOX" 163-mailaddr) . ?i)
+                                                 (,(format "/[%s]/.Sent Mail" 163-mailaddr) . ?s)
+                                                 (,(format "/[%s]/.Trash" 163-mailaddr) . ?t)
+                                                 (,(format "/[%s]/.All Mail" 163-mailaddr) . ?a)))
+                       (mu4e-drafts-folder     . ,(format "/[%s]/.Drafts" 163-mailaddr))
+                       (mu4e-sent-folder       . ,(format "/[%s]/.Sent Mail" 163-mailaddr))
+                       (mu4e-trash-folder      . ,(format "/[%s]/.Trash" 163-mailaddr) )
+                       (mu4e-refile-folder     . ,(format "/[%s]/.All Mail" 163-mailaddr) )
+                       (mu4e-compose-signature .
+                                               ,(concat
+                                                "Thanks\n"
+                                                "slegetank\n")))))))
+#+END_SRC
+
+* send
+** org mode
+主旨就是使用
+org mode来编辑邮件：
+一篇不错的文章：
+http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
+另一篇：
+http://thomasf.github.io/solarized-css/test/org-hacks.html
+
+发送邮件时忽略原本的自动org转换，使用自定义方法：
+#+BEGIN_SRC emacs-lisp
+  (require 'org-mu4e)
+  (setq org-mu4e-convert-to-html nil)
+#+END_SRC
+
+编辑邮件时根据光标移动到头上还是内容上切换mode：
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'mu4e-compose-mode-hook 'org~mu4e-mime-switch-headers-or-body)
+#+END_SRC
+
+新建邮件时自动添加一些org mode的头部设置：
+#+BEGIN_SRC emacs-lisp
+  (defun custom-init-html-body ()
+    "Insert body end separator, so that org-mime can translate properly"
+    (save-excursion
+      (goto-char (point-min))
+      (re-search-forward mail-header-separator)
+      (let ((custom-header "SETUPFILE:"))
+        (when (not (re-search-forward custom-header nil t))
+          (insert "\n#+SETUPFILE: ~/.emacs.d/org-template/email.org\n")))))
+
+  (add-hook 'mu4e-compose-mode-hook 'custom-init-html-body)
+#+END_SRC
+
+转换mail-header-separator和mu4e-compose-signature之间的部分；这样附件就可以正确的发出去了：
+#+BEGIN_SRC emacs-lisp
+    (defun custom-htmlize-mail-body ()
+      "Only htmlize the body on top of the custom signature"
+      (require 'org)
+      (let (beg end)
+        (goto-char (point-min))
+        (re-search-forward mail-header-separator)
+        (beginning-of-line 2)
+        (setq beg (point))
+        (re-search-forward mu4e-compose-signature)
+        (end-of-line -1)
+        (setq end (point))
+
+        ;; select the region I want
+        (goto-char beg)
+        (set-mark-command nil)
+        (goto-char end)
+        (setq deactivate-mark nil)
+
+        ;; so that this function only translate the things in the region
+        (org-mime-htmlize)))
+
+    (defun custom-send-html-message ()
+      "Custom send html mail."
+      (interactive)
+      (custom-htmlize-mail-body)
+      (message-send-and-exit))
+#+END_SRC
+
+在头部和body中时，使用自定义的发送方法：
+#+BEGIN_SRC emacs-lisp
+  (require 'org-mime)
+
+  (defun custom-htmlize-and-send ()
+    "When in an org-mu4e-compose-org-mode message, htmlize and send it."
+    (interactive)
+    (if (or (member 'org~mu4e-mime-switch-headers-or-body post-command-hook) (eq major-mode 'mu4e-compose-mode))
+        (custom-send-html-message)
+      (call-interactively 'org-ctrl-c-ctrl-c)))
+
+  (define-key org-mode-map (kbd "C-c C-c") 'custom-htmlize-and-send)
+  (with-eval-after-load 'org-table
+    (add-hook 'orgtbl-mode-hook (lambda () (define-key orgtbl-mode-map (kbd "C-c C-c") 'custom-htmlize-and-send))))
+
+#+END_SRC
+
+当在body中时，使C-c C-a变得可以添加附件；将附件放到最后，使其不会被错误的转换为html：
+#+BEGIN_SRC emacs-lisp
+  (defun mml-attach-file--go-to-eob (orig-fun &rest args)
+    "Go to the end of buffer before attaching files."
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-max))
+        (apply orig-fun args))))
+
+  (advice-add 'mml-attach-file :around #'mml-attach-file--go-to-eob)
+
+    (defun custom-mail-attach ()
+      (interactive)
+      (if (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
+          (call-interactively 'mml-attach-file)
+        (org-attach)))
+
+    (add-hook 'org-mode-hook (lambda () (define-key org-mode-map (kbd "C-c C-a") 'custom-mail-attach)))
+
+  ;; (defun compose-attach-marked-files ()
+  ;;   "Compose mail and attach all the marked files from a dired buffer."
+  ;;   (interactive)
+  ;;   (let ((files (dired-get-marked-files)))
+  ;;     (compose-mail nil nil nil t)
+  ;;     (dolist (file files)
+  ;;           (if (file-regular-p file)
+  ;;               (mml-attach-file file
+  ;;                                (mm-default-file-encoding file)
+  ;;                                nil "attachment")
+  ;;             (message "skipping non-regular file %s" file)))))
+#+END_SRC
+
+** other
+q to quit:
+#+BEGIN_SRC emacs-lisp
+  (defun custom-org-mode-q-key ()
+    "q in normal mode only when in mail means quit"
+    (interactive)
+    (if (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
+        (kill-buffer (current-buffer))
+      (call-interactively 'evil-record-macro)))
+
+  (with-eval-after-load 'org-table
+    (add-hook 'orgtbl-mode-hook
+              (lambda ()
+                (evil-define-key 'normal orgtbl-mode-hook (kbd "q") (lambda ()
+                                                                      (interactive)
+                                                                      (org-kill-note-or-show-branches))))))
+
+  (evil-define-key 'normal mu4e-compose-mode-map (kbd "q") 'orgstruct-hijacker-org-kill-note-or-show-branches)
+  (evil-define-key 'normal org-mode-map (kbd "q") 'custom-org-mode-q-key)
+#+END_SRC
+
+发送之前进行确认，避免误发：
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'message-send-hook
+            (lambda ()
+              (unless (yes-or-no-p "Sure you want to send this?")
+                (signal 'quit nil))))
+#+END_SRC
+
+* css
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'org-mime-html-hook
+            (lambda ()
+              (org-mime-change-element-style
+               "pre" "margin-left: 2em;")))
+
+  (add-hook 'org-mime-html-hook
+            (lambda ()
+              (org-mime-change-element-style
+               "blockquote" "border-left: 2px solid gray; padding-left: 4px;")))
+#+END_SRC
+
+代码块暗色背景：
+#+BEGIN_SRC emacs-lisp
+  ;; uncomment to displyay src blocks with a dark background
+  ;; (add-hook 'org-mime-html-hook
+  ;;           (lambda ()
+  ;;             (org-mime-change-element-style
+  ;;              "pre" (format "color: %s; background-color: %s; padding: 0.5em;"
+  ;;                            "#E6E1DC" "#232323"))))
+#+END_SRC
+
+* keys
+#+BEGIN_SRC emacs-lisp
+  ;; (defun custom-mu4e-choose-account ()
+  ;;   "Choose mail account:"
+  ;;   (interactive)
+  ;;   (let ( (account (ivy-completing-read "Which account:" '("work" "163") nil t)) )
+  ;;     (funcall (intern (format "custom-mu4e-%s-config" account))))
+  ;;   (mu4e))
+
+  (evil-leader/set-key
+    "ma" 'mu4e)
 #+END_SRC

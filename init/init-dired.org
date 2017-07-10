@@ -132,14 +132,14 @@ dired会被加入recentf-list:
   (require 'ivy) ; swiper 7.0+ should be installed
 
   (defun custom-goto-recent-directory ()
-    "Open recent directory with dired"
+    "Open recent directory with dired; add z cmd list to this"
     (interactive)
     (unless recentf-mode (recentf-mode 1))
     (let ((collection
            (delete-dups
-            (append (mapcar 'file-name-directory recentf-list)
+            (append (mapcar (lambda (filename) (and (file-exists-p filename) (file-name-directory filename))) recentf-list)
                     (if (file-exists-p "~/.z") ; append top 20 dirs
-                        (mapcar (lambda (directory) (concat directory "/")) (split-string (shell-command-to-string "cat ~/.z | sort -r -n -k 2 -t \"|\" | cut -f 1 -d \"|\" | head -n 20") "\n" t)))))))
+                        (mapcar (lambda (directory) (and (file-exists-p directory) (concat directory "/"))) (split-string (shell-command-to-string "cat ~/.z | sort -r -n -k 2 -t \"|\" | cut -f 1 -d \"|\" | head -n 20") "\n" t)))))))
       (ivy-read "directories:" collection :action 'dired)))
 
   (defun custom-goto-finder-directory ()

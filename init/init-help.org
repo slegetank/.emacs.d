@@ -1,3 +1,4 @@
+* helper
 #+BEGIN_SRC emacs-lisp
   (setq custom-help-local-dir "/Users/hy/Work/github/MyBlogOrg/blog/")
   (setq custom-help-remote-url "http://blog.slegetank.com/article/%s?blogtype=%s")
@@ -37,9 +38,30 @@
     "Open remote help article"
     (interactive)
     (custom-help-open-article "remote"))
-
-  (evil-leader/set-key
-    "hl" 'custom-help-open-local-article
-    "hr" 'custom-help-open-remote-article)
 #+END_SRC
 
+* notes
+#+BEGIN_SRC emacs-lisp
+  (defun custom-note-init (filename)
+    "Init a note."
+    (interactive (list (read-string (format "Enter new note name: %s%s-" default-directory  (format-time-string "%Y%m%d" (current-time))))))
+    (if (string= "" filename)
+        (message "Need a filename")
+      (or (string-match "\\.org$" filename) (setq filename (concat (file-name-sans-extension filename) ".org")))
+      (progn (setq filepath (format "%s%s-%s" default-directory (format-time-string "%Y%m%d" (current-time)) filename))
+             (find-file filepath)
+             (let ((custom-org-buffer (get-file-buffer filepath))
+                   (user-name (s-trim-right (shell-command-to-string "git config --global user.name") ))
+                   (user-email (s-trim-right (shell-command-to-string "git config --global user.email") )))
+               (with-current-buffer custom-org-buffer
+                 (insert (format "#+TITLE: \n#+AUTHOR: %s\n#+EMAIL: %s\n#+DATE: %s\n" user-name user-email (format-time-string "<%Y-%m-%d %H:%M>" (current-time))))
+                 (goto-char 9))))))
+#+END_SRC
+
+* keys
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key
+    "hl" 'custom-help-open-local-article
+    "hr" 'custom-help-open-remote-article
+    "hn" 'custom-note-init)
+#+END_SRC

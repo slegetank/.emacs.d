@@ -46,17 +46,17 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
     ;; If src come from org mode, use these functions
     (defun custom-org-edit-src-exit ()
       (interactive)
-      (when (equal org-edit-src-from-org-mode 'org-mode)
+      (when (bound-and-true-p org-src-mode)
         (org-edit-src-exit)))
 
     (defun custom-org-edit-src-save ()
       (interactive)
-      (when (equal org-edit-src-from-org-mode 'org-mode)
+      (when (bound-and-true-p org-src-mode)
         (org-edit-src-save)))
 
     (defun custom-save-buffer ()
       (interactive)
-      (if (equal org-edit-src-from-org-mode 'org-mode)
+      (if (bound-and-true-p org-src-mode)
           (org-edit-src-save)
         (save-buffer)))
 

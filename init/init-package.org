@@ -7,68 +7,73 @@
   #+BEGIN_SRC emacs-lisp
     (when (>= emacs-major-version 24)
       (setq package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
-                               ("melpa" . "http://elpa.zilongshanren.com/melpa/"))))
+                               ("org" . "http://orgmode.org/elpa/")
+                               ("melpa" . "http://elpa.zilongshanren.com/melpa/")
+                               )))
   #+END_SRC
 
   2 然后，将要加载的库加入package-selected-packages里。package库将使用这个变量来确认用户需要安装哪些包。
   package-autoremove也依赖于这个列表来自动删除包。注意，这个变量是在25.1之后引入的。
   #+BEGIN_SRC emacs-lisp
     (setq package-selected-packages '(use-package
-                                      company
-                                      company-anaconda
-                                      company-tern
-                                      hungry-delete
-                                      swiper
-                                      counsel
-                                      smartparens
-                                      evil
-                                      evil-leader
-                                      evil-nerd-commenter
-                                      evil-surround
-                                      evil-matchit
-                                      evil-visualstar
-                                      evil-mu4e
-                                      exec-path-from-shell
-                                      popwin
-                                      reveal-in-osx-finder
-                                      iedit
-                                      helm-ag
-                                      window-numbering
-                                      which-key
-                                      slime
-                                      rainbow-delimiters
-                                      elpy
-                                      darkokai-theme
-                                      better-defaults
-                                      dired+
-                                      diredful
-                                      ;; dired-icon
-                                      recentf-ext
-                                      s
-                                      avy
-                                      evil-cleverparens
-                                      osx-dictionary
-                                      nyan-mode
-                                      magit
-                                      evil-magit
-                                      ;; js
-                                      js2-mode
-                                      web-mode
-                                      rjsx-mode
-                                      simple-httpd
-                                      skewer-mode
-                                      emmet-mode
-                                      git-gutter
-                                      mu4e-alert
-                                      mu4e-maildirs-extension
-                                      sr-speedbar
-                                      flycheck
-                                      yasnippet
-                                      react-snippets
-                                      impatient-mode
-                                      imenu-list
-                                      neotree
-                                      switch-buffer-functions))
+                                       company
+                                       company-anaconda
+                                       company-tern
+                                       hungry-delete
+                                       swiper
+                                       counsel
+                                       smartparens
+                                       evil
+                                       evil-leader
+                                       evil-nerd-commenter
+                                       evil-surround
+                                       evil-matchit
+                                       evil-visualstar
+                                       evil-mu4e
+                                       exec-path-from-shell
+                                       popwin
+                                       reveal-in-osx-finder
+                                       iedit
+                                       helm-ag
+                                       window-numbering
+                                       which-key
+                                       slime
+                                       rainbow-delimiters
+                                       elpy
+                                       solarized-theme
+                                       better-defaults
+                                       dired+
+                                       diredful
+                                       ;; dired-icon
+                                       recentf-ext
+                                       s
+                                       avy
+                                       evil-cleverparens
+                                       osx-dictionary
+                                       nyan-mode
+                                       magit
+                                       evil-magit
+                                       ;; js
+                                       js2-mode
+                                       web-mode
+                                       rjsx-mode
+                                       simple-httpd
+                                       skewer-mode
+                                       emmet-mode
+                                       git-gutter
+                                       mu4e-alert
+                                       mu4e-maildirs-extension
+                                       sr-speedbar
+                                       flycheck
+                                       yasnippet
+                                       react-snippets
+                                       impatient-mode
+                                       imenu-list
+                                       neotree
+                                       switch-buffer-functions
+                                       auto-highlight-symbol
+                                       json-mode
+                                       org-plus-contrib))
   #+END_SRC
   3 最后，检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
@@ -104,7 +109,7 @@
 ** evil
 vim
 manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
-***  evil-leader
+*** evil-leader
 快捷键
 M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
@@ -119,6 +124,8 @@ M-x customize-group -> 默认触发为\，改为SPC
     "ff" 'find-file
     "bb" 'switch-to-buffer
     "bk" 'kill-buffer
+    "bp" 'previous-buffer
+    "bn" 'next-buffer
     ;; project
     "pf" 'counsel-git
     "ps" 'helm-do-ag-project-root
@@ -246,6 +253,8 @@ M-x customize-group -> 默认触发为\，改为SPC
 ** avy
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c g") 'avy-goto-char-timer)
+
+  (evil-leader/set-key "gg" 'avy-goto-char-timer)
 #+END_SRC
 
 ** exec-path-from-shell
@@ -268,7 +277,17 @@ C-c o 打开当前文件所在的Finder;
 ** helm-ag
 工程内搜索工具。C-c C-e编辑结果。
 #+BEGIN_SRC emacs-lisp
-  ;;(global-set-key (kbd "C-c p s") 'helm-do-ag-project-root) 
+  (custom-set-variables
+   '(helm-follow-mode-persistent t))
+
+  (use-package helm-ag
+    :ensure t
+    :config
+    (define-key evil-motion-state-map (kbd "s-F") 'helm-do-ag-project-root)
+    (define-key evil-motion-state-map (kbd "s-f") 'helm-do-ag-this-file)
+    (define-key helm-do-ag-map (kbd "C-j") 'helm-next-line)
+    (define-key helm-do-ag-map (kbd "C-k") 'helm-previous-line)
+    )
 #+END_SRC
 ** window-numbering
 #+BEGIN_SRC emacs-lisp
@@ -295,10 +314,6 @@ C-c o 打开当前文件所在的Finder;
 ** rainbow-delimiters
    #+BEGIN_SRC emacs-lisp
      (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
-   #+END_SRC
-** darkokai-theme
-   #+BEGIN_SRC emacs-lisp
-     (load-theme 'darkokai t)
    #+END_SRC
 ** slime
    #+BEGIN_SRC emacs-lisp
@@ -481,4 +496,24 @@ C-c o 打开当前文件所在的Finder;
               (neotree-dir project-dir)
               (neotree-find file-name))
           (message "Buffer is invalid.")))))
+#+END_SRC
+** auto-highlight-symbol
+#+BEGIN_SRC emacs-lisp
+  (require 'auto-highlight-symbol)
+  (global-auto-highlight-symbol-mode)
+
+  (use-package auto-highlight-symbol
+                                          ; this only installs it for programming mode derivatives; you can also make it global...
+    :init
+    (add-hook 'org-mode-hook 'auto-highlight-symbol-mode)
+    (add-hook 'rjsx-mode-hook 'auto-highlight-symbol-mode)
+    (add-hook 'auto-highlight-symbol-mode-hook (lambda ()
+                                                 (define-key evil-normal-state-map (kbd "C-p") 'ahs-backward)
+                                                 (define-key evil-normal-state-map (kbd "C-n") 'ahs-forward)))
+    :config
+    (setq ahs-idle-interval 1.0) ;; if you want instant highlighting, set it to 0, but I find it annoying
+    (setq ahs-default-range 'ahs-range-whole-buffer) ;; highlight every occurence in buffer
+    )
+
+
 #+END_SRC

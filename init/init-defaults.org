@@ -84,7 +84,22 @@ brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件�
 
 emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页之后cursor位置不变，则可以将其设为t
 #+BEGIN_SRC emacs-lisp
-  (setq scroll-preserve-screen-position t) 
+  (setq scroll-preserve-screen-position t)
+#+END_SRC
+
+支持search粘贴和默认搜索选中
+#+BEGIN_SRC emacs-lisp
+    (define-key isearch-mode-map (kbd "s-v") 'isearch-yank-pop)
+
+  (defun custom-isearch-with-region ()
+    "Use region as the isearch text."
+    (when mark-active
+      (let ((region (filter-buffer-substring (region-beginning) (1+ (region-end)))))
+        (deactivate-mark)
+        (isearch-push-state)
+        (isearch-yank-string region))))
+
+  (add-hook 'isearch-mode-hook 'custom-isearch-with-region)
 #+END_SRC
 
 ** trailing space
@@ -99,7 +114,16 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
   (defun no-trailing-whitespace ()
     (setq show-trailing-whitespace nil))
 
-  (setq no-trailing-modes '(minibuffer-setup-hook eww-mode-hook ielm-mode-hook gdb-mode-hook help-mode-hook artist-mode-hook term-mode-hook))
+  (setq no-trailing-modes '(minibuffer-setup-hook
+                            eww-mode-hook
+                            ielm-mode-hook
+                            gdb-mode-hook
+                            help-mode-hook
+                            artist-mode-hook
+                            term-mode-hook
+                            mu4e-view-mode-hook
+                            mu4e-org-mode-hook
+                            mu4e-main-mode-hook))
   (dolist (element no-trailing-modes nil)
     (add-hook element 'no-trailing-whitespace))
 #+END_SRC

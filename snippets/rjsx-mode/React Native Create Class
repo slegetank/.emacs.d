@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: React Create Class
-# key: rcc
+# name: React Native Create Class
+# key: rncc
 # --
 class $0 extends React.Component {
     constructor(props) {
@@ -11,9 +11,8 @@ class $0 extends React.Component {
 
     render() {
         return (
-            <div>
-            </div>
+            <View>
+            </View>
         );
     }
 }
-
