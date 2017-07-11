@@ -391,7 +391,9 @@ C-c o 打开当前文件所在的Finder;
   (with-eval-after-load 'mu4e
     ;; (mu4e-alert-set-default-style 'notifier)
     ;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-    (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display))
+    (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+    (setq mu4e-alert-interesting-mail-query "flag:unread maildir:/shuai.zhao@linkplay.com/INBOX"))
+
 #+END_SRC
 
 ** mu4e-maildirs-extension
@@ -401,8 +403,8 @@ C-c o 打开当前文件所在的Finder;
     (mu4e-maildirs-extension)
     (evil-define-key 'motion mu4e-main-mode-map (kbd "<tab>") 'mu4e-maildirs-extension-toggle-maildir-at-point))
 
-    ;; (setq mu4e-maildirs-extension-custom-list '("/slege_tank@163.com/INBOX"))
-    ;; (setq mu4e-maildirs-extension-default-collapse-level 1)
+    ;;(setq mu4e-maildirs-extension-custom-list '("/slege_tank@163.com/INBOX"))
+    ;;(setq mu4e-maildirs-extension-default-collapse-level 2)
 #+END_SRC
 ** flycheck
 #+BEGIN_SRC emacs-lisp

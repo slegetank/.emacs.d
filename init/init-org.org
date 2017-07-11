@@ -66,6 +66,25 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
       "eq" 'custom-org-edit-src-exit
       "es" 'custom-org-edit-src-save)
   #+END_SRC
+* Drag file
+分发处理右键拖拽
+#+BEGIN_SRC emacs-lisp
+  (defun custom-org-drag-file-method (event)
+    (interactive "e")
+    "deal with mouse drag file into org"
+    (x-focus-frame nil)
+    (let* ((payload (car (last event)))
+           (type (car payload))
+           (fromname (cadr payload)))
+      (when (and (eq 'drag-n-drop (car event))
+                  (eq 'file type))
+        (cond ((and (fboundp 'custom-blog-drag-image) (custom-org-blog-p)) (custom-blog-drag-image fromname)) ; blog
+              ((and (fboundp 'custom-mail-drag-attach) (custom-org-mail-p)) (custom-mail-drag-attach fromname)) ; mail
+              (t (message "Found no deal method; Abort"))))))
+
+  (define-key org-mode-map (kbd "<drag-n-drop>") 'custom-org-drag-file-method)
+#+END_SRC
+
 * keys
 #+BEGIN_SRC emacs-lisp
   (defun my-org-config ()
