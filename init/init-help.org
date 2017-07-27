@@ -11,6 +11,7 @@
                                    ("s" "https://github.com/magnars/s.el" "Emacs")
                                    ("RN-github" "https://github.com/jondot/awesome-react-native" "RN")
                                    ("emmet" "https://github.com/smihica/emmet-mode" "js")
+                                   ("material-ui" "http://www.material-ui.com/#/" "react")
                                    ))
 
   (defun custom-help-open-article (remote)

@@ -89,17 +89,30 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
 
 支持search粘贴和默认搜索选中
 #+BEGIN_SRC emacs-lisp
-    (define-key isearch-mode-map (kbd "s-v") 'isearch-yank-pop)
+  ;; if use no simpleclip, then use isearch-yank-pop
+  (define-key isearch-mode-map (kbd "s-v") 'custom-isearch-yank-pop)
 
-  (defun custom-isearch-with-region ()
-    "Use region as the isearch text."
-    (when mark-active
-      (let ((region (filter-buffer-substring (region-beginning) (1+ (region-end)))))
-        (deactivate-mark)
-        (isearch-push-state)
-        (isearch-yank-string region))))
+  (defun custom-isearch-yank-pop ()
+    "For paste in minibuffer isearch"
+    (interactive)
+    (deactivate-mark)
+    (isearch-push-state)
+    (isearch-yank-string (simpleclip-get-contents)))
 
-  (add-hook 'isearch-mode-hook 'custom-isearch-with-region)
+    (defun custom-isearch-with-region ()
+      "Use region as the isearch text."
+      (when mark-active
+        (let ((region (filter-buffer-substring (region-beginning) (1+ (region-end)))))
+          (deactivate-mark)
+          (isearch-push-state)
+          (isearch-yank-string region))))
+
+    (add-hook 'isearch-mode-hook 'custom-isearch-with-region)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (require 'server)
+  (unless (server-running-p) (server-start))
 #+END_SRC
 
 ** trailing space

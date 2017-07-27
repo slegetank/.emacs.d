@@ -26,18 +26,20 @@
             'face (list :background (match-string-no-properties 0)))))))
     (font-lock-flush))
 
-  (add-hook 'rjsx-mode-hook 'xah-syntax-color-hex)
   (add-hook 'web-mode-hook 'xah-syntax-color-hex)
+  (add-hook 'jsx-mode-hook 'xah-syntax-color-hex)
 #+END_SRC
-* rjsx-mode
+* jsx-mode
 #+BEGIN_SRC emacs-lisp
-  (require 'rjsx-mode)
-  (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx$" . jsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.js$" . jsx-mode))
+  (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
 #+END_SRC
 * web-mode
 #+BEGIN_SRC emacs-lisp
   (require 'web-mode)
+  ;; (add-to-list 'auto-mode-alist '("\\.js$" . web-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
@@ -84,10 +86,9 @@
 #+END_SRC
 * tern
 #+BEGIN_SRC emacs-lisp
-  (evil-define-key 'normal rjsx-mode-map (kbd "s-.") 'tern-find-definition)
+  (evil-define-key 'normal jsx-mode-map (kbd "s-.") 'tern-find-definition)
   (evil-define-key 'normal global-map (kbd "s-,") (lambda ()))
-  (evil-define-key 'normal rjsx-mode-map (kbd "s-,") 'tern-pop-find-definition)
-
+  (evil-define-key 'normal jsx-mode-map (kbd "s-,") 'tern-pop-find-definition)
 #+END_SRC
 * react
 ** init env
@@ -137,7 +138,7 @@
   (defun custom-save-hook-refresh-browser ()
     "Add refresh html to save hook."
     (let (current-frame (select-frame))
-      (when (or (equal major-mode 'web-mode) (equal major-mode 'rjsx-mode))
+      (when (or (equal major-mode 'web-mode) (equal major-mode 'jsx-mode))
         (custom-browse-this-html-and-back))))
 
   (defun custom-toggle-html-auto-refresh ()

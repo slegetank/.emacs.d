@@ -137,7 +137,7 @@ dired会被加入recentf-list:
     (unless recentf-mode (recentf-mode 1))
     (let ((collection
            (delete-dups
-            (append (mapcar (lambda (filename) (and (file-exists-p (file-name-directory filename)) (file-name-directory filename))) recentf-list)
+            (append (delq nil (mapcar (lambda (filename) (and (file-exists-p (file-name-directory filename)) (file-name-directory filename))) recentf-list))
                     (if (file-exists-p "~/.z") ; append top 20 dirs
                         (mapcar (lambda (directory) (and (file-exists-p directory) (concat directory "/"))) (split-string (shell-command-to-string "cat ~/.z | sort -r -n -k 2 -t \"|\" | cut -f 1 -d \"|\" | head -n 20") "\n" t)))))))
       (ivy-read "directories:" collection :action 'dired)))

@@ -28,3 +28,5 @@ ath
 network-security.data
 
 var/pcache/ucs-utils
+\#*
+.tern-port

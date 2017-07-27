@@ -3,6 +3,9 @@
   (require 'mu4e)
   (setq mu4e-maildir "~/.Mail")
   (setq mail-user-agent 'mu4e-user-agent)
+
+  ;; disable minibuffer message
+(setq mu4e-hide-index-messages t)
 #+END_SRC
 
 定义main view中U所调用的更新本地邮件的命令：
@@ -18,7 +21,6 @@
 对富文本html的处理：
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-view-show-images t
-        mu4e-show-images t
         mu4e-view-image-max-width 800)
   (when (fboundp 'imagemagick-register-types)
     (imagemagick-register-types))
@@ -39,7 +41,7 @@ message compose view's head format:
 
 附件保存地址：
 #+BEGIN_SRC emacs-lisp
-  (setq mu4e-attachment-dir  "~/MU4EMail/")
+  (setq mu4e-attachment-dir  "~/MU4EMail")
 #+END_SRC
 
 发送配置：
@@ -93,6 +95,25 @@ header list时间戳：
   (setq  mu4e-headers-date-format "%Y-%m-%d %H:%M")
 #+END_SRC
 
+自定义不同thread的不同背景色，更好的显示：
+#+BEGIN_SRC emacs-lisp
+  (defface custom-mu4e~single-background-face
+    '((t :background "#1D417C"
+         ))
+    "face for line which thread is single number")
+
+  (defun custom-mu4e~headers-line-apply-thread-face (msg line)
+    "Different background color for different thread"
+    (let ((thread (plist-get (mu4e-message-field msg :thread) :path)))
+      (when (fboundp 'add-face-text-property)
+        ;; (message "%s %s %d" thread (mu4e-message-field msg :subject) (string-to-number (s-left 3 thread) 16))
+        (when (eq (% (string-to-number (s-left 3 thread) 16) 2) 1)
+          (add-face-text-property 0 (length line) 'custom-mu4e~single-background-face t line)))
+      line))
+
+  (add-to-list 'mu4e~headers-line-handler-functions 'custom-mu4e~headers-line-apply-thread-face)
+#+END_SRC
+
 headers view列表域及其宽度，nil表示无限制：
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-headers-fields
@@ -103,25 +124,51 @@ headers view列表域及其宽度，nil表示无限制：
            (:subject       .  nil)))
 #+END_SRC
 
+更好的headerview flag:
+#+BEGIN_SRC emacs-lisp
+  (defconst mu4e-headers-from-or-to-prefix '("" . ""))
+  (setq mu4e-use-fancy-chars t)
+  (setq mu4e-headers-has-child-prefix    '("+"  . "+"))
+  (setq mu4e-headers-empty-parent-prefix '("-"  . "-"))
+  (setq mu4e-headers-first-child-prefix  '("\\" . "\\"))
+  (setq mu4e-headers-duplicate-prefix    '("="  . "="))
+  (setq mu4e-headers-default-prefix      '("|"  . "|"))
+  (setq mu4e-headers-unread-mark         '("u"  . ""))
+  (setq mu4e-headers-attach-mark         '("a"  . "a"))
+  (setq mu4e-headers-flagged-mark        '("F"  . "F"))
+  (setq mu4e-headers-new-mark            '("N"  . "*"))
+  (setq mu4e-headers-passed-mark         '("P"  . "»"))
+  (setq mu4e-headers-replied-mark        '("R"  . "«"))
+  (setq mu4e-headers-seen-mark           '("S"  . ""))
+  (setq mu4e-headers-trashed-mark        '("T"  . ""))
+#+END_SRC
+
 h列表页面自定义一些快捷键（forward不知道为什么丢了）:
 #+BEGIN_SRC emacs-lisp
   (add-hook 'mu4e-headers-mode-hook (lambda ()
                                       (evil-define-key 'motion mu4e-headers-mode-map (kbd "F") 'mu4e-compose-forward)
                                       (evil-define-key 'motion mu4e-headers-mode-map (kbd "+") 'mu4e-headers-mark-for-flag)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "-") 'mu4e-headers-mark-for-unflag)))
+                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "-") 'mu4e-headers-mark-for-unflag)
+                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "E") 'mu4e-compose-edit)))
 #+END_SRC
 ** Message
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'message-mode-hook
+            (lambda ()
+              (font-lock-add-keywords nil
+                                      '(("^[ \t]*>[ \t]*>[ \t]*>.*$"
+                                         (0 'message-multiply-quoted-text-face))
+                                        ("^[ \t]*>[ \t]*>.*$"
+                                         (0 'message-double-quoted-text-face))))))
+#+END_SRC
+
 tab to jump link:
 #+BEGIN_SRC emacs-lisp
   (add-hook 'mu4e-view-mode-hook
             (lambda ()
+              (evil-define-key 'motion mu4e-view-mode-map (kbd "g") 'mu4e-view-go-to-url)
               (evil-define-key 'motion mu4e-view-mode-map (kbd "<tab>") 'shr-next-link)
-              (evil-define-key 'motion mu4e-view-mode-map (kbd "<backtab>") 'shr-previous-link)))
-#+END_SRC
-
-更好的换行：
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'mu4e-view-mode-hook 'visual-line-mode)
+              (evil-define-key 'motion mu4e-view-mode-map (kbd "<S-tab>") 'shr-previous-link)))
 #+END_SRC
 
 头部展示的域：
@@ -142,12 +189,14 @@ aV在浏览器中打开：
 
 更好的输入：
 #+BEGIN_SRC emacs-lisp
+  (defun custom-mu4e-no-auto-fill ()
+    "Turn off auto-fill-mode."
+    (auto-fill-mode -1))
+
+  (add-hook 'mu4e-compose-mode-hook 'custom-mu4e-no-auto-fill)
+
   (add-hook 'mu4e-compose-mode-hook 'orgstruct++-mode 'append)
-  (add-hook 'mu4e-compose-mode-hook 'turn-on-auto-fill 'append)
   (add-hook 'mu4e-compose-mode-hook 'orgtbl-mode 'append)
-  (add-hook 'mu4e-compose-mode-hook
-            '(lambda () (setq fill-column 72))
-            'append)
 #+END_SRC
 * contexts
 默认第一个context
@@ -221,14 +270,20 @@ aV在浏览器中打开：
                                                 "slegetank\n")))))))
 #+END_SRC
 
-* org mode
+* send
+** org mode
 主旨就是使用org mode来编辑邮件：
 一篇不错的文章：
 http://kitchingroup.cheme.cmu.edu/blog/2016/10/29/Sending-html-emails-from-org-mode-with-org-mime/
 另一篇：
 http://thomasf.github.io/solarized-css/test/org-hacks.html
 
-判断当前是否在编辑邮件：
+标志位，用来区分是否使用org-mode编辑邮件：
+#+BEGIN_SRC emacs-lisp
+  (defvar custom-compose-org-flag nil "Flag compose htmlize of plain mail")
+#+END_SRC
+
+判断当前的org-mode是否在编辑邮件：
 #+BEGIN_SRC emacs-lisp
   (defun custom-org-mail-p ()
     "judge if mail org mode"
@@ -242,11 +297,6 @@ http://thomasf.github.io/solarized-css/test/org-hacks.html
   (setq org-mu4e-convert-to-html nil)
 #+END_SRC
 
-编辑邮件时根据光标移动到头上还是内容上切换mode：
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'mu4e-compose-mode-hook 'org~mu4e-mime-switch-headers-or-body)
-#+END_SRC
-
 新建邮件时自动添加一些org mode的头部设置：
 #+BEGIN_SRC emacs-lisp
   (defun custom-init-html-body ()
@@ -257,8 +307,6 @@ http://thomasf.github.io/solarized-css/test/org-hacks.html
       (let ((custom-header "SETUPFILE:"))
         (when (not (re-search-forward custom-header nil t))
           (insert "\n#+SETUPFILE: ~/.emacs.d/org-template/email.org\n")))))
-
-  (add-hook 'mu4e-compose-mode-hook 'custom-init-html-body)
 #+END_SRC
 
 转换mail-header-separator和mu4e-compose-signature之间的部分；这样附件就可以正确的发出去了：
@@ -288,9 +336,6 @@ http://thomasf.github.io/solarized-css/test/org-hacks.html
 在body中C-c C-c时，使用`mu4e-compose-mode的方法：
 #+BEGIN_SRC emacs-lisp
   (require 'org-mime)
-
-  (add-hook 'message-send-hook 'custom-htmlize-mail-body)
-  (add-hook 'message-send-hook (lambda () (add-hook 'mu4e-compose-mode-hook 'org~mu4e-mime-switch-headers-or-body)) t)
 
   (defun custom-htmlize-and-send ()
     "When in an org-mu4e-compose-org-mode message, htmlize and send it."
@@ -352,17 +397,46 @@ q to quit:
   (evil-define-key 'normal mu4e-compose-mode-map (kbd "q") 'orgstruct-hijacker-org-kill-note-or-show-branches)
   (evil-define-key 'normal org-mode-map (kbd "q") 'custom-org-mode-q-key)
 #+END_SRC
-
-发送之前进行确认，避免误发：
+** htmlize/plain
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'message-send-hook
-            (lambda ()
-              (unless (yes-or-no-p "Sure you want to send this?")
-                (with-current-buffer (current-buffer)
-                  (add-hook 'mu4e-compose-mode-hook 'org~mu4e-mime-switch-headers-or-body)
-                  (mu4e-compose-mode)
-                  (undo-tree-undo))
-                (signal 'quit nil))))
+  (defun custom-mu4e-ask-before-send ()
+    "ask before send"
+    (unless (yes-or-no-p "Sure you want to send this?")
+      (when custom-compose-org-flag
+        (with-current-buffer (current-buffer)
+          (add-hook 'mu4e-compose-mode-hook 'org~mu4e-mime-switch-headers-or-body)
+          (mu4e-compose-mode)
+          (undo-tree-undo)))
+      (signal 'quit nil)))
+
+  (add-hook 'message-send-hook 'custom-mu4e-ask-before-send)
+
+  (defun custom-mu4e-after-send-method ()
+    "deal with the after send info"
+    (add-hook 'mu4e-compose-mode-hook 'org~mu4e-mime-switch-headers-or-body))
+
+  (defun custom-compose-html-plain-config ()
+    (if custom-compose-org-flag
+        (progn
+          (message "htmlize")
+          (add-hook 'mu4e-compose-mode-hook 'org~mu4e-mime-switch-headers-or-body)
+          (add-hook 'mu4e-compose-mode-hook 'custom-init-html-body)
+          (add-hook 'message-send-hook 'custom-htmlize-mail-body)
+          (add-hook 'message-send-hook 'custom-mu4e-after-send-method t))
+      (progn
+        (message "plain")
+        (remove-hook 'mu4e-compose-mode-hook 'org~mu4e-mime-switch-headers-or-body)
+        (remove-hook 'mu4e-compose-mode-hook 'custom-init-html-body)
+        (remove-hook 'message-send-hook 'custom-htmlize-mail-body)
+        (remove-hook 'message-send-hook 'custom-mu4e-after-send-method))))
+
+  (custom-compose-html-plain-config)
+
+  (defun custom-compose-html-plain-config-switch ()
+    "switch htmlize/plain mail"
+    (interactive)
+    (setq custom-compose-org-flag (not custom-compose-org-flag))
+    (custom-compose-html-plain-config))
 #+END_SRC
 
 * css
@@ -390,8 +464,36 @@ q to quit:
 
 * search
 http://www.djcbsoftware.nl/code/mu/cheatsheet.html
+* contacts
+#+BEGIN_SRC emacs-lisp
+  (defun custom-select-and-insert-contact (&optional start)
+    (interactive)
+    (let ((mail-abbrev-mode-regexp mu4e~compose-address-fields-regexp)
+          (eoh ;; end-of-headers
+           (save-excursion
+             (goto-char (point-min))
+             (search-forward-regexp mail-header-separator nil t))))
+      (when (and eoh (> eoh (point)) (mail-abbrev-in-expansion-header-p))
+        (let* ((end (point))
+               (start
+                (or start
+                    (save-excursion
+                      (re-search-backward "\\(\\`\\|[\n:,]\\)[ \t]*")
+                      (goto-char (match-end 0))
+                      (point))))
+               (contact
+                (ido-completing-read "Contact: "
+                                     mu4e~contacts
+                                     nil
+                                     nil
+                                     (buffer-substring-no-properties start end))))
+          (unless (equal contact "")
+            (kill-region start end)
+            (insert contact))))))
+#+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
-    "ma" 'mu4e)
+    "ma" 'mu4e
+    "mc" 'custom-compose-html-plain-config-switch)
 #+END_SRC
