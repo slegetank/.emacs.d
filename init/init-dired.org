@@ -1,20 +1,7 @@
-* Packages
-** dired+
-#+BEGIN_SRC emacs-lisp
-  ; only use one buffer
-  (diredp-toggle-find-file-reuse-dir 1)
-#+END_SRC
-** dired-icon
-#+BEGIN_SRC emacs-lisp
-  ;; (add-hook 'dired-mode-hook 'dired-icon-mode)
-#+END_SRC
-** diredful
-#+BEGIN_SRC emacs-lisp
-  (diredful-mode 1)
-#+END_SRC
 * Defaults
 better defaults
 #+BEGIN_SRC emacs-lisp
+  (require 'dired-x)
   (setq dired-recursive-copies 'always)
   (setq dired-recursive-deletes 'always)
   (setq dired-dwim-target t)
@@ -55,6 +42,22 @@ dired会被加入recentf-list:
   (add-hook 'kill-buffer-hook 'recentd-track-closed-file)
 #+END_SRC
 
+* Packages
+** dired+
+#+BEGIN_SRC emacs-lisp
+  (require-package 'dired+)
+  ;; only use one buffer
+  (diredp-toggle-find-file-reuse-dir 1)
+#+END_SRC
+** diryed-icon
+#+BEGIN_SRC emacs-lisp
+  ;; (add-hook 'dired-mode-hook 'dired-icon-mode)
+#+END_SRC
+** diredful
+#+BEGIN_SRC emacs-lisp
+  (require-package 'diredful)
+  (diredful-mode 1)
+#+END_SRC
 * Inside
 #+BEGIN_SRC emacs-lisp
     (defun custom-dired-open-file-with-osx ()

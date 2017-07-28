@@ -167,6 +167,11 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
   (setf recentf-keep '(keep-default-old-and-visible-recentf-p))
 #+END_SRC
 
+* better-defaults
+修正Emacs默认配置的一些不合理配置。
+#+BEGIN_SRC emacs-lisp
+  (require-package 'better-defaults)
+#+END_SRC
 * TRAMP
 #+BEGIN_SRC emacs-lisp
   (tramp-set-completion-function "sshx"

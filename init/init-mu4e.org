@@ -77,17 +77,27 @@ message compose view's head format:
   (setq gnus-dired-mail-mode 'mu4e-user-agent)
   (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
 #+END_SRC
+* evil
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-mu4e)
+  (with-eval-after-load 'mu4e
+    (require 'evil-mu4e)
+    )
+#+END_SRC
 * view
 ** Main view
 u for quick update; U for total update; 仅仅mu4e-update-index并不是很好用
 #+BEGIN_SRC emacs-lisp
-    (evil-define-key 'motion mu4e-main-mode-map (kbd "u") (lambda () (interactive)
-                                                            (setq mu4e-get-mail-command "offlineimap -q")
-                                                            (mu4e-update-mail-and-index nil)
-                                                            (setq mu4e-get-mail-command "offlineimap")))
-    (evil-define-key 'motion mu4e-main-mode-map (kbd "U") (lambda () (interactive)
-                                                            (setq mu4e-get-mail-command "offlineimap")
-                                                            (mu4e-update-mail-and-index nil)))
+  (defun custom-mu4e-update-all ()
+    (interactive)
+    (setq mu4e-get-mail-command "offlineimap")
+    (mu4e-update-mail-and-index nil))
+
+  (evil-define-key 'motion mu4e-main-mode-map (kbd "u") (lambda () (interactive)
+                                                          (setq mu4e-get-mail-command "offlineimap -q")
+                                                          (mu4e-update-mail-and-index nil)
+                                                          (setq mu4e-get-mail-command "offlineimap")))
+  (evil-define-key 'motion mu4e-main-mode-map (kbd "U") 'custom-mu4e-update-all)
 #+END_SRC
 ** Headers view
 header list时间戳：
@@ -490,6 +500,29 @@ http://www.djcbsoftware.nl/code/mu/cheatsheet.html
           (unless (equal contact "")
             (kill-region start end)
             (insert contact))))))
+#+END_SRC
+* packages
+** mu4e-alert
+#+BEGIN_SRC emacs-lisp
+  (require-package 'mu4e-alert)
+  (with-eval-after-load 'mu4e
+    ;; (mu4e-alert-set-default-style 'notifier)
+    ;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+    (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+    (setq mu4e-alert-interesting-mail-query "flag:unread maildir:/shuai.zhao@linkplay.com/INBOX"))
+
+#+END_SRC
+
+** mu4e-maildirs-extension
+#+BEGIN_SRC emacs-lisp
+  (require-package 'mu4e-maildirs-extension)
+  (with-eval-after-load 'mu4e
+    (require 'mu4e-maildirs-extension)
+    (mu4e-maildirs-extension)
+    (evil-define-key 'motion mu4e-main-mode-map (kbd "<tab>") 'mu4e-maildirs-extension-toggle-maildir-at-point))
+
+    ;;(setq mu4e-maildirs-extension-custom-list '("/slege_tank@163.com/INBOX"))
+    ;;(setq mu4e-maildirs-extension-default-collapse-level 2)
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp

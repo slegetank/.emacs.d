@@ -29,15 +29,22 @@
   (add-hook 'web-mode-hook 'xah-syntax-color-hex)
   (add-hook 'jsx-mode-hook 'xah-syntax-color-hex)
 #+END_SRC
+* packages
+#+BEGIN_SRC emacs-lisp
+  (require-package 'js2-mode)
+  (require-package 'simple-httpd)
+#+END_SRC
+
 * jsx-mode
 #+BEGIN_SRC emacs-lisp
+  (require-package 'jsx-mode)
   (add-to-list 'auto-mode-alist '("\\.jsx$" . jsx-mode))
   (add-to-list 'auto-mode-alist '("\\.js$" . jsx-mode))
   (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
 #+END_SRC
 * web-mode
 #+BEGIN_SRC emacs-lisp
-  (require 'web-mode)
+  (require-package 'web-mode)
   ;; (add-to-list 'auto-mode-alist '("\\.js$" . web-mode))
   ;; (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
@@ -54,6 +61,30 @@
     (setq web-mode-code-indent-offset 4)
     (setq web-mode-attr-indent-offset 4))
   (add-hook 'web-mode-hook  'my-web-mode-hook)
+#+END_SRC
+* emmet-mode
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'web-mode-hook 'emmet-mode)
+  (add-hook 'jsx-mode-hook 'emmet-mode)
+#+END_SRC
+* prettier-js
+#+BEGIN_SRC emacs-lisp
+  (require-package 'prettier-js)
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'web-mode-hook 'prettier-js-mode)
+  (add-hook 'jsx-mode-hook 'prettier-js-mode)
+  (setq prettier-js-args '(
+                           "--trailing-comma" "all"
+                           "--bracket-spacing" "false"
+                           ))
+  (defun enable-minor-mode (my-pair)
+    "Enable minor mode if filename match the regexp.  MY-PAIR is a cons cell (regexp . minor-mode)."
+    (if (buffer-file-name)
+        (if (string-match (car my-pair) buffer-file-name)
+            (funcall (cdr my-pair)))))
+  (add-hook 'jsx-mode-hook #'(lambda ()
+                               (enable-minor-mode
+                                '("\\.js?\\'" . prettier-js-mode))))
 #+END_SRC
 * eslint
 安装完eslint之后，要disable掉默认的flycheck默认的jshint、jsonlist，并且active eslint:

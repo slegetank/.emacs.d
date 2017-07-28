@@ -1,19 +1,33 @@
-这个文件用来存储所有第三方库的相关配置。
+这个文件用来存储所有第三方库的相关配置
 
 * 核心
-  这里使用package包来管理第三方库。注意，25.1版本之后才具有这个强大的能力。
+源设为国内的，此处使用子龙山人提供的源；另外需要org mode的源：
+#+BEGIN_SRC emacs-lisp
+(when (>= emacs-major-version 24)
+    (setq package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
+                            ("org" . "http://orgmode.org/elpa/")
+                            )))
+#+END_SRC
 
-  1 首先，将安装源设为国内的，此处使用子龙山人提供的源：
-  #+BEGIN_SRC emacs-lisp
-    (when (>= emacs-major-version 24)
-      (setq package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
-                               ("org" . "http://orgmode.org/elpa/")
-                               ("melpa" . "http://elpa.zilongshanren.com/melpa/")
-                               )))
-  #+END_SRC
+更好的包管理；从purcell处拿过来直接用，避免package都写在一堆
+#+BEGIN_SRC emacs-lisp
+  (defun require-package (package &optional min-version no-refresh)
+    "Install given PACKAGE, optionally requiring MIN-VERSION.
+  If NO-REFRESH is non-nil, the available package lists will not be
+  re-downloaded in order to locate PACKAGE."
+    (if (package-installed-p package min-version)
+        t
+      (if (or (assoc package package-archive-contents) no-refresh)
+          (if (boundp 'package-selected-packages)
+              ;; Record this as a package the user installed explicitly
+              (package-install package nil)
+            (package-install package))
+        (progn
+          (package-refresh-contents)
+          (require-package package min-version t)))))
+#+END_SRC
 
-  2 然后，将要加载的库加入package-selected-packages里。package库将使用这个变量来确认用户需要安装哪些包。
-  package-autoremove也依赖于这个列表来自动删除包。注意，这个变量是在25.1之后引入的。
+未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
     (setq package-selected-packages '(use-package
                                        company
@@ -23,13 +37,6 @@
                                        swiper
                                        counsel
                                        smartparens
-                                       evil
-                                       evil-leader
-                                       evil-nerd-commenter
-                                       evil-surround
-                                       evil-matchit
-                                       evil-visualstar
-                                       evil-mu4e
                                        exec-path-from-shell
                                        popwin
                                        reveal-in-osx-finder
@@ -40,45 +47,26 @@
                                        rainbow-delimiters
                                        elpy
                                        solarized-theme
-                                       better-defaults
-                                       dired+
-                                       diredful
-                                       ;; dired-icon
                                        recentf-ext
                                        s
                                        avy
-                                       evil-cleverparens
                                        osx-dictionary
                                        nyan-mode
-                                       magit
-                                       evil-magit
-                                       ;; js
-                                       js2-mode
-                                       web-mode
-                                       simple-httpd
                                        skewer-mode
-                                       emmet-mode
-                                       git-gutter
-                                       mu4e-alert
-                                       mu4e-maildirs-extension
                                        sr-speedbar
                                        flycheck
                                        yasnippet
-                                       react-snippets
-                                       impatient-mode
                                        imenu-list
                                        neotree
                                        switch-buffer-functions
                                        auto-highlight-symbol
                                        json-mode
-                                       org-plus-contrib
-                                       prettier-js
-                                       jsx-mode
                                        anzu
                                        evil-anzu
                                        simpleclip))
   #+END_SRC
-  3 最后，检测所有列表里的库，如果未安装，则自动安装。
+
+  检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
 (require 'cl-lib)
 (defun slegtank/check-installed-packages ()
@@ -93,90 +81,13 @@
     (when (not (package-installed-p pkg))
       (package-install pkg))))
   #+END_SRC
-  4 当需要删除某个包时，就将package-selected-packages中的包去掉，然后调用M-x package-autoremove来自动删除包。
-  当然，别忘了将下面关于包的配置手动删除。
 * 包
-下面是所有上面的第三方库的配置。(org mode中编辑代码时，可以使用C-c '来在一个新的buffer中进行编辑；按C-x C-s来保存;再次按C-c '来退出)
 ** use-package
 #+BEGIN_SRC emacs-lisp
   (eval-when-compile
     (require 'use-package))
   (require 'diminish)                ;; if you use :diminish
   (require 'bind-key)                ;; if you use any :bind variant
-#+END_SRC
-** better-defaults
-修正Emacs默认配置的一些不合理配置。
-#+BEGIN_SRC emacs-lisp
-  (require 'better-defaults)
-#+END_SRC
-** evil
-vim
-manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
-*** evil-leader
-快捷键
-M-x customize-group -> 默认触发为\，改为SPC
-#+BEGIN_SRC emacs-lisp
-  (require 'evil-leader)
-  (setq evil-leader/in-all-states t)
-  (setq evil-leader/leader "SPC")
-  (global-evil-leader-mode)
-  (evil-mode t)
-  (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode")) ; w3m mode needs this too!
-  (evil-leader/set-key
-    ;; file & buffer
-    "ff" 'find-file
-    "bb" 'switch-to-buffer
-    "bk" 'kill-buffer
-    "bp" 'previous-buffer
-    "bn" 'next-buffer
-    ;; project
-    "pf" 'counsel-git
-    "ps" 'helm-do-ag-project-root
-    "pd" 'helm-do-ag
-    ;; window
-    "0" 'select-window-0
-    "1" 'select-window-1
-    "2" 'select-window-2
-    "3" 'select-window-3
-    "wk" 'delete-other-windows
-    "ws" 'split-window-horizontally
-    "wv" 'split-window-vertically
-    ;; elisp
-    "er" 'eval-region
-    "eb" 'eval-buffer
-    "." 'repeat
-    )
-
-  ;; q for kill-buffer, not for exit emacss
-  (evil-ex-define-cmd "q" (lambda () (interactive) (kill-buffer (current-buffer))))
-  ;; wq for save & kill-buffer, not for exit emacss
-  (evil-ex-define-cmd "wq" (lambda () (interactive) (save-buffer) (kill-buffer (current-buffer))))
-#+END_SRC
-*** evil-nerd-commenter
-    注释
-    #+BEGIN_SRC emacs-lisp
-      (evilnc-default-hotkeys)
-      (global-set-key (kbd "s-/") 'evilnc-comment-or-uncomment-lines)
-    #+END_SRC
-*** evil-surround
-    #+BEGIN_SRC emacs-lisp
-      (require 'evil-surround)
-      (global-evil-surround-mode 1)
-    #+END_SRC
-*** evil-matchit
-#+BEGIN_SRC emacs-lisp
-  (require 'evil-matchit)
-  (global-evil-matchit-mode 1)
-#+END_SRC
-*** evil-visualstar
-#+BEGIN_SRC emacs-lisp
-  (global-evil-visualstar-mode)
-#+END_SRC
-*** evil-mu4e
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'mu4e
-    (require 'evil-mu4e)
-    )
 #+END_SRC
 ** company
    company的意思是complete-anything。顾名思义，它可以对用户的输入进行补全。
@@ -315,24 +226,9 @@ C-c o 打开当前文件所在的Finder;
      (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
    #+END_SRC
 ** slime
-   #+BEGIN_SRC emacs-lisp
-(setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
- (setq slime-contribs '(slime-fancy))
-   #+END_SRC
-** evil-cleverparens
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'emacs-lisp-mode-hook #'evil-cleverparens-mode)
-  (setq evil-move-beyond-eol t)
-
-  (defun evil-visual-char-or-expand-region ()
-    (interactive)
-    (if (region-active-p)
-          (call-interactively 'er/expand-region)
-      (evil-visual-char)))
-
-  (define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
-  (define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
-  (define-key evil-visual-state-map [escape] 'evil-visual-char)
+  (setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
+  (setq slime-contribs '(slime-fancy))
 #+END_SRC
 ** osx-dictionary
 #+BEGIN_SRC emacs-lisp
@@ -342,41 +238,6 @@ C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
   (nyan-mode t)
   (nyan-start-animation)
-#+END_SRC
-** magit
-#+BEGIN_SRC emacs-lisp
-  (require 'evil-magit)
-  (evil-leader/set-key
-    "gs" 'magit-status
-    "gm" 'magit-dispatch-popup)
-#+END_SRC
-** emmet-mode
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'web-mode-hook 'emmet-mode)
-  (add-hook 'jsx-mode-hook 'emmet-mode)
-#+END_SRC
-** prettier-js
-#+BEGIN_SRC emacs-lisp
-  (require 'prettier-js)
-  (add-hook 'js2-mode-hook 'prettier-js-mode)
-  (add-hook 'web-mode-hook 'prettier-js-mode)
-  (add-hook 'jsx-mode-hook 'prettier-js-mode)
-  (setq prettier-js-args '(
-                           "--trailing-comma" "all"
-                           "--bracket-spacing" "false"
-                           ))
-  (defun enable-minor-mode (my-pair)
-    "Enable minor mode if filename match the regexp.  MY-PAIR is a cons cell (regexp . minor-mode)."
-    (if (buffer-file-name)
-        (if (string-match (car my-pair) buffer-file-name)
-            (funcall (cdr my-pair)))))
-  (add-hook 'jsx-mode-hook #'(lambda ()
-                               (enable-minor-mode
-                                '("\\.js?\\'" . prettier-js-mode))))
-#+END_SRC
-** git-gutter
-#+BEGIN_SRC emacs-lisp
-  (global-git-gutter-mode +1)
 #+END_SRC
 ** sr-speedbar
 #+BEGIN_SRC emacs-lisp
@@ -404,26 +265,6 @@ C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
   (require 'recentf-ext)
 #+END_SRC
-** mu4e-alert
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'mu4e
-    ;; (mu4e-alert-set-default-style 'notifier)
-    ;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-    (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
-    (setq mu4e-alert-interesting-mail-query "flag:unread maildir:/shuai.zhao@linkplay.com/INBOX"))
-
-#+END_SRC
-
-** mu4e-maildirs-extension
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'mu4e
-    (require 'mu4e-maildirs-extension)
-    (mu4e-maildirs-extension)
-    (evil-define-key 'motion mu4e-main-mode-map (kbd "<tab>") 'mu4e-maildirs-extension-toggle-maildir-at-point))
-
-    ;;(setq mu4e-maildirs-extension-custom-list '("/slege_tank@163.com/INBOX"))
-    ;;(setq mu4e-maildirs-extension-default-collapse-level 2)
-#+END_SRC
 ** flycheck
 #+BEGIN_SRC emacs-lisp
   (require 'flycheck)
@@ -444,30 +285,11 @@ C-c o 打开当前文件所在的Finder;
   (require 'yasnippet)
   (yas-global-mode 1)
 #+END_SRC
-*** react
-#+BEGIN_SRC emacs-lisp
-  (require 'react-snippets)
-#+END_SRC
 ** skewer-mode
 #+BEGIN_SRC emacs-lisp
   ;; (add-hook 'jsx-mode-hook 'skewer-mode)
   (add-hook 'css-mode-hook 'skewer-css-mode)
   (add-hook 'web-mode-hook 'skewer-html-mode)
-
-#+END_SRC
-** impatient-mode
-#+BEGIN_SRC emacs-lisp
-  ;; (require 'impatient-mode)
-
-  ;; (add-hook 'web-mode-hook 'impatient-mode)
-
-  ;; (defun custom-browse-this-file-impatient ()
-  ;;   (interactive)
-  ;;   (if (s-ends-with? ".html" (buffer-file-name))
-  ;;       (progn (unless (process-status "httpd")
-  ;;                (httpd-start))
-  ;;              (imp-visit-buffer))
-  ;;     (message "Not a valide html file.")))
 
 #+END_SRC
 ** neotree
@@ -551,6 +373,8 @@ C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
   (require 'simpleclip)
   (simpleclip-mode 1)
+
+  (setq simpleclip-unmark-on-copy t)
 #+END_SRC
 
 在simpleclip.el中会将(setq interprogram-cut-function nil) 置为nil，而这个方法在evil-mode的x中将会调用到的simple.el中的kill-new中会用到。返回string参数即可修复x无法删除string的bug。

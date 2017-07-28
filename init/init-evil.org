@@ -1,0 +1,98 @@
+Evil genius!
+Make Emacs's keymap more convenient for me.
+
+manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
+
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil)
+#+END_SRC
+
+* evil-leader
+快捷键
+M-x customize-group -> 默认触发为\，改为SPC
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-leader)
+
+  (setq evil-leader/in-all-states t)
+  (setq evil-leader/leader "SPC")
+  (global-evil-leader-mode)
+  (evil-mode t)
+  (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode")) ; w3m mode needs this too!
+
+  (evil-leader/set-key
+    ;; file & buffer
+    "ff" 'find-file
+    "bb" 'switch-to-buffer
+    "bk" 'kill-buffer
+    "bp" 'previous-buffer
+    "bn" 'next-buffer
+    ;; project
+    "pf" 'counsel-git
+    "ps" 'helm-do-ag-project-root
+    "pd" 'helm-do-ag
+    ;; window
+    "0" 'select-window-0
+    "1" 'select-window-1
+    "2" 'select-window-2
+    "3" 'select-window-3
+    "wk" 'delete-other-windows
+    "ws" 'split-window-horizontally
+    "wv" 'split-window-vertically
+    ;; elisp
+    "er" 'eval-region
+    "eb" 'eval-buffer
+    "." 'repeat
+    )
+
+  ;; q for kill-buffer, not for exit emacss
+  (evil-ex-define-cmd "q" (lambda () (interactive) (kill-buffer (current-buffer))))
+  ;; wq for save & kill-buffer, not for exit emacss
+  (evil-ex-define-cmd "wq" (lambda () (interactive) (save-buffer) (kill-buffer (current-buffer))))
+#+END_SRC
+
+* evil-nerd-commenter
+注释
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-nerd-commenter)
+
+  (evilnc-default-hotkeys)
+  (global-set-key (kbd "s-/") 'evilnc-comment-or-uncomment-lines)
+#+END_SRC
+
+* evil-surround
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-surround)
+
+  (global-evil-surround-mode 1)
+#+END_SRC
+
+* evil-matchit
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-matchit)
+
+  (global-evil-matchit-mode 1)
+#+END_SRC
+
+* evil-visualstar
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-visualstar)
+  (global-evil-visualstar-mode)
+#+END_SRC
+
+* evil-cleverparens
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-cleverparens)
+
+  (add-hook 'emacs-lisp-mode-hook #'evil-cleverparens-mode)
+  (setq evil-move-beyond-eol t)
+
+  (defun evil-visual-char-or-expand-region ()
+    (interactive)
+    (if (region-active-p)
+          (call-interactively 'er/expand-region)
+      (evil-visual-char)))
+
+  (define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
+  (define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
+  (define-key evil-visual-state-map [escape] 'evil-visual-char)
+#+END_SRC

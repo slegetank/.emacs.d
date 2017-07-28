@@ -1,0 +1,16 @@
+* magit
+#+BEGIN_SRC emacs-lisp
+  (require-package 'magit)
+  (require-package 'evil-magit)
+  (require 'evil-magit)
+
+  (evil-leader/set-key
+    "gs" 'magit-status
+    "gm" 'magit-dispatch-popup)
+#+END_SRC
+* git-gutter
+#+BEGIN_SRC emacs-lisp
+  (require-package 'git-gutter)
+  (global-git-gutter-mode +1)
+#+END_SRC
+
