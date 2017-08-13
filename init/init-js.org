@@ -64,6 +64,7 @@
 #+END_SRC
 * emmet-mode
 #+BEGIN_SRC emacs-lisp
+  (require-package 'emmet-mode)
   (add-hook 'web-mode-hook 'emmet-mode)
   (add-hook 'jsx-mode-hook 'emmet-mode)
 #+END_SRC

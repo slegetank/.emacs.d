@@ -52,14 +52,6 @@ message compose view's head format:
         message-kill-buffer-on-exit t)
 #+END_SRC
 
-通知
-#+BEGIN_SRC emacs-lisp
-  (mu4e-alert-set-default-style 'notifier)
-  (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-  (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
-  (setq mu4e-alert-email-notification-types '(count))
-#+END_SRC
-
 在dired中C-c enter C-a向mail中加入附件：
 #+BEGIN_SRC emacs-lisp
   (require 'gnus-dired)
@@ -528,5 +520,6 @@ http://www.djcbsoftware.nl/code/mu/cheatsheet.html
 #+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
     "ma" 'mu4e
-    "mc" 'custom-compose-html-plain-config-switch)
+    "mc" 'custom-compose-html-plain-config-switch
+    "mu" 'custom-mu4e-update-all)
 #+END_SRC

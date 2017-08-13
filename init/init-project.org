@@ -1,0 +1,20 @@
+#+BEGIN_SRC emacs-lisp
+  (require-package 'counsel-projectile)
+#+END_SRC
+
+* packages
+** counsel-projectile
+#+BEGIN_SRC emacs-lisp
+  (counsel-projectile-on)
+#+END_SRC
+
+* keys
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key
+    "pf" 'counsel-projectile-find-file
+    "pd" 'counsel-projectile-find-dir
+    "ps" 'counsel-projectile-ag
+    "pb" 'counsel-projectile-switch-to-buffer
+    "pp" 'counsel-projectile-switch-project)
+#+END_SRC
+

@@ -11,43 +11,36 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
 快捷键
 M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
-  (require-package 'evil-leader)
+    (require-package 'evil-leader)
+  (require 'evil-leader)
 
-  (setq evil-leader/in-all-states t)
-  (setq evil-leader/leader "SPC")
-  (global-evil-leader-mode)
-  (evil-mode t)
-  (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode")) ; w3m mode needs this too!
+    (setq evil-leader/in-all-states t)
+    (setq evil-leader/leader "SPC")
+    (global-evil-leader-mode)
+    (evil-mode t)
+    (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode")) ; w3m mode needs this too!
 
-  (evil-leader/set-key
-    ;; file & buffer
-    "ff" 'find-file
-    "bb" 'switch-to-buffer
-    "bk" 'kill-buffer
-    "bp" 'previous-buffer
-    "bn" 'next-buffer
-    ;; project
-    "pf" 'counsel-git
-    "ps" 'helm-do-ag-project-root
-    "pd" 'helm-do-ag
-    ;; window
-    "0" 'select-window-0
-    "1" 'select-window-1
-    "2" 'select-window-2
-    "3" 'select-window-3
-    "wk" 'delete-other-windows
-    "ws" 'split-window-horizontally
-    "wv" 'split-window-vertically
-    ;; elisp
-    "er" 'eval-region
-    "eb" 'eval-buffer
-    "." 'repeat
-    )
+    (evil-leader/set-key
+      ;; file & buffer
+      "ff" 'counsel-find-file
+      "bb" 'ivy-switch-buffer
+      "bk" 'kill-buffer
+      "bp" 'previous-buffer
+      "bn" 'next-buffer
+      ;; window
+      "wk" 'delete-other-windows
+      "ws" 'split-window-horizontally
+      "wv" 'split-window-vertically
+      ;; elisp
+      "er" 'eval-region
+      "eb" 'eval-buffer
+      "." 'repeat
+      )
 
-  ;; q for kill-buffer, not for exit emacss
-  (evil-ex-define-cmd "q" (lambda () (interactive) (kill-buffer (current-buffer))))
-  ;; wq for save & kill-buffer, not for exit emacss
-  (evil-ex-define-cmd "wq" (lambda () (interactive) (save-buffer) (kill-buffer (current-buffer))))
+    ;; q for kill-buffer, not for exit emacss
+    (evil-ex-define-cmd "q" (lambda () (interactive) (kill-buffer (current-buffer))))
+    ;; wq for save & kill-buffer, not for exit emacss
+    (evil-ex-define-cmd "wq" (lambda () (interactive) (save-buffer) (kill-buffer (current-buffer))))
 #+END_SRC
 
 * evil-nerd-commenter

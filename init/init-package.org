@@ -1,32 +1,4 @@
-这个文件用来存储所有第三方库的相关配置
-
-* 核心
-源设为国内的，此处使用子龙山人提供的源；另外需要org mode的源：
-#+BEGIN_SRC emacs-lisp
-(when (>= emacs-major-version 24)
-    (setq package-archives '(("gnu"   . "http://elpa.zilongshanren.com/gnu/")
-                            ("org" . "http://orgmode.org/elpa/")
-                            )))
-#+END_SRC
-
-更好的包管理；从purcell处拿过来直接用，避免package都写在一堆
-#+BEGIN_SRC emacs-lisp
-  (defun require-package (package &optional min-version no-refresh)
-    "Install given PACKAGE, optionally requiring MIN-VERSION.
-  If NO-REFRESH is non-nil, the available package lists will not be
-  re-downloaded in order to locate PACKAGE."
-    (if (package-installed-p package min-version)
-        t
-      (if (or (assoc package package-archive-contents) no-refresh)
-          (if (boundp 'package-selected-packages)
-              ;; Record this as a package the user installed explicitly
-              (package-install package nil)
-            (package-install package))
-        (progn
-          (package-refresh-contents)
-          (require-package package min-version t)))))
-#+END_SRC
-
+* 未分类
 未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
     (setq package-selected-packages '(use-package
@@ -40,13 +12,10 @@
                                        exec-path-from-shell
                                        popwin
                                        reveal-in-osx-finder
-                                       helm-ag
-                                       window-numbering
                                        which-key
                                        slime
                                        rainbow-delimiters
                                        elpy
-                                       solarized-theme
                                        recentf-ext
                                        s
                                        avy
@@ -63,7 +32,9 @@
                                        json-mode
                                        anzu
                                        evil-anzu
-                                       simpleclip))
+                                       simpleclip
+                                       switch-window
+                                       blackboard-theme))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
@@ -81,7 +52,7 @@
     (when (not (package-installed-p pkg))
       (package-install pkg))))
   #+END_SRC
-* 包
+* 配置
 ** use-package
 #+BEGIN_SRC emacs-lisp
   (eval-when-compile
@@ -151,6 +122,7 @@
      (setq ivy-use-virtual-buffers t)
      (setq ivy-display-style 'fancy)
      (setq ivy-initial-inputs-alist nil)
+     (global-set-key "\C-s" 'swiper)
 
      (define-key ivy-minibuffer-map (kbd "s-<return>") 'ivy-immediate-done)
      (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
@@ -187,21 +159,17 @@ C-c o 打开当前文件所在的Finder;
 ** helm-ag
 工程内搜索工具。C-c C-e编辑结果。
 #+BEGIN_SRC emacs-lisp
-  (custom-set-variables
-   '(helm-follow-mode-persistent t))
+  ;; (custom-set-variables
+  ;;  '(helm-follow-mode-persistent t))
 
-  (use-package helm-ag
-    :ensure t
-    :config
-    (define-key evil-motion-state-map (kbd "s-F") 'helm-do-ag-project-root)
-    (define-key evil-motion-state-map (kbd "s-f") 'helm-do-ag-this-file)
-    (define-key helm-do-ag-map (kbd "C-j") 'helm-next-line)
-    (define-key helm-do-ag-map (kbd "C-k") 'helm-previous-line)
-    )
-#+END_SRC
-** window-numbering
-#+BEGIN_SRC emacs-lisp
-   (window-numbering-mode 1)
+  ;; (use-package helm-ag
+  ;;   :ensure t
+  ;;   :config
+  ;;   (define-key evil-motion-state-map (kbd "s-F") 'helm-do-ag-project-root)
+  ;;   (define-key evil-motion-state-map (kbd "s-f") 'helm-do-ag-this-file)
+  ;;   (define-key helm-do-ag-map (kbd "C-j") 'helm-next-line)
+  ;;   (define-key helm-do-ag-map (kbd "C-k") 'helm-previous-line)
+  ;;   )
 #+END_SRC
 ** which-key
    #+BEGIN_SRC emacs-lisp
@@ -328,12 +296,15 @@ C-c o 打开当前文件所在的Finder;
   (use-package find-file-in-project :ensure t)
 
   (defun custom-neotree-toggle-project-dir ()
-    "Open NeoTree using the git root."
+    "Open NeoTree using the git root. & show imenu"
     (interactive)
+    (imenu-list-smart-toggle)
     (if (neo-global--window-exists-p)
-        (neotree-hide)
+        (progn (neotree-hide)
+               (imenu-list-quit-window))
       (let ((project-dir (or (ffip-project-root) (file-name-directory (or (buffer-file-name) ""))))
             (file-name (buffer-file-name)))
+        (imenu-list-show)
         (if project-dir
             (progn
               (neotree-dir project-dir)
@@ -382,4 +353,27 @@ C-c o 打开当前文件所在的Finder;
   (defun fix-evil-clip-not-function (string &optional PRED)
     string)
   (advice-add 'kill-new :after 'fix-evil-clip-not-function)
+#+END_SRC
+
+** imenu-list
+#+BEGIN_SRC emacs-lisp
+    (evil-define-key 'motion imenu-list-major-mode-map (kbd "<tab>") 'hs-toggle-hiding)
+    (evil-define-key 'motion imenu-list-major-mode-map (kbd "<RET>") 'imenu-list-goto-entry)
+    (evil-define-key 'motion imenu-list-major-mode-map (kbd "q") 'imenu-list-quit-window)
+    (evil-define-key 'motion imenu-list-major-mode-map (kbd "g") 'imenu-list-refresh)
+#+END_SRC
+** switch-window
+#+BEGIN_SRC emacs-lisp
+  (require 'switch-window)
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-qwerty-shortcuts
+        '("a" "s" "d" "f" "j" "k" "l" ";" "w" "e" "i" "o"))
+  (setq switch-window-increase 17)
+  ;; (setq switch-window-shortcut-appearance 'asciiart)
+  (evil-leader/set-key
+    "wo" 'switch-window)
+#+END_SRC
+** theme
+#+BEGIN_SRC emacs-lisp
+  (load-theme 'blackboard t)
 #+END_SRC

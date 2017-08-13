@@ -5,10 +5,33 @@
 
 (package-initialize)
 
+;; source point to China
+(when (>= emacs-major-version 24)
+    (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
+                             ("melpa"   . "http://elpa.emacs-china.org/melpa/")
+                             ("org" . "http://orgmode.org/elpa/")
+                             )))
+
+;; get from Purcell
+(defun require-package (package &optional min-version no-refresh)
+ "Install given PACKAGE, optionally requiring MIN-VERSION.
+ If NO-REFRESH is non-nil, the available package lists will not be
+ re-downloaded in order to locate PACKAGE."
+ (if (package-installed-p package min-version)
+     t
+   (if (or (assoc package package-archive-contents) no-refresh)
+       (if (boundp 'package-selected-packages)
+	   ;; Record this as a package the user installed explicitly
+	   (package-install package nil)
+	 (package-install package))
+     (progn
+       (package-refresh-contents)
+       (require-package package min-version t)))))
+
 ;; 加载配置orgmode文件
+(org-babel-load-file (expand-file-name "init/init-evil.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-evil.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-blog.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-elisp.org" user-emacs-directory))
@@ -17,6 +40,7 @@
 (org-babel-load-file (expand-file-name "init/init-dired.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-mu4e.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-git.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-project.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-help.org" user-emacs-directory))
 
 ;;(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))
@@ -40,6 +64,9 @@
  '(helm-follow-mode-persistent t)
  '(hl-paren-background-colors (quote ("#e8fce8" "#c1e7f8" "#f8e8e8")))
  '(hl-paren-colors (quote ("#40883f" "#0287c8" "#b85c57")))
+ '(package-selected-packages
+   (quote
+    (emmet-mode emmet counsel-projectile git-gutter evil-magit magit mu4e-maildirs-extension mu4e-alert evil-mu4e use-package company company-anaconda company-tern hungry-delete swiper counsel smartparens exec-path-from-shell popwin reveal-in-osx-finder window-numbering which-key slime rainbow-delimiters elpy solarized-theme recentf-ext s avy osx-dictionary nyan-mode skewer-mode sr-speedbar flycheck yasnippet imenu-list neotree switch-buffer-functions auto-highlight-symbol json-mode anzu evil-anzu simpleclip)))
  '(sml/active-background-color "#98ece8")
  '(sml/active-foreground-color "#424242")
  '(sml/inactive-background-color "#4fa8a8")

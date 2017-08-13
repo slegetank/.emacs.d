@@ -41,7 +41,6 @@ brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件�
       (linum-mode -1)))
 #+END_SRC
 
-
 #+BEGIN_SRC emacs-lisp
   ;; title show full path
   (setq frame-title-format
@@ -115,6 +114,12 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
   (unless (server-running-p) (server-start))
 #+END_SRC
 
+高亮括号
+#+BEGIN_SRC emacs-lisp
+  (require-package 'highlight-parentheses)
+  (global-highlight-parentheses-mode)
+#+END_SRC
+
 ** trailing space
 #+BEGIN_SRC emacs-lisp
   ;; Show trailing whitespace
@@ -171,6 +176,7 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
 修正Emacs默认配置的一些不合理配置。
 #+BEGIN_SRC emacs-lisp
   (require-package 'better-defaults)
+  (require 'better-defaults)
 #+END_SRC
 * TRAMP
 #+BEGIN_SRC emacs-lisp
