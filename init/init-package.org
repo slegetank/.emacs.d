@@ -1,40 +1,41 @@
 * 未分类
 未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
-    (setq package-selected-packages '(use-package
-                                       company
-                                       company-anaconda
-                                       company-tern
-                                       hungry-delete
-                                       swiper
-                                       counsel
-                                       smartparens
-                                       exec-path-from-shell
-                                       popwin
-                                       reveal-in-osx-finder
-                                       which-key
-                                       slime
-                                       rainbow-delimiters
-                                       elpy
-                                       recentf-ext
-                                       s
-                                       avy
-                                       osx-dictionary
-                                       nyan-mode
-                                       skewer-mode
-                                       sr-speedbar
-                                       flycheck
-                                       yasnippet
-                                       imenu-list
-                                       neotree
-                                       switch-buffer-functions
-                                       auto-highlight-symbol
-                                       json-mode
-                                       anzu
-                                       evil-anzu
-                                       simpleclip
-                                       switch-window
-                                       blackboard-theme))
+    (setq package-selected-packages (append package-selected-packages '(use-package
+                                         company
+                                         company-anaconda
+                                         company-tern
+                                         hungry-delete
+                                         swiper
+                                         counsel
+                                         smartparens
+                                         exec-path-from-shell
+                                         popwin
+                                         reveal-in-osx-finder
+                                         which-key
+                                         slime
+                                         rainbow-delimiters
+                                         elpy
+                                         recentf-ext
+                                         s
+                                         avy
+                                         osx-dictionary
+                                         nyan-mode
+                                         skewer-mode
+                                         sr-speedbar
+                                         flycheck
+                                         yasnippet
+                                         imenu-list
+                                         neotree
+                                         switch-buffer-functions
+                                         auto-highlight-symbol
+                                         json-mode
+                                         anzu
+                                         evil-anzu
+                                         simpleclip
+                                         switch-window
+                                         lenlen-theme
+                                         engine-mode)))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
@@ -375,5 +376,25 @@ C-c o 打开当前文件所在的Finder;
 #+END_SRC
 ** theme
 #+BEGIN_SRC emacs-lisp
-  (load-theme 'blackboard t)
+;; (load-theme 'occidental t)
+#+END_SRC
+** engine-mode
+#+BEGIN_SRC emacs-lisp
+    (require 'engine-mode)
+    (engine-mode t)
+
+    (defengine duckduckgo
+      "https://duckduckgo.com/?q=%s"
+      :keybinding "d")
+
+    (defengine google
+      "http://www.google.com.sg/search?ie=utf-8&oe=utf-8&q=%s"
+      :keybinding "g")
+
+    (defengine stack-overflow
+      "https://stackoverflow.com/search?q=%s"
+      :keybinding "s")
+
+    (evil-leader/set-key
+      "s" 'engine-mode-prefixed-map)
 #+END_SRC
