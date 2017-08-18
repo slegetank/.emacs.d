@@ -1,13 +1,12 @@
 * defaults
   #+BEGIN_SRC emacs-lisp
-    (require-package 'org-plus-contrib)
+    (require 'org)
 
     (setq org-startup-indented t) ; 行首缩进
     (setq org-hide-leading-stars t) ; 只显示一颗星
     (setq org-ellipsis " \u25bc" ) ; 题目缩略显示
     (setq org-startup-truncated nil)
 
-    (require 'org)
     (setq org-src-fontify-natively t)
   #+END_SRC
 * Edit code
