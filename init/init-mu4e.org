@@ -100,7 +100,7 @@ header list时间戳：
 自定义不同thread的不同背景色，更好的显示：
 #+BEGIN_SRC emacs-lisp
   (defface custom-mu4e~single-background-face
-    '((t :background "#1D417C"
+    '((t :background "#FFFF00"
          ))
     "face for line which thread is single number")
 
@@ -137,7 +137,7 @@ headers view列表域及其宽度，nil表示无限制：
   (setq mu4e-headers-default-prefix      '("|"  . "|"))
   (setq mu4e-headers-unread-mark         '("u"  . ""))
   (setq mu4e-headers-attach-mark         '("a"  . "a"))
-  (setq mu4e-headers-flagged-mark        '("F"  . "F"))
+  (setq mu4e-headers-flagged-mark        '("F"  . "!"))
   (setq mu4e-headers-new-mark            '("N"  . "*"))
   (setq mu4e-headers-passed-mark         '("P"  . "»"))
   (setq mu4e-headers-replied-mark        '("R"  . "«"))
@@ -147,10 +147,37 @@ headers view列表域及其宽度，nil表示无限制：
 
 h列表页面自定义一些快捷键（forward不知道为什么丢了）:
 #+BEGIN_SRC emacs-lisp
+  (defun custom-mu4e-headers-toggle-flag ()
+    (interactive)
+    "One key to flag & unflag"
+    (let* ((msg (mu4e-message-at-point))
+           (docid (mu4e-message-field msg :docid))
+           (flags (mu4e-message-field msg :flags))
+           (dyn-flags (gethash docid mu4e~mark-map)))
+      (if (or (member 'flagged flags)
+              (member 'flag dyn-flags))
+          (mu4e-headers-mark-for-unflag)
+        (mu4e-headers-mark-for-flag))))
+
+  (defun custom-mu4e-headers-toggle-read ()
+    (interactive)
+    "One key to mark read & unread"
+    (let* ((msg (mu4e-message-at-point))
+           (docid (mu4e-message-field msg :docid))
+           (flags (mu4e-message-field msg :flags))
+           (dyn-flags (gethash docid mu4e~mark-map)))
+      (message "%s" flags)
+      (message "%s" dyn-flags)
+      (if (or (member 'new flags)
+              (member 'unread flags)
+              (member 'unread dyn-flags))
+          (mu4e-headers-mark-for-read)
+        (mu4e-headers-mark-for-unread))))
+
   (add-hook 'mu4e-headers-mode-hook (lambda ()
                                       (evil-define-key 'motion mu4e-headers-mode-map (kbd "F") 'mu4e-compose-forward)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "+") 'mu4e-headers-mark-for-flag)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "-") 'mu4e-headers-mark-for-unflag)
+                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "!") 'custom-mu4e-headers-toggle-flag)
+                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "*") 'custom-mu4e-headers-toggle-read)
                                       (evil-define-key 'motion mu4e-headers-mode-map (kbd "E") 'mu4e-compose-edit)))
 #+END_SRC
 ** Message
@@ -353,23 +380,23 @@ http://thomasf.github.io/solarized-css/test/org-hacks.html
 
 当在body中时，使C-c C-a变得可以添加附件；将附件放到最后，使其不会被错误的转换为html：
 #+BEGIN_SRC emacs-lisp
-  (defun mml-attach-file--go-to-eob (orig-fun &rest args)
-    "Go to the end of buffer before attaching files."
-    (save-excursion
-      (save-restriction
-        (widen)
-        (goto-char (point-max))
-        (apply orig-fun args))))
+  ;; (defun mml-attach-file--go-to-eob (orig-fun &rest args)
+  ;;   "Go to the end of buffer before attaching files."
+  ;;   (save-excursion
+  ;;     (save-restriction
+  ;;       (widen)
+  ;;       (goto-char (point-max))
+  ;;       (apply orig-fun args))))
 
-  (advice-add 'mml-attach-file :around #'mml-attach-file--go-to-eob)
+  ;; (advice-add 'mml-attach-file :around #'mml-attach-file--go-to-eob)
 
-    (defun custom-mail-attach ()
-      (interactive)
-      (if (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
-          (call-interactively 'mml-attach-file)
-        (org-attach)))
+  ;;   (defun custom-mail-attach ()
+  ;;     (interactive)
+  ;;     (if (member 'org~mu4e-mime-switch-headers-or-body post-command-hook)
+  ;;         (call-interactively 'mml-attach-file)
+  ;;       (org-attach)))
 
-    (add-hook 'org-mode-hook (lambda () (define-key org-mode-map (kbd "C-c C-a") 'custom-mail-attach)))
+  ;;   (add-hook 'org-mode-hook (lambda () (define-key org-mode-map (kbd "C-c C-a") 'custom-mail-attach)))
 #+END_SRC
 
 处理右键拖拽附件：
@@ -493,6 +520,17 @@ http://www.djcbsoftware.nl/code/mu/cheatsheet.html
             (kill-region start end)
             (insert contact))))))
 #+END_SRC
+* message id
+#+BEGIN_SRC emacs-lisp
+  (defun custom-mu4e-get-messageid ()
+    (interactive)
+    (message (mu4e-field-at-point :message-id))
+    (kill-new (mu4e-field-at-point :message-id)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; (mu4e-view-message-with-message-id "1405353963.3232.1503227877998.JavaMail.jenkins@d87f3df0b8c5")
+#+END_SRC
 * packages
 ** mu4e-alert
 #+BEGIN_SRC emacs-lisp
@@ -518,8 +556,9 @@ http://www.djcbsoftware.nl/code/mu/cheatsheet.html
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key
-    "ma" 'mu4e
-    "mc" 'custom-compose-html-plain-config-switch
-    "mu" 'custom-mu4e-update-all)
+    (evil-leader/set-key
+      "ma" 'mu4e
+      "mc" 'custom-compose-html-plain-config-switch
+      "mu" 'custom-mu4e-update-all
+      "mi" 'custom-mu4e-get-messageid)
 #+END_SRC
