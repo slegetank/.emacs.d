@@ -29,70 +29,73 @@
 
 导出参数的配置：
 #+BEGIN_SRC emacs-lisp
-    (require 'ox-html)
-    (require 'ox-publish)
-    (require 'ox-extra)
-    (ox-extras-activate '(ignore-headlines))
-    (setq org-publish-project-alist
-          `(
-            ("blog-home"
-             :base-directory ,my-blog-post-base
-             :base-extension "org"
-             :publishing-directory ,my-blog-publish-base
-             :publishing-function (org-html-publish-to-html)
-             :with-author t
-             :with-creator nil
-             :sitemap-filename "index.org"
-             :sitemap-title "index"
-             :sitemap-sort-files anti-chronologically
-             :html-preamble my-blog-home-header
-             :html-postamble ,my-blog-footer
-             :sitemap-function my-blog-sitemap
-             :recursive t
-             :section-numbers nil
-             :with-toc nil
-             :with-drawers t
-             :html-head-include-default-style nil
-             :html-head-include-scripts nil
-             ;; :html-link-home "/"
-             :html-head nil ;; cleans up anything that would have been in there.
-             :html-head-include-default-style nil
-             :html-head-include-scripts nil
-             :html-viewport nil
-             :with-sub-superscript nil
-             :exclude "blog/*.*\\|README.org\\|draft/*.*"
-             )
-            ("blog-content"
-             :base-directory ,(concat my-blog-post-base "/blog")
-             :base-extension "org"
-             :publishing-directory ,(concat my-blog-publish-base "/blog")
-             :publishing-function (org-html-publish-to-html)
-             ;; :preparation-function my-blog-articles-preprocessor
-             ;; :completion-function my-blog-articles-postprocessor
-             :with-author t
-             :with-creator nil
-             :html-preamble my-blog-header
-             :html-postamble ,my-blog-footer
-             :recursive t
-             :section-numbers nil
-             :with-toc nil
-             :with-drawers t
-             :html-head-include-default-style nil
-             :html-head-include-scripts nil
-             ;; :html-link-home "/"
-             :html-head nil ;; cleans up anything that would have been in there.
-             :html-head-include-default-style nil
-             :html-head-include-scripts nil
-             :html-viewport nil
-             :with-sub-superscript nil)
-            ("blog-static"
-             :base-directory ,(concat my-blog-post-base "/static")
-             :base-extension "gif\\|png\\|jpg\\|css"
-             :publishing-directory ,(concat my-blog-publish-base "/static")
-             :recursive t
-             :publishing-function org-publish-attachment)
-            ("blog"
-             :components ("blog-home" "blog-content" "blog-static"))))
+  (require 'ox-html)
+  (require 'ox-publish)
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
+  (setq org-publish-project-alist
+        `(
+          ("blog-home"
+           :base-directory ,my-blog-post-base
+           :base-extension "org"
+           :publishing-directory ,my-blog-publish-base
+           :publishing-function (org-html-publish-to-html)
+           :with-author t
+           :with-creator nil
+           :sitemap-filename "index.org"
+           :sitemap-title "index"
+           :sitemap-sort-files anti-chronologically
+           :html-preamble my-blog-home-header
+           :html-postamble ,my-blog-footer
+           :auto-sitemap t
+           :sitemap-function my-blog-sitemap
+           :recursive t
+           :section-numbers nil
+           :with-toc nil
+           :with-drawers t
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           ;; :html-link-home "/"
+           :html-head nil ;; cleans up anything that would have been in there.
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           :html-viewport nil
+           :with-sub-superscript nil
+           :exclude "blog/*.*\\|README.org\\|draft/*.*"
+           )
+          ("blog-content"
+           :base-directory ,(concat my-blog-post-base "/blog")
+           :base-extension "org"
+           :publishing-directory ,(concat my-blog-publish-base "/blog")
+           :publishing-function (org-html-publish-to-html)
+           ;; :preparation-function my-blog-articles-preprocessor
+           ;; :completion-function my-blog-articles-postprocessor
+           :with-author t
+           :with-creator nil
+           :html-preamble my-blog-header
+           :html-postamble ,my-blog-footer
+           :auto-sitemap nil
+           :recursive t
+           :section-numbers nil
+           :with-toc nil
+           :with-drawers t
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           ;; :html-link-home "/"
+           :html-head nil ;; cleans up anything that would have been in there.
+           :html-head-include-default-style nil
+           :html-head-include-scripts nil
+           :html-viewport nil
+           :with-sub-superscript nil)
+          ("blog-static"
+           :base-directory ,(concat my-blog-post-base "/static")
+           :base-extension "gif\\|png\\|jpg\\|css"
+           :auto-sitemap nil
+           :publishing-directory ,(concat my-blog-publish-base "/static")
+           :recursive t
+           :publishing-function org-publish-attachment)
+          ("blog"
+           :components ("blog-home" "blog-content" "blog-static"))))
 #+END_SRC
 
 * Export
@@ -101,8 +104,8 @@
   (evil-leader/set-key
     "blc" 'custom-blog-commit
     "bli" 'custom-blog-init
-    "blp" 'custom-blog-publish
-    "bld" 'custom-blog-deploy)
+    "blf" 'custom-blog-finish-draft
+    "bld" 'custom-blog-deploy-to-remote)
 #+END_SRC
 
 ** Functions
@@ -113,7 +116,9 @@
     (let* ((org-inhibit-startup t)
            (tempbuffer (find-file file))
            (preview-str "")
-           (type ""))
+           (type "")
+           (title "")
+           (date ""))
 
       (with-current-buffer tempbuffer
         ;; preview
@@ -129,36 +134,39 @@
         (let ((org-properties (org-element-map (org-element-parse-buffer 'element) 'keyword
                                 (lambda (keyword) (cons (org-element-property :key keyword)
                                                         (org-element-property :value keyword))))))
-          (setq type (or (cdr (assoc "BLOGTYPE" org-properties)) "")))
+          (setq type (or (cdr (assoc "BLOGTYPE" org-properties)) ""))
+          (setq title (or (cdr (assoc "TITLE" org-properties)) ""))
+          (setq date (or (cdr (assoc "DATE" org-properties)) "")))
+
         (kill-buffer tempbuffer))
 
-      `(("preview" . ,preview-str) ("type" . ,type))))
+      `(("preview" . ,preview-str) ("type" . ,type) ("title" . ,title) ("date" . ,date))))
 #+END_SRC
 
 读取目录下博客org文件的信息：
 #+BEGIN_SRC emacs-lisp
   (defun my-blog-org-files-info (project)
     "Generate info list for org files"
+
     (let* ((project-plist (cdr project))
-           (files (org-publish-get-base-files project "README.org\\|draft/*.*"))
+           (files (directory-files (concat my-blog-post-base "/blog/") t ".org$"))
            (sitemap-sans-extension (plist-get project-plist :sitemap-sans-extension))
-           (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
+           (postdir (file-name-as-directory my-blog-post-base))
            file
            (infolist '()))
       (while (setq file (pop files))
+        (message file)
         (unless (or (s-ends-with? "index.org" (file-truename file)) (s-ends-with? "archive.org" (file-truename file)) (s-ends-with? "tag.org" (file-truename file)))
           (let ((link (file-relative-name file (file-name-as-directory
                                                 (expand-file-name (file-name-as-directory postdir))))))
             (when sitemap-sans-extension
               (setq link (file-name-sans-extension link)))
-            (let* ((title (org-publish-format-file-entry "%t" file project-plist))
-                   (date (org-publish-format-file-entry "%d" file project-plist))
-                   (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
-                   (properties (my-blog-get-custom-property file))
+            (let* ((properties (my-blog-get-custom-property file))
 
+                   (title (cdr (assoc "title" properties)))
+                   (date (cdr (assoc "date" properties)))
                    (preview (cdr (assoc "preview" properties)))
-                   (type (cdr (assoc "type" properties)))
-                   )
+                   (type (cdr (assoc "type" properties))))
               (setq infolist (cons `(("link" . ,(or link "")) ("title" . ,(or title "")) ("date" . ,(or date "")) ("preview" . ,(or preview "")) ("type" . ,(or type ""))) infolist))))))
       infolist))
 #+END_SRC
@@ -168,7 +176,7 @@
     (defun my-blog-sitemap (project &optional sitemap-filename)
       "Sitemap custom method"
       (let* ((project-plist (cdr project))
-             (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
+             (postdir (file-name-as-directory my-blog-post-base))
              (sitemap-filename (concat postdir (or sitemap-filename "index.org")))
              (visiting (find-buffer-visiting sitemap-filename))
              (bloginfos (my-blog-org-files-info project))
@@ -215,8 +223,7 @@
             (insert "#+TITLE:Slegetank's Blog\n")
             (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
             (save-buffer)))
-        (or visiting (kill-buffer sitemap-buffer)))
-  )
+        (or visiting (kill-buffer sitemap-buffer))))
 #+END_SRC
 
 自定义archive生成函数：
@@ -224,7 +231,7 @@
   (defun my-blog-archive (project bloginfos)
     "Archive custom method"
     (let* ((project-plist (cdr project))
-           (postdir (file-name-as-directory (plist-get project-plist :base-directory)))
+           (postdir (file-name-as-directory my-blog-post-base))
            (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
            archive-buffer
            typelist '()
@@ -361,7 +368,7 @@
 
 自定义草稿发布函数：
 #+BEGIN_SRC emacs-lisp
-  (defun custom-blog-publish ()
+  (defun custom-blog-finish-draft ()
     (interactive)
     (if (custom-org-blog-p)
         (progn (dired-rename-file (buffer-file-name) (concat my-blog-post-base "/blog/" (file-name-nondirectory (buffer-file-name))) 1)
@@ -373,7 +380,7 @@
 
 自定义部署函数：
 #+BEGIN_SRC emacs-lisp
-  (defun custom-blog-deploy ()
+  (defun custom-blog-deploy-to-remote ()
     (interactive)
     (let ((default-directory my-blog-publish-base))
       (message "push to static blog...")

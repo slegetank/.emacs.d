@@ -92,6 +92,7 @@ u for quick update; U for total update; 仅仅mu4e-update-index并不是很好�
   (evil-define-key 'motion mu4e-main-mode-map (kbd "U") 'custom-mu4e-update-all)
 #+END_SRC
 ** Headers view
+*** view
 header list时间戳：
 #+BEGIN_SRC emacs-lisp
   (setq  mu4e-headers-date-format "%Y-%m-%d %H:%M")
@@ -145,7 +146,8 @@ headers view列表域及其宽度，nil表示无限制：
   (setq mu4e-headers-trashed-mark        '("T"  . ""))
 #+END_SRC
 
-h列表页面自定义一些快捷键（forward不知道为什么丢了）:
+*** keys
+列表页面自定义一些快捷键（forward不知道为什么丢了）:
 #+BEGIN_SRC emacs-lisp
   (defun custom-mu4e-headers-toggle-flag ()
     (interactive)
@@ -178,17 +180,22 @@ h列表页面自定义一些快捷键（forward不知道为什么丢了）:
                                       (evil-define-key 'motion mu4e-headers-mode-map (kbd "F") 'mu4e-compose-forward)
                                       (evil-define-key 'motion mu4e-headers-mode-map (kbd "!") 'custom-mu4e-headers-toggle-flag)
                                       (evil-define-key 'motion mu4e-headers-mode-map (kbd "*") 'custom-mu4e-headers-toggle-read)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "E") 'mu4e-compose-edit)))
+                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "E") 'mu4e-compose-edit)
+                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "C-n") 'mu4e-headers-next-unread)
+                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "C-p") 'mu4e-headers-prev-unread)
+                                      ))
 #+END_SRC
 
+*** org
 capture action自动将链接加入剪贴板以及org-stored-links
 #+BEGIN_SRC emacs-lisp
   (advice-add 'mu4e-action-capture-message :after
               (lambda (msg)
                 (let ((subject (mu4e-message-field msg :subject))
                       (link (org-mu4e-store-link)))
-                  (when (boundp 'simpleclip)
+                  (when (boundp 'simpleclip-set-contents)
                     (simpleclip-set-contents (format "[[%s][%s]]" link subject)))
+                  (kill-new (format "[[%s][%s]]" link subject))
                   (push (list link subject) org-stored-links))))
 #+END_SRC
 ** Message
@@ -267,7 +274,7 @@ aV在浏览器中打开：
                                                ( (,(format "/%s/INBOX" work-mailaddr) . ?i)
                                                  (,(format "/[%s]/.Sent Mail" work-mailaddr) . ?s)
                                                  (,(format "/[%s]/.Trash" work-mailaddr) . ?t)
-                                                 (,(format "/%s/其他文件夹.Resume" work-mailaddr) . ?r)))
+                                                 (,(format "/%s/其他文件夹.Jenkins" work-mailaddr) . ?j)))
                        (mu4e-drafts-folder     . ,(format "/[%s]/.Drafts" work-mailaddr))
                        (mu4e-sent-folder       . ,(format "/[%s]/.Sent Mail" work-mailaddr))
                        (mu4e-trash-folder      . ,(format "/[%s]/.Trash" work-mailaddr) )
@@ -545,12 +552,12 @@ http://www.djcbsoftware.nl/code/mu/cheatsheet.html
 * packages
 ** mu4e-alert
 #+BEGIN_SRC emacs-lisp
-  (require-package 'mu4e-alert)
-  (with-eval-after-load 'mu4e
-    ;; (mu4e-alert-set-default-style 'notifier)
-    ;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-    (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
-    (setq mu4e-alert-interesting-mail-query "flag:unread maildir:/shuai.zhao@linkplay.com/INBOX"))
+  ;; (require-package 'mu4e-alert)
+  ;; (with-eval-after-load 'mu4e
+  ;;   ;; (mu4e-alert-set-default-style 'notifier)
+  ;;   ;; (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+  ;;   (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+  ;;   (setq mu4e-alert-interesting-mail-query "flag:unread maildir:/shuai.zhao@linkplay.com/INBOX"))
 
 #+END_SRC
 

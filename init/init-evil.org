@@ -18,7 +18,7 @@ M-x customize-group -> 默认触发为\，改为SPC
     (setq evil-leader/leader "SPC")
     (global-evil-leader-mode)
     (evil-mode t)
-    (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode")) ; w3m mode needs this too!
+    (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode" "cfw:calendar-mode")) ; w3m mode needs this too!
 
     (evil-leader/set-key
       ;; file & buffer
