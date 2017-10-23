@@ -2,42 +2,46 @@
 未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
     (setq package-selected-packages (append package-selected-packages '(use-package
-                                         company
-                                         company-anaconda
-                                         company-tern
-                                         hungry-delete
-                                         swiper
-                                         counsel
-                                         smartparens
-                                         exec-path-from-shell
-                                         popwin
-                                         reveal-in-osx-finder
-                                         which-key
-                                         slime
-                                         rainbow-delimiters
-                                         elpy
-                                         recentf-ext
-                                         s
-                                         avy
-                                         osx-dictionary
-                                         nyan-mode
-                                         skewer-mode
-                                         sr-speedbar
-                                         flycheck
-                                         yasnippet
-                                         imenu-list
-                                         neotree
-                                         switch-buffer-functions
-                                         auto-highlight-symbol
-                                         json-mode
-                                         anzu
-                                         evil-anzu
-                                         simpleclip
-                                         switch-window
-                                         organic-green-theme
-                                         engine-mode
-                                         cnfonts
-                                         ace-pinyin)))
+                                                                         company
+                                                                         company-anaconda
+                                                                         company-tern
+                                                                         hungry-delete
+                                                                         swiper
+                                                                         counsel
+                                                                         smartparens
+                                                                         exec-path-from-shell
+                                                                         popwin
+                                                                         reveal-in-osx-finder
+                                                                         which-key
+                                                                         slime
+                                                                         rainbow-delimiters
+                                                                         elpy
+                                                                         recentf-ext
+                                                                         s
+                                                                         avy
+                                                                         osx-dictionary
+                                                                         nyan-mode
+                                                                         skewer-mode
+                                                                         sr-speedbar
+                                                                         flycheck
+                                                                         yasnippet
+                                                                         imenu-list
+                                                                         neotree
+                                                                         switch-buffer-functions
+                                                                         auto-highlight-symbol
+                                                                         json-mode
+                                                                         anzu
+                                                                         evil-anzu
+                                                                         simpleclip
+                                                                         switch-window
+                                                                         organic-green-theme
+                                                                         engine-mode
+                                                                         cnfonts
+                                                                         ace-pinyin
+                                                                         ggtags
+                                                                         counsel-gtags
+                                                                         irony
+                                                                         company-irony)))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
@@ -411,4 +415,49 @@ C-c o 打开当前文件所在的Finder;
   (cnfonts-enable)
   ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
   (cnfonts-set-spacemacs-fallback-fonts)
+#+END_SRC
+** ggtags
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                (ggtags-mode 1))))
+#+END_SRC
+** irony
+mac上先brew install cmake，再执行下面的语句再执行M-x irony-install-server:
+#+BEGIN_SRC shell
+  ### create /usr/local if not there yet
+  sudo mkdir -p /usr/local/lib /usr/local/include
+  ### grab standard libclang
+  sudo cp -p "`xcode-select --print-path`"/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib /usr/local/lib
+  ### (dirty part) supplement with latest llvm clang-c includes
+  cd /tmp
+  svn export http://llvm.org/svn/llvm-project/cfe/trunk/include/clang-c/
+  sudo cp -RP clang-c /usr/local/include
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package irony
+    :ensure t
+    :defer t
+    :init
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'objc-mode-hook 'irony-mode)
+    :config
+    ;; replace the `completion-at-point' and `complete-symbol' bindings in
+    ;; irony-mode's buffers by irony-mode's function
+    (defun my-irony-mode-hook ()
+      (define-key irony-mode-map [remap completion-at-point]
+        'irony-completion-at-point-async)
+      (define-key irony-mode-map [remap complete-symbol]
+        'irony-completion-at-point-async))
+    (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+    )
+#+END_SRC
+*** company-irony
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load "company"
+    '(add-to-list 'company-backends '(company-irony company-gtags)))
 #+END_SRC

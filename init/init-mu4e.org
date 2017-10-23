@@ -15,7 +15,7 @@
 
 同步邮件的时间间隔：
 #+BEGIN_SRC emacs-lisp
-  (setq mu4e-update-interval 300)
+  (setq mu4e-update-interval 30)
 #+END_SRC
 
 对富文本html的处理：
@@ -117,6 +117,29 @@ header list时间戳：
   (add-to-list 'mu4e~headers-line-handler-functions 'custom-mu4e~headers-line-apply-thread-face)
 #+END_SRC
 
+对于发给自己的邮件, 字体加粗
+#+BEGIN_SRC emacs-lisp
+  (defface custom-mu4e~tome-face
+    '((t :underline t
+         ))
+    "Face for mails sent to me")
+
+  (defun custom-mu4e~headers-line-apply-tome-face (msg line)
+    "Different background color for different thread"
+    (let ((toField (mu4e-message-field msg :to))
+          (breakFlag nil))
+      (while (and (not breakFlag) toField)
+        (when (string= user-mail-address (cdr (car toField)))
+          (setq breakFlag t)
+          (add-face-text-property 0 (length line) 'custom-mu4e~tome-face t line)
+          )
+        (setq toField (cdr toField))
+        )
+      line))
+
+  (add-to-list 'mu4e~headers-line-handler-functions 'custom-mu4e~headers-line-apply-tome-face)
+#+END_SRC
+
 headers view列表域及其宽度，nil表示无限制：
 #+BEGIN_SRC emacs-lisp
   (setq mu4e-headers-fields
@@ -193,7 +216,7 @@ capture action自动将链接加入剪贴板以及org-stored-links
               (lambda (msg)
                 (let ((subject (mu4e-message-field msg :subject))
                       (link (org-mu4e-store-link)))
-                  (when (boundp 'simpleclip-set-contents)
+                  (when (boundp 'simpleclip-contents)
                     (simpleclip-set-contents (format "[[%s][%s]]" link subject)))
                   (kill-new (format "[[%s][%s]]" link subject))
                   (push (list link subject) org-stored-links))))

@@ -44,6 +44,7 @@
 (org-babel-load-file (expand-file-name "init/init-mu4e.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-git.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-project.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-tools.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-help.org" user-emacs-directory))
 
 ;;(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))
