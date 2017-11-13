@@ -30,3 +30,8 @@ network-security.data
 var/pcache/ucs-utils
 \#*
 .tern-port
+/currentDir
+/.org-id-locations
+ido.last
+irony/*
+meghanada/*

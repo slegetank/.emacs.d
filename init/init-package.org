@@ -34,14 +34,16 @@
                                                                          evil-anzu
                                                                          simpleclip
                                                                          switch-window
-                                                                         organic-green-theme
+                                                                         afternoon-theme
                                                                          engine-mode
                                                                          cnfonts
                                                                          ace-pinyin
                                                                          ggtags
                                                                          counsel-gtags
                                                                          irony
-                                                                         company-irony)))
+                                                                         company-irony
+                                                                         indent-guide
+                                                                         expand-region)))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
@@ -151,7 +153,7 @@
    #+END_SRC
 ** avy
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "gg" 'avy-goto-char)
+  (evil-leader/set-key "gg" 'avy-goto-char-timer)
 #+END_SRC
 
 ** exec-path-from-shell
@@ -272,55 +274,57 @@ C-c o 打开当前文件所在的Finder;
 #+END_SRC
 ** neotree
 #+BEGIN_SRC emacs-lisp
-    (require 'neotree)
-    (use-package neotree
-      :ensure t
-      :config
-      (evil-leader/set-key
-        "dn"  'custom-neotree-toggle-project-dir)
+  (require 'neotree)
+  (use-package neotree
+    :ensure t
+    :config
+    (evil-leader/set-key
+      "dn"  'custom-neotree-toggle-project-dir)
 
-      (setq neo-smart-open t)
-      (setq neo-window-fixed-size nil)
+    (setq neo-smart-open t)
+    (setq neo-window-fixed-size nil)
+  
+    (setq neo-hidden-regexp-list '("^\\." "\\.cs\\.meta$" "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "*_flymake.py$"))
 
-      ;; (setq projectile-switch-project-action 'neotree-projectile-action)
+    ;; (setq projectile-switch-project-action 'neotree-projectile-action)
 
-      (add-hook 'neotree-mode-hook
-                (lambda ()
-                  (define-key evil-normal-state-local-map (kbd "<tab>") (neotree-make-executor :dir-fn 'neo-open-dir))
-                  (define-key evil-normal-state-local-map (kbd "u") 'neotree-select-up-node)
-                  (define-key evil-normal-state-local-map (kbd "v") 'neotree-quick-look)
-                  (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
-                  (define-key evil-normal-state-local-map (kbd "I") 'neotree-hidden-file-toggle)
-                  (define-key evil-normal-state-local-map (kbd "z") 'neotree-stretch-toggle)
-                  (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
-                  (define-key evil-normal-state-local-map (kbd "r") 'neotree-rename-node)
-                  (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
-                  (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node)
-                  (define-key evil-normal-state-local-map (kbd "o") (lambda () (interactive) (shell-command (format "open %s" (neo-buffer--get-filename-current-line)))))
+    (add-hook 'neotree-mode-hook
+              (lambda ()
+                (define-key evil-normal-state-local-map (kbd "<tab>") (neotree-make-executor :dir-fn 'neo-open-dir))
+                (define-key evil-normal-state-local-map (kbd "u") 'neotree-select-up-node)
+                (define-key evil-normal-state-local-map (kbd "v") 'neotree-quick-look)
+                (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+                (define-key evil-normal-state-local-map (kbd "I") 'neotree-hidden-file-toggle)
+                (define-key evil-normal-state-local-map (kbd "z") 'neotree-stretch-toggle)
+                (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
+                (define-key evil-normal-state-local-map (kbd "r") 'neotree-rename-node)
+                (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
+                (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node)
+                (define-key evil-normal-state-local-map (kbd "o") (lambda () (interactive) (shell-command (format "open %s" (neo-buffer--get-filename-current-line)))))
 
-                  (define-key evil-normal-state-local-map (kbd "s") 'neotree-enter-vertical-split)
-                  (define-key evil-normal-state-local-map (kbd "S") 'neotree-enter-horizontal-split)
+                (define-key evil-normal-state-local-map (kbd "s") 'neotree-enter-vertical-split)
+                (define-key evil-normal-state-local-map (kbd "S") 'neotree-enter-horizontal-split)
 
-                  (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter))))
+                (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter))))
 
-    (use-package find-file-in-project :ensure t)
+  (use-package find-file-in-project :ensure t)
 
-    (defun custom-neotree-toggle-project-dir ()
-      "Open NeoTree using the git root. & show imenu"
-      (interactive)
-      ;; (imenu-list-smart-toggle)
-      (if (neo-global--window-exists-p)
-          (progn (neotree-hide)
-                 ;; (imenu-list-quit-window)
-  )
-        (let ((project-dir (or (ffip-project-root) (file-name-directory (or (buffer-file-name) ""))))
-              (file-name (buffer-file-name)))
-          ;; (imenu-list-show)
-          (if project-dir
-              (progn
-                (neotree-dir project-dir)
-                (neotree-find file-name))
-            (message "Buffer is invalid.")))))
+  (defun custom-neotree-toggle-project-dir ()
+    "Open NeoTree using the git root. & show imenu"
+    (interactive)
+    ;; (imenu-list-smart-toggle)
+    (if (neo-global--window-exists-p)
+        (progn (neotree-hide)
+               ;; (imenu-list-quit-window)
+               )
+      (let ((project-dir (or (ffip-project-root) (file-name-directory (or (buffer-file-name) ""))))
+            (file-name (buffer-file-name)))
+        ;; (imenu-list-show)
+        (if project-dir
+            (progn
+              (neotree-dir project-dir)
+              (neotree-find file-name))
+          (message "Buffer is invalid.")))))
 #+END_SRC
 ** auto-highlight-symbol
 #+BEGIN_SRC emacs-lisp
@@ -386,7 +390,7 @@ C-c o 打开当前文件所在的Finder;
 #+END_SRC
 ** theme
 #+BEGIN_SRC emacs-lisp
-;; (load-theme 'occidental t)
+(load-theme 'afternoon t)
 #+END_SRC
 ** engine-mode
 #+BEGIN_SRC emacs-lisp
@@ -460,4 +464,15 @@ mac上先brew install cmake，再执行下面的语句再执行M-x irony-install
 #+BEGIN_SRC emacs-lisp
   (eval-after-load "company"
     '(add-to-list 'company-backends '(company-irony company-gtags)))
+#+END_SRC
+** indent-guide
+#+BEGIN_SRC emacs-lisp
+  (require 'indent-guide)
+  (indent-guide-global-mode)
+  ;; (setq indent-guide-delay 0.1)
+#+END_SRC
+** expand-region
+#+BEGIN_SRC emacs-lisp
+  (require 'expand-region)
+  (global-set-key (kbd "S-<double-mouse-1>") 'er/expand-region)
 #+END_SRC

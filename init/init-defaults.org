@@ -21,8 +21,8 @@ brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件�
 
 保存文件的编辑位置。
 #+BEGIN_SRC emacs-lisp
-(desktop-save-mode 1)
-(setq history-length 20)
+  ;; (desktop-save-mode 1)
+  ;; (setq history-length 20)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp

@@ -5,6 +5,9 @@
 * packages
 ** counsel-projectile
 #+BEGIN_SRC emacs-lisp
+  (require 'counsel-projectile)
+  (add-to-list 'projectile-globally-ignored-files "bundle.js")
+  (add-to-list 'grep-find-ignored-files "bundle.js")
   (counsel-projectile-on)
 #+END_SRC
 

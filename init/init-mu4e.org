@@ -15,7 +15,7 @@
 
 同步邮件的时间间隔：
 #+BEGIN_SRC emacs-lisp
-  (setq mu4e-update-interval 30)
+  (setq mu4e-update-interval 50)
 #+END_SRC
 
 对富文本html的处理：
@@ -101,7 +101,7 @@ header list时间戳：
 自定义不同thread的不同背景色，更好的显示：
 #+BEGIN_SRC emacs-lisp
   (defface custom-mu4e~single-background-face
-    '((t :background "#FFFF00"
+    '((t :background "#969896"
          ))
     "face for line which thread is single number")
 
@@ -280,64 +280,67 @@ aV在浏览器中打开：
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (let ((163-mailaddr "slege_tank@163.com")
-        (work-mailaddr "shuai.zhao@linkplay.com"))
-    (setq mu4e-contexts
-          `(,(make-mu4e-context
-              :name "work"
-              :match-func (lambda (msg)
-                            (when msg
-                              (mu4e-message-contact-field-matches msg
-                                                                  :to "shuai.zhao@linkplay.com")))
-              :vars `( (user-mail-address      . ,work-mailaddr)
-                       (user-full-name         . "shuai.zhao" )
-                       (smtpmail-smtp-server   . "smtp.exmail.qq.com")
-                       (mu4e-sent-messages-behavior . sent)
-                       (mu4e-maildir-shortcuts .
-                                               ( (,(format "/%s/INBOX" work-mailaddr) . ?i)
-                                                 (,(format "/[%s]/.Sent Mail" work-mailaddr) . ?s)
-                                                 (,(format "/[%s]/.Trash" work-mailaddr) . ?t)
-                                                 (,(format "/%s/其他文件夹.Jenkins" work-mailaddr) . ?j)))
-                       (mu4e-drafts-folder     . ,(format "/[%s]/.Drafts" work-mailaddr))
-                       (mu4e-sent-folder       . ,(format "/[%s]/.Sent Mail" work-mailaddr))
-                       (mu4e-trash-folder      . ,(format "/[%s]/.Trash" work-mailaddr) )
-                       (mu4e-refile-folder     . ,(format "/[%s]/.All Mail" work-mailaddr) )
-                       (mu4e-bookmarks         . ((,(format "flag:unread maildir:/%s/INBOX AND NOT flag:trashed" work-mailaddr)  "Unread messages"      ?u)
-                                                  (,(format "flag:flagged maildir:/%s/INBOX" work-mailaddr)  "Flagged messages"      ?f)
-                                                  (,(format "to:shuai.zhao maildir:/%s/INBOX" work-mailaddr)  "To me"      ?m)
-                                                   ))
+      (let (
+  ;; (163-mailaddr "slege_tank@163.com")
+            (work-mailaddr "shuai.zhao@linkplay.com"))
+        (setq mu4e-contexts
+              `(,(make-mu4e-context
+                  :name "work"
+                  :match-func (lambda (msg)
+                                (when msg
+                                  (mu4e-message-contact-field-matches msg
+                                                                      :to "shuai.zhao@linkplay.com")))
+                  :vars `( (user-mail-address      . ,work-mailaddr)
+                           (user-full-name         . "shuai.zhao" )
+                           (smtpmail-smtp-server   . "smtp.exmail.qq.com")
+                           (mu4e-sent-messages-behavior . sent)
+                           (mu4e-maildir-shortcuts .
+                                                   ( (,(format "/%s/INBOX" work-mailaddr) . ?i)
+                                                     (,(format "/[%s]/.Sent Mail" work-mailaddr) . ?s)
+                                                     (,(format "/[%s]/.Trash" work-mailaddr) . ?t)
+                                                     (,(format "/%s/其他文件夹.Jenkins" work-mailaddr) . ?j)))
+                           (mu4e-drafts-folder     . ,(format "/[%s]/.Drafts" work-mailaddr))
+                           (mu4e-sent-folder       . ,(format "/[%s]/.Sent Mail" work-mailaddr))
+                           (mu4e-trash-folder      . ,(format "/[%s]/.Trash" work-mailaddr) )
+                           (mu4e-refile-folder     . ,(format "/[%s]/.All Mail" work-mailaddr) )
+                           (mu4e-bookmarks         . ((,(format "flag:unread maildir:/%s/INBOX AND NOT flag:trashed" work-mailaddr)  "Unread messages"      ?u)
+                                                      (,(format "flag:flagged maildir:/%s/INBOX" work-mailaddr)  "Flagged messages"      ?f)
+                                                      (,(format "to:shuai.zhao maildir:/%s/INBOX" work-mailaddr)  "To me"      ?m)
+                                                       ))
 
-                       (mu4e-compose-signature . ,(concat
-                                                  "赵帅 (Shuai Zhao)\n"
-                                                  (format "Email: %s\n" work-mailaddr)
-                                                  "\n"))))
-            ,(make-mu4e-context
-              :name "163"
-              :match-func (lambda (msg)
-                            (when msg
-                              (mu4e-message-contact-field-matches msg
-                                                                  :to "slege_tank@163.com")))
-              :vars `( (user-mail-address      . ,163-mailaddr)
-                       (user-full-name         . "slegetank" )
-                       (smtpmail-smtp-server   . "smtp.163.com")
-                       (mu4e-sent-messages-behavior . delete)
-                       (mu4e-maildir-shortcuts .
-                                               ( (,(format "/%s/INBOX" 163-mailaddr) . ?i)
-                                                 (,(format "/[%s]/.Sent Mail" 163-mailaddr) . ?s)
-                                                 (,(format "/[%s]/.Trash" 163-mailaddr) . ?t)
-                                                 (,(format "/[%s]/.All Mail" 163-mailaddr) . ?a)))
-                       (mu4e-drafts-folder     . ,(format "/[%s]/.Drafts" 163-mailaddr))
-                       (mu4e-sent-folder       . ,(format "/[%s]/.Sent Mail" 163-mailaddr))
-                       (mu4e-trash-folder      . ,(format "/[%s]/.Trash" 163-mailaddr) )
-                       (mu4e-refile-folder     . ,(format "/[%s]/.All Mail" 163-mailaddr) )
-                       (mu4e-bookmarks         . ((,(format "flag:unread maildir:/%s/INBOX AND NOT flag:trashed" work-mailaddr)  "Unread messages"      ?u)
-                                                  (,(format "flag:flagged maildir:/%s/INBOX" work-mailaddr)  "Flagged messages"      ?f)
-                                                  (,(format "to:slege_tank@163.com maildir:/%s/INBOX" work-mailaddr)  "To me"      ?m)
-                                                  ))
-                       (mu4e-compose-signature .
-                                               ,(concat
-                                                "Thanks\n"
-                                                "slegetank\n")))))))
+                           (mu4e-compose-signature . ,(concat
+                                                      "赵帅 (Shuai Zhao)\n"
+                                                      (format "Email: %s\n" work-mailaddr)
+                                                      "\n"))))
+                ;; ,(make-mu4e-context
+                ;;   :name "163"
+                ;;   :match-func (lambda (msg)
+                ;;                 (when msg
+                ;;                   (mu4e-message-contact-field-matches msg
+                ;;                                                       :to "slege_tank@163.com")))
+                ;;   :vars `( (user-mail-address      . ,163-mailaddr)
+                ;;            (user-full-name         . "slegetank" )
+                ;;            (smtpmail-smtp-server   . "smtp.163.com")
+                ;;            (mu4e-sent-messages-behavior . delete)
+                ;;            (mu4e-maildir-shortcuts .
+                ;;                                    ( (,(format "/%s/INBOX" 163-mailaddr) . ?i)
+                ;;                                      (,(format "/[%s]/.Sent Mail" 163-mailaddr) . ?s)
+                ;;                                      (,(format "/[%s]/.Trash" 163-mailaddr) . ?t)
+                ;;                                      (,(format "/[%s]/.All Mail" 163-mailaddr) . ?a)))
+                ;;            (mu4e-drafts-folder     . ,(format "/[%s]/.Drafts" 163-mailaddr))
+                ;;            (mu4e-sent-folder       . ,(format "/[%s]/.Sent Mail" 163-mailaddr))
+                ;;            (mu4e-trash-folder      . ,(format "/[%s]/.Trash" 163-mailaddr) )
+                ;;            (mu4e-refile-folder     . ,(format "/[%s]/.All Mail" 163-mailaddr) )
+                ;;            (mu4e-bookmarks         . ((,(format "flag:unread maildir:/%s/INBOX AND NOT flag:trashed" work-mailaddr)  "Unread messages"      ?u)
+                ;;                                       (,(format "flag:flagged maildir:/%s/INBOX" work-mailaddr)  "Flagged messages"      ?f)
+                ;;                                       (,(format "to:slege_tank@163.com maildir:/%s/INBOX" work-mailaddr)  "To me"      ?m)
+                ;;                                       ))
+                ;;            (mu4e-compose-signature .
+                ;;                                    ,(concat
+                ;;                                     "Thanks\n"
+                ;;                                     "slegetank\n"))))
+
+    )))
 #+END_SRC
 
 * send

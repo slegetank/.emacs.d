@@ -1,0 +1,71 @@
+* subject
+有些命令工具不想单独摘出来，就放到这里吧。
+* terminal
+make-term version:
+#+BEGIN_SRC emacs-lisp
+  ;; make-term version
+  (defun fast-terminal ()
+    "fastway to access terminal. Only open one."
+    (interactive)
+    (unless (get-buffer-window "*terminal*" 'visible)
+      (unless (get-buffer "*terminal*")
+        (make-term "terminal" (getenv "SHELL")))
+      (split-window-sensibly)
+      (other-window 1)
+      (set-buffer "*terminal*")
+      (term-mode)
+      (term-char-mode)
+      (switch-to-buffer "*terminal*")
+      (and default-directory (term-send-raw-string (format "cd %s\n" default-directory)))
+      (goto-char (point-max))
+      ))
+
+  ;; auto delete window when process exit
+  (add-hook 'term-exec-hook (lambda ()
+                              (let* ((buff (current-buffer))
+                                     (proc (get-buffer-process buff)))
+                                (lexical-let ((buff buff))
+                                  (set-process-sentinel proc (lambda (process event)
+                                                               (if (string= event "finished\n")
+                                                                   (kill-buffer-and-window))))))))
+
+  (evil-leader/set-key "tt"  'fast-terminal)
+
+  (add-hook 'term-mode-hook '(lambda ()
+                               (evil-define-key 'normal term-raw-map (kbd "q") '(lambda () (interactive) (other-window -1) (delete-window (get-buffer-window "*terminal*"))))
+                               (evil-define-key 'normal term-raw-map (kbd "C-r") 'term-send-reverse-search-history)
+                               ))
+#+END_SRC
+
+eshell version:
+#+BEGIN_SRC emacs-lisp
+    (defun fast-terminal-eshell ()
+      "Opens up a new shell in the directory associated with the current buffer's file."
+      (interactive)
+      (let* ((parent (if (buffer-file-name)
+                         (file-name-directory (buffer-file-name))
+                       default-directory))
+             (name (car (last (split-string parent "/" t)))))
+        (split-window-vertically)
+        (other-window 1)
+        (eshell "new")
+        (rename-buffer (concat "*eshell: " name "*"))
+
+        (insert (concat "ls"))
+        (eshell-send-input)))
+
+    (defun quit-eshell-window (&optional window)
+      "Remove WINDOW from the display.  Default is `selected-window'.
+    If WINDOW is the only one in its frame, then `delete-frame' too."
+      (interactive)
+      (save-current-buffer
+        (setq window (or window (selected-window)))
+        (select-window window)
+        (kill-buffer)
+        (if (one-window-p t)
+            (delete-frame)
+          (delete-window (selected-window)))))
+
+    ;; (global-set-key (kbd "<f12>") 'fast-terminal-eshell)
+    ;; (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'quit-eshell-window)))
+#+END_SRC
