@@ -3,14 +3,41 @@
 #+END_SRC
 
 * packages
+ivy for projectile
 ** counsel-projectile
 #+BEGIN_SRC emacs-lisp
   (require 'counsel-projectile)
-  (add-to-list 'projectile-globally-ignored-files "bundle.js")
   (add-to-list 'grep-find-ignored-files "bundle.js")
   (counsel-projectile-on)
 #+END_SRC
 
+* custom
+counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.projectile，一般情况下是可以的，但是对于webpack的工程由于bundle.js不会被忽略，但是又不想搜其中的东西，所以只好摘出来自定义了：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/projectile-ag (&optional options)
+    "Copy from counsel, and use .projectile"
+    (interactive)
+    (if (projectile-project-p)
+        (let* ((options
+                (if current-prefix-arg
+                    (read-string "options: ")
+                  options))
+               (ignored
+                (append
+                 (cl-union (projectile-ignored-files-rel) grep-find-ignored-files)
+                 (cl-union (projectile-ignored-directories-rel) grep-find-ignored-directories)))
+               (options
+                (concat options " "
+                        (mapconcat (lambda (i)
+                                     (concat "--ignore " (shell-quote-argument i)))
+                                   ignored
+                                   " "))))
+          (counsel-ag (eval counsel-projectile-ag-initial-input)
+                      (projectile-project-root)
+                      options
+                      (projectile-prepend-project-name "ag")))
+      (user-error "You're not in a project")))
+#+END_SRC
 * notes
 #+BEGIN_SRC emacs-lisp
   (defun custom-note-init (filename)
@@ -33,7 +60,7 @@
   (evil-leader/set-key
     "pf" 'counsel-projectile-find-file
     "pd" 'counsel-projectile-find-dir
-    "ps" 'counsel-projectile-ag
+    "ps" 'slegetank/projectile-ag
     "pb" 'counsel-projectile-switch-to-buffer
     "pp" 'counsel-projectile-switch-project
     "pn" 'custom-note-init)
