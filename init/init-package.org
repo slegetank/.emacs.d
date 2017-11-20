@@ -9,7 +9,6 @@
                                                                          swiper
                                                                          counsel
                                                                          smartparens
-                                                                         exec-path-from-shell
                                                                          popwin
                                                                          reveal-in-osx-finder
                                                                          which-key
@@ -153,40 +152,21 @@
    #+END_SRC
 ** avy
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "gg" 'avy-goto-char-timer)
+  (evil-leader/set-key "gg" 'avy-goto-word-1)
 #+END_SRC
 
-** exec-path-from-shell
-使MacOS上的Emacs能正确的使用shell的环境变量。
-#+BEGIN_SRC emacs-lisp
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
-#+END_SRC
 ** reveal-in-osx-finder
 C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-c o") 'reveal-in-osx-finder)
+  (evil-leader/set-key "fo" 'reveal-in-osx-finder)
 #+END_SRC
 
-** helm-ag
-工程内搜索工具。C-c C-e编辑结果。
-#+BEGIN_SRC emacs-lisp
-  ;; (custom-set-variables
-  ;;  '(helm-follow-mode-persistent t))
-
-  ;; (use-package helm-ag
-  ;;   :ensure t
-  ;;   :config
-  ;;   (define-key evil-motion-state-map (kbd "s-F") 'helm-do-ag-project-root)
-  ;;   (define-key evil-motion-state-map (kbd "s-f") 'helm-do-ag-this-file)
-  ;;   (define-key helm-do-ag-map (kbd "C-j") 'helm-next-line)
-  ;;   (define-key helm-do-ag-map (kbd "C-k") 'helm-previous-line)
-  ;;   )
-#+END_SRC
 ** which-key
    #+BEGIN_SRC emacs-lisp
      (which-key-mode 1)
      (setq which-key-side-window-max-height 0.25)
+     (which-key-add-key-based-replacements
+       "ff" "find files")
    #+END_SRC
 ** elpy
    #+BEGIN_SRC emacs-lisp

@@ -1,3 +1,5 @@
+emacs 的邮件客户端，配置流程见：[[https://slegetank.github.io/blog/20170328-mu4e.html]]
+
 * default
 #+BEGIN_SRC emacs-lisp
   (require 'mu4e)
@@ -5,7 +7,7 @@
   (setq mail-user-agent 'mu4e-user-agent)
 
   ;; disable minibuffer message
-(setq mu4e-hide-index-messages t)
+  (setq mu4e-hide-index-messages t)
 #+END_SRC
 
 定义main view中U所调用的更新本地邮件的命令：
