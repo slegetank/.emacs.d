@@ -370,7 +370,7 @@ C-c o 打开当前文件所在的Finder;
 #+END_SRC
 ** theme
 #+BEGIN_SRC emacs-lisp
-(load-theme 'afternoon t)
+  (load-theme 'afternoon t)
 #+END_SRC
 ** engine-mode
 #+BEGIN_SRC emacs-lisp

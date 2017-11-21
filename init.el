@@ -32,10 +32,10 @@
        (require-package package min-version t)))))
 
 ;; 加载配置orgmode文件
-(org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-evil.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-blog.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-elisp.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-python.org" user-emacs-directory))
@@ -57,7 +57,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("17cda1304ba8d26d62bf247cab2c161d12957054b6be4477abb5972a74eea4e1" "8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" "889a93331bc657c0f05a04b8665b78b3c94a12ca76771342cee27d6605abcd0e" default)))
+    ("2a739405edf418b8581dcd176aaf695d319f99e3488224a3c495cb0f9fd814e3" "17cda1304ba8d26d62bf247cab2c161d12957054b6be4477abb5972a74eea4e1" "8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" "889a93331bc657c0f05a04b8665b78b3c94a12ca76771342cee27d6605abcd0e" default)))
  '(fci-rule-color "#0084C8"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
