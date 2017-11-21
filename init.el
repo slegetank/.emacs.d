@@ -32,10 +32,10 @@
        (require-package package min-version t)))))
 
 ;; 加载配置orgmode文件
+(org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-evil.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-blog.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-elisp.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-python.org" user-emacs-directory))

@@ -1,11 +1,8 @@
-#+BEGIN_SRC emacs-lisp
-  (require-package 'counsel-projectile)
-#+END_SRC
-
 * packages
-ivy for projectile
+projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步封装。在此之前，请先安装https://github.com/ggreer/the_silver_searcher ；在mac上也就是brew install the_silver_searcher。
 ** counsel-projectile
 #+BEGIN_SRC emacs-lisp
+  (require-package 'counsel-projectile)
   (require 'counsel-projectile)
   (add-to-list 'grep-find-ignored-files "bundle.js")
   (counsel-projectile-on)

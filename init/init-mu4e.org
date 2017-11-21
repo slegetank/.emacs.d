@@ -41,17 +41,32 @@ message compose view's head format:
   (setq message-citation-line-function 'message-insert-formatted-citation-line)
 #+END_SRC
 
+保存附件不弹提示：
+#+BEGIN_SRC emacs-lisp
+  (setq mu4e-save-multiple-attachments-without-asking t)
+#+END_SRC
+
 附件保存地址：
 #+BEGIN_SRC emacs-lisp
-  (setq mu4e-attachment-dir  "~/MU4EMail")
+  (defun slegetank/mu4e-generate-attach-dir ()
+    (concat "~/MU4EMail/"
+            (s-trim
+             (replace-regexp-in-string "[^A-Za-z0-9]" ""
+                                       (mu4e-field-at-point :message-id)))))
+
+  (setq mu4e-attachment-dir (lambda (fname mimetype)
+                              (let ((dir (slegetank/mu4e-generate-attach-dir)))
+                                (unless (file-exists-p dir)
+                                  (make-directory dir))
+                                dir)))
 #+END_SRC
 
 发送配置：
 #+BEGIN_SRC emacs-lisp
   (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-stream-service 25
-        smtpmail-stream-type 'starttls
-        message-kill-buffer-on-exit t)
+        smtpmail-smtp-service 465
+        smtpmail-stream-type 'ssl)
+  (setq smtpmail-auth-credentials (expand-file-name "~/.authinfo"))
 #+END_SRC
 
 在dired中C-c enter C-a向mail中加入附件：
@@ -70,6 +85,13 @@ message compose view's head format:
 
   (setq gnus-dired-mail-mode 'mu4e-user-agent)
   (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
+#+END_SRC
+* message id
+#+BEGIN_SRC emacs-lisp
+  (defun custom-mu4e-get-messageid ()
+    (interactive)
+    (message (mu4e-field-at-point :message-id))
+    (kill-new (mu4e-field-at-point :message-id)))
 #+END_SRC
 * evil
 #+BEGIN_SRC emacs-lisp
@@ -269,6 +291,34 @@ aV在浏览器中打开：
 
   (add-hook 'mu4e-compose-mode-hook 'orgstruct++-mode 'append)
   (add-hook 'mu4e-compose-mode-hook 'orgtbl-mode 'append)
+#+END_SRC
+
+保存并打开附件所在地址：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/mu4e-save-and-open-attach-dir ()
+    (interactive)
+    "Save all attachments and open its dir in finder"
+    (let* ((msg (mu4e-message-at-point))
+           (count (hash-table-count mu4e~view-attach-map))
+           (attachnums (mu4e-split-ranges-to-numbers "a" count)))
+      (let* ((path (concat (mu4e~get-attachment-dir) "/"))
+             (attachdir (mu4e~view-request-attachments-dir path)))
+        (dolist (num attachnums)
+          (let* ((att (mu4e~view-get-attach msg num))
+                 (fname  (plist-get att :name))
+                 (index (plist-get att :index))
+                 (retry t)
+                 fpath)
+            (while retry
+              (setq fpath (expand-file-name (concat attachdir fname) path))
+              (setq retry
+                    (and (file-exists-p fpath)
+                         (not (y-or-n-p
+                               (mu4e-format "Overwrite '%s'?" fpath))))))
+            (mu4e~proc-extract
+             'save (mu4e-message-field msg :docid)
+             index mu4e-decryption-policy fpath)))))
+    (shell-command (format "open %s" (slegetank/mu4e-generate-attach-dir))))
 #+END_SRC
 * contexts
 默认第一个context
@@ -566,17 +616,6 @@ http://www.djcbsoftware.nl/code/mu/cheatsheet.html
             (kill-region start end)
             (insert contact))))))
 #+END_SRC
-* message id
-#+BEGIN_SRC emacs-lisp
-  (defun custom-mu4e-get-messageid ()
-    (interactive)
-    (message (mu4e-field-at-point :message-id))
-    (kill-new (mu4e-field-at-point :message-id)))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  ;; (mu4e-view-message-with-message-id "1405353963.3232.1503227877998.JavaMail.jenkins@d87f3df0b8c5")
-#+END_SRC
 * packages
 ** mu4e-alert
 #+BEGIN_SRC emacs-lisp
@@ -602,9 +641,10 @@ http://www.djcbsoftware.nl/code/mu/cheatsheet.html
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-    (evil-leader/set-key
-      "ma" 'mu4e
-      "mc" 'custom-compose-html-plain-config-switch
-      "mu" 'custom-mu4e-update-all
-      "mi" 'custom-mu4e-get-messageid)
+      (evil-leader/set-key
+        "ma" 'mu4e
+        "mc" 'custom-compose-html-plain-config-switch
+        "mu" 'custom-mu4e-update-all
+        "mi" 'custom-mu4e-get-messageid
+        "ms" 'slegetank/mu4e-save-and-open-attach-dir)
 #+END_SRC
