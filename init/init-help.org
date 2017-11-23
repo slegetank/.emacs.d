@@ -41,10 +41,9 @@
     (custom-help-open-article "remote"))
 #+END_SRC
 
-
 * keys
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key
-    "hl" 'custom-help-open-local-article
-    "hr" 'custom-help-open-remote-article)
+  (slegetank/leader-define-key nil "h" nil "Help"
+                               "hl" 'custom-help-open-local-article "Local help"
+                               "hr" 'custom-help-open-remote-article "Remote help")
 #+END_SRC

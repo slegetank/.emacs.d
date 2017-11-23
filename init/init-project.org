@@ -57,9 +57,9 @@ counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.pr
   (evil-leader/set-key
     "pf" 'counsel-projectile-find-file
     "pd" 'counsel-projectile-find-dir
-    "ps" 'slegetank/projectile-ag
     "pb" 'counsel-projectile-switch-to-buffer
     "pp" 'counsel-projectile-switch-project
     "pn" 'custom-note-init)
+    (define-key evil-motion-state-map (kbd "s-F") 'counsel-ag)
 #+END_SRC
 

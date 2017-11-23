@@ -34,6 +34,7 @@
 ;; 加载配置orgmode文件
 (org-babel-load-file (expand-file-name "init/init-evil.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))
+(org-babel-load-file (expand-file-name "init/init-search.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
 (org-babel-load-file (expand-file-name "init/init-blog.org" user-emacs-directory))

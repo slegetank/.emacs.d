@@ -6,41 +6,71 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
 #+BEGIN_SRC emacs-lisp
   (require-package 'evil)
 #+END_SRC
+* which-key
+evil-leader配上which-key 效果非常棒
+#+BEGIN_SRC emacs-lisp
+  (require-package 'which-key)
+  (which-key-mode 1)
+  (setq which-key-side-window-max-height 0.25)
+  ;; (which-key-add-key-based-replacements
+  ;;   "<SPC>f" "File"
+  ;;   "<SPC>d" "Directory"
+  ;;   "<SPC>b" "Buffer"
+  ;;   "<SPC>bl" "Blog"
+  ;;   )
 
+#+END_SRC
 * evil-leader
 快捷键
 M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
-    (require-package 'evil-leader)
+  (require-package 'evil-leader)
   (require 'evil-leader)
 
-    (setq evil-leader/in-all-states t)
-    (setq evil-leader/leader "SPC")
-    (global-evil-leader-mode)
-    (evil-mode t)
-    (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode" "cfw:calendar-mode")) ; w3m mode needs this too!
+  (setq evil-leader/in-all-states t)
+  (setq evil-leader/leader "SPC")
+  (global-evil-leader-mode)
+  (evil-mode t)
+  (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode" "cfw:calendar-mode")) ; w3m mode needs this too!
 
-    (evil-leader/set-key
-      ;; file & buffer
-      "ff" 'counsel-find-file
-      "bb" 'ivy-switch-buffer
-      "bk" 'kill-buffer
-      "bp" 'previous-buffer
-      "bn" 'next-buffer
-      ;; window
-      "wk" 'delete-other-windows
-      "ws" 'split-window-horizontally
-      "wv" 'split-window-vertically
-      ;; elisp
-      "er" 'eval-region
-      "eb" 'eval-buffer
-      "." 'repeat
-      )
+  (defun slegetank/leader-define-key (map key def desc &rest seq)
+    "Custom method to define key and add comment to which-key"
+    (let ((map (unless map evil-leader--default-map))
+          (fkey (concat "<SPC>" key))
+          (fdesc desc)
+          keyDescList)
+      (while key
+        (when def
+          (define-key map (read-kbd-macro key) def))
+        (setq key (pop seq)
+              def (pop seq)
+              desc (pop seq))
+        (when key
+          (push desc keyDescList)
+          (push (concat "<SPC>" key) keyDescList)))
+      (apply 'which-key-add-key-based-replacements fkey fdesc keyDescList)))
 
-    ;; q for kill-buffer, not for exit emacss
-    (evil-ex-define-cmd "q" (lambda () (interactive) (kill-buffer (current-buffer))))
-    ;; wq for save & kill-buffer, not for exit emacss
-    (evil-ex-define-cmd "wq" (lambda () (interactive) (save-buffer) (kill-buffer (current-buffer))))
+  (slegetank/leader-define-key nil
+                               "f" nil "Files"
+                               "ff" 'counsel-find-file "Find file"
+                               "b" nil "Buffers"
+                               "bb" 'ivy-switch-buffer "Switch buffer"
+                               "bk" 'kill-buffer "Kill buffer"
+                               "bn" 'next-buffer "Next buffer"
+                               "bp" 'previous-buffer "Previous buffer"
+                               "w" nil "Windows"
+                               "wk" 'delete-other-windows "Kill window"
+                               "ws" 'split-window-horizontally "Split window horizontally"
+                               "wv" 'split-window-vertically "Split window vertically"
+                               "e" nil "elisp"
+                               "er" 'eval-region "Eval region"
+                               "eb" 'eval-buffer "Eval buffer"
+                               "." 'repeat "Repeat")
+
+  ;; q for kill-buffer, not for exit emacss
+  (evil-ex-define-cmd "q" (lambda () (interactive) (kill-buffer (current-buffer))))
+  ;; wq for save & kill-buffer, not for exit emacss
+  (evil-ex-define-cmd "wq" (lambda () (interactive) (save-buffer) (kill-buffer (current-buffer))))
 #+END_SRC
 
 * evil-nerd-commenter

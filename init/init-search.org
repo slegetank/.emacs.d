@@ -1,0 +1,120 @@
+* multiple-cursors
+https://github.com/magnars/multiple-cursors.el
+#+BEGIN_SRC emacs-lisp
+  (require-package 'multiple-cursors)
+  (require 'multiple-cursors)
+#+END_SRC
+** evil-mc
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-mc)
+  (require 'evil-mc)
+  (global-evil-mc-mode 1)
+
+  ;; (slegetank/leader-define-key nil "sm" (lambda () (interactive) (if (evil-mc-has-cursors-p)
+  ;;                                                                  (evil-mc-undo-all-cursors)
+  ;;                                                                (evil-mc-make-all-cursors)
+  ;;                                                                )) "Multiple cursor")
+  (define-key evil-normal-state-map (kbd "s-m") (lambda () (interactive) (if (evil-mc-has-cursors-p)
+                                                                   (evil-mc-undo-all-cursors)
+                                                                 (evil-mc-make-all-cursors)
+                                                                 )))
+
+  (evil-define-key 'normal evil-mc-key-map (kbd "C-g") 'evil-mc-undo-all-cursors)
+  (evil-define-key 'normal evil-mc-key-map (kbd "<escape>") 'evil-mc-undo-all-cursors)
+#+END_SRC
+* ivy
+https://github.com/abo-abo/swiper
+ivy是强大的查找文件、搜索代码、执行命令的补全工具。
+** ivy
+#+BEGIN_SRC emacs-lisp
+  (ivy-mode 1)
+#+END_SRC
+swiper提供了更优美的单文件搜索功能，支持正则：
+** swiper
+#+BEGIN_SRC emacs-lisp
+  (require-package 'swiper)
+  (require'swiper)
+
+  (setq counsel-find-file-at-point t)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+  (setq ivy-display-style 'fancy)
+  (setq ivy-initial-inputs-alist nil)
+  (define-key evil-normal-state-map (kbd "s-f") 'swiper)
+
+  (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
+  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
+#+END_SRC
+
+swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
+#+BEGIN_SRC emacs-lisp
+  (define-key swiper-map (kbd "s-r") 'swiper-query-replace)
+#+END_SRC
+
+当然更强大的编辑功能则是跟wgrep组合起来:
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/swiper-occur-edit ()
+    (interactive)
+    "Easier way to edit occur buffer"
+    (dolist (buffer (buffer-list))
+      (let ((name (buffer-name buffer)))
+        (when (and (get-buffer-window name 'visible)
+                   (string-match "^\\*ivy-occur swiper" name))
+          (with-current-buffer buffer
+            (ivy-wgrep-change-to-wgrep-mode)
+            (evil-define-key 'normal wgrep-mode-map (kbd "q") (lambda ()
+                                                                (interactive)
+                                                                (wgrep-exit)
+                                                                (kill-buffer)
+                                                                (delete-window (selected-window))))
+            (define-key wgrep-mode-map (kbd "C-c C-c") (lambda ()
+                                                         (interactive)
+                                                         (wgrep-finish-edit)
+                                                         (kill-buffer)
+                                                         (delete-window (selected-window))))
+            (define-key wgrep-mode-map (kbd "C-c C-k") (lambda ()
+                                                         (interactive)
+                                                         (wgrep-abort-changes)
+                                                         (kill-buffer)
+                                                         (delete-window (selected-window))))
+            )))))
+
+  (add-hook 'ivy-occur-grep-mode-hook (lambda () (interactive)
+                                        (run-with-timer 0.1 nil 'slegetank/swiper-occur-edit)))
+
+  (define-key swiper-map (kbd "s-m") 'ivy-occur)
+#+END_SRC
+
+* avy
+通过提示键进行当前屏幕内的跳转：
+** ace-pinyin
+支持中文：
+#+BEGIN_SRC emacs-lisp
+  (require-package 'ace-pinyin)
+  (require 'ace-pinyin)
+  (ace-pinyin-global-mode +1)
+#+END_SRC
+** avy
+#+BEGIN_SRC emacs-lisp
+  (require-package 'avy)
+  (evil-leader/set-key "sg" 'avy-goto-word-1)
+#+END_SRC
+
+* anzu
+在使用普通搜索功能时在状态栏显示匹配数目：
+#+BEGIN_SRC emacs-lisp
+  (require-package 'anzu)
+  (global-anzu-mode +1)
+#+END_SRC
+** evil-anzu
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-anzu)
+  (with-eval-after-load 'evil
+    (require 'evil-anzu))
+#+END_SRC
+* wgrep
+#+BEGIN_SRC emacs-lisp
+  (require-package 'wgrep)
+  (require 'wgrep)
+  (define-key evil-normal-state-map (kbd "") 'wgrep-change-to-wgrep-mode)
+#+END_SRC

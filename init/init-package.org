@@ -6,18 +6,15 @@
                                                                          company-anaconda
                                                                          company-tern
                                                                          hungry-delete
-                                                                         swiper
                                                                          counsel
                                                                          smartparens
                                                                          popwin
                                                                          reveal-in-osx-finder
-                                                                         which-key
                                                                          slime
                                                                          rainbow-delimiters
                                                                          elpy
                                                                          recentf-ext
                                                                          s
-                                                                         avy
                                                                          osx-dictionary
                                                                          nyan-mode
                                                                          skewer-mode
@@ -29,14 +26,10 @@
                                                                          switch-buffer-functions
                                                                          auto-highlight-symbol
                                                                          json-mode
-                                                                         anzu
-                                                                         evil-anzu
                                                                          simpleclip
                                                                          switch-window
                                                                          afternoon-theme
-                                                                         engine-mode
                                                                          cnfonts
-                                                                         ace-pinyin
                                                                          ggtags
                                                                          counsel-gtags
                                                                          irony
@@ -120,54 +113,12 @@
 (require 'popwin)
 (popwin-mode t)
    #+END_SRC
-** ace-pinyin
-#+BEGIN_SRC emacs-lisp
-  (require 'ace-pinyin)
-  (ace-pinyin-global-mode +1)
-#+END_SRC
-** ivy && Swiper && counsel
-   强大的查找文件、搜索代码、执行命令的补全工具。
-   #+BEGIN_SRC emacs-lisp
-     ;; ivy
-     (ivy-mode 1)
-
-     (setq counsel-find-file-at-point t)
-     (setq ivy-use-virtual-buffers t)
-     (setq ivy-display-style 'fancy)
-     (setq ivy-initial-inputs-alist nil)
-     (global-set-key "\C-s" 'swiper)
-
-     (define-key ivy-minibuffer-map (kbd "s-<return>") 'ivy-immediate-done)
-     (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-     (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
-
-     ;; (after-load 'ivy
-     ;;          (setq-default ivy-use-virtual-buffers t
-     ;;                        ivy-count-format ""
-     ;;                   projectile-completion-system 'ivy
-     ;;                   ivy-initial-inputs-alist
-     ;;                   '((counsel-M-x . "^")
-     ;;                     (man . "^")
-     ;;                     (woman . "^")))
-   #+END_SRC
-** avy
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "gg" 'avy-goto-word-1)
-#+END_SRC
-
 ** reveal-in-osx-finder
 C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
   (evil-leader/set-key "fo" 'reveal-in-osx-finder)
 #+END_SRC
 
-** which-key
-   #+BEGIN_SRC emacs-lisp
-     (which-key-mode 1)
-     (setq which-key-side-window-max-height 0.25)
-     (which-key-add-key-based-replacements
-       "ff" "find files")
-   #+END_SRC
 ** elpy
    #+BEGIN_SRC emacs-lisp
      (elpy-enable)
@@ -326,15 +277,6 @@ C-c o 打开当前文件所在的Finder;
 
 
 #+END_SRC
-** anzu
-#+BEGIN_SRC emacs-lisp
-  (global-anzu-mode +1)
-#+END_SRC
-** evil-anzu
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'evil
-    (require 'evil-anzu))
-#+END_SRC
 ** simpleclip
 #+BEGIN_SRC emacs-lisp
   (require 'simpleclip)
@@ -371,26 +313,6 @@ C-c o 打开当前文件所在的Finder;
 ** theme
 #+BEGIN_SRC emacs-lisp
   (load-theme 'afternoon t)
-#+END_SRC
-** engine-mode
-#+BEGIN_SRC emacs-lisp
-    (require 'engine-mode)
-    (engine-mode t)
-
-    (defengine duckduckgo
-      "https://duckduckgo.com/?q=%s"
-      :keybinding "d")
-
-    (defengine google
-      "http://www.google.com.sg/search?ie=utf-8&oe=utf-8&q=%s"
-      :keybinding "g")
-
-    (defengine stack-overflow
-      "https://stackoverflow.com/search?q=%s"
-      :keybinding "s")
-
-    (evil-leader/set-key
-      "s" 'engine-mode-prefixed-map)
 #+END_SRC
 ** cnfonts
 #+BEGIN_SRC emacs-lisp
