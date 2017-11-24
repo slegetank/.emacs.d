@@ -8,19 +8,23 @@ https://github.com/magnars/multiple-cursors.el
 #+BEGIN_SRC emacs-lisp
   (require-package 'evil-mc)
   (require 'evil-mc)
-  (global-evil-mc-mode 1)
 
-  ;; (slegetank/leader-define-key nil "sm" (lambda () (interactive) (if (evil-mc-has-cursors-p)
-  ;;                                                                  (evil-mc-undo-all-cursors)
-  ;;                                                                (evil-mc-make-all-cursors)
-  ;;                                                                )) "Multiple cursor")
-  (define-key evil-normal-state-map (kbd "s-m") (lambda () (interactive) (if (evil-mc-has-cursors-p)
-                                                                   (evil-mc-undo-all-cursors)
-                                                                 (evil-mc-make-all-cursors)
-                                                                 )))
+  (defun slegetank/evil-mc-enable ()
+    (interactive)
+    "Enable multiple-cursors mode in evil"
+    (evil-mc-mode 1)
+    (evil-mc-make-all-cursors)
+    (message "Enter multi cursors mode."))
 
-  (evil-define-key 'normal evil-mc-key-map (kbd "C-g") 'evil-mc-undo-all-cursors)
-  (evil-define-key 'normal evil-mc-key-map (kbd "<escape>") 'evil-mc-undo-all-cursors)
+  (defun slegetank/evil-mc-quit ()
+    (interactive)
+    "Disaable multiple-cursors mode in evil"
+    (evil-mc-mode -1)
+    (evil-mc-undo-all-cursors)
+    (message "Quit multi cursors mode."))
+
+  (evil-define-key 'normal evil-mc-key-map (kbd "C-g") 'slegetank/evil-mc-quit)
+  (evil-define-key 'normal evil-mc-key-map (kbd "<escape>") 'slegetank/evil-mc-quit)
 #+END_SRC
 * ivy
 https://github.com/abo-abo/swiper
@@ -40,7 +44,6 @@ swiper提供了更优美的单文件搜索功能，支持正则：
   (setq enable-recursive-minibuffers t)
   (setq ivy-display-style 'fancy)
   (setq ivy-initial-inputs-alist nil)
-  (define-key evil-normal-state-map (kbd "s-f") 'swiper)
 
   (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
   (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
@@ -51,15 +54,16 @@ swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
   (define-key swiper-map (kbd "s-r") 'swiper-query-replace)
 #+END_SRC
 
-当然更强大的编辑功能则是跟wgrep组合起来:
+** 编辑
+swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的替换、编辑：
 #+BEGIN_SRC emacs-lisp
-  (defun slegetank/swiper-occur-edit ()
+  (defun slegetank/ivy-occur-edit ()
     (interactive)
     "Easier way to edit occur buffer"
     (dolist (buffer (buffer-list))
       (let ((name (buffer-name buffer)))
         (when (and (get-buffer-window name 'visible)
-                   (string-match "^\\*ivy-occur swiper" name))
+                   (string-match "^\\*ivy-occur " name))
           (with-current-buffer buffer
             (ivy-wgrep-change-to-wgrep-mode)
             (evil-define-key 'normal wgrep-mode-map (kbd "q") (lambda ()
@@ -80,9 +84,9 @@ swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
             )))))
 
   (add-hook 'ivy-occur-grep-mode-hook (lambda () (interactive)
-                                        (run-with-timer 0.1 nil 'slegetank/swiper-occur-edit)))
+                                        (run-with-timer 0.1 nil 'slegetank/ivy-occur-edit)))
 
-  (define-key swiper-map (kbd "s-m") 'ivy-occur)
+  (define-key ivy-mode-map (kbd "s-e") 'ivy-occur)
 #+END_SRC
 
 * avy
@@ -97,7 +101,6 @@ swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
 ** avy
 #+BEGIN_SRC emacs-lisp
   (require-package 'avy)
-  (evil-leader/set-key "sg" 'avy-goto-word-1)
 #+END_SRC
 
 * anzu
@@ -113,8 +116,15 @@ swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
     (require 'evil-anzu))
 #+END_SRC
 * wgrep
+可以用来编辑grep buffer并且将其应用到实际环境中；即以编辑文本的方式编辑实际功能，类似于wdired
 #+BEGIN_SRC emacs-lisp
   (require-package 'wgrep)
   (require 'wgrep)
   (define-key evil-normal-state-map (kbd "") 'wgrep-change-to-wgrep-mode)
+#+END_SRC
+* keys
+#+BEGIN_SRC emacs-lisp
+  (define-key evil-normal-state-map (kbd "s-f") 'swiper)
+  (define-key evil-normal-state-map (kbd "s-m") 'slegetank/evil-mc-enable)
+  (define-key evil-normal-state-map (kbd "s-g") 'avy-goto-word-1)
 #+END_SRC
