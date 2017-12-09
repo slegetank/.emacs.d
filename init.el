@@ -11,10 +11,13 @@
                              ("melpa"   . "http://elpa.emacs-china.org/melpa/")
                              )))
 
+;; http://orgmode.org 下载org mode的源码
+;; 配过在线安装的，但是并不好用
 (add-to-list 'load-path "~/org-9.0.9/lisp/")
 (add-to-list 'load-path "~/org-9.0.9/contrib/lisp/" t)
 
 ;; get from Purcell
+;; 自动在线安装第三方包
 (defun require-package (package &optional min-version no-refresh)
  "Install given PACKAGE, optionally requiring MIN-VERSION.
  If NO-REFRESH is non-nil, the available package lists will not be
@@ -31,22 +34,25 @@
        (package-refresh-contents)
        (require-package package min-version t)))))
 
-;; 加载配置orgmode文件
-(org-babel-load-file (expand-file-name "init/init-evil.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-org.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-search.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-package.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-blog.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-elisp.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-python.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-js.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-dired.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-mu4e.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-git.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-project.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-tools.org" user-emacs-directory))
-(org-babel-load-file (expand-file-name "init/init-help.org" user-emacs-directory))
+;; 要加载的配置文件
+(setq slegetank/init-load-files '("evil"
+                                  "org"
+                                  "search"
+                                  "package"
+                                  "defaults"
+                                  "blog"
+                                  "elisp"
+                                  "python"
+                                  "js"
+                                  "dired"
+                                  "mu4e"
+                                  "git"
+                                  "project"
+                                  "tools"
+                                  "help"))
+
+(dolist (item slegetank/init-load-files nil)
+  (org-babel-load-file (expand-file-name (format "init/init-%s.org" item) user-emacs-directory)))
 
 ;;(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))
 

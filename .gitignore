@@ -35,3 +35,4 @@ var/pcache/ucs-utils
 ido.last
 irony/*
 meghanada/*
+/.mc-lists.el

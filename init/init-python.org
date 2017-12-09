@@ -1,4 +1,19 @@
 * defaults
+基于elpy: https://github.com/jorgenschaefer/elpy
+首先需要安装
+** elpy
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'elpy)
+     (elpy-enable)
+
+     (defun elpy-key-bind-method ()
+       "Custom key binding"
+       (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
+       (evil-define-key 'normal elpy-mode-map (kbd "s->") 'elpy-goto-definition-other-window)
+       (evil-define-key 'normal elpy-mode-map (kbd "s-,") 'pop-tag-mark))
+
+     (add-hook 'elpy-mode-hook 'elpy-key-bind-method)
+   #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
     (defun add-py-breakpoint ()  

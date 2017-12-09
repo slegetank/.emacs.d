@@ -41,6 +41,12 @@
     (custom-help-open-article "remote"))
 #+END_SRC
 
+* dictionary
+调用osx字典
+#+BEGIN_SRC emacs-lisp
+  (require-package  'osx-dictionary)
+  (slegetank/leader-define-key nil "hd" 'osx-dictionary-search-input "Dictionary")
+#+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
   (slegetank/leader-define-key nil "h" nil "Help"

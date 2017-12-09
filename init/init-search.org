@@ -54,7 +54,7 @@ swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
   (define-key swiper-map (kbd "s-r") 'swiper-query-replace)
 #+END_SRC
 
-** 编辑
+** edit
 swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的替换、编辑：
 #+BEGIN_SRC emacs-lisp
   (defun slegetank/ivy-occur-edit ()
@@ -123,6 +123,13 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
   (define-key evil-normal-state-map (kbd "") 'wgrep-change-to-wgrep-mode)
 #+END_SRC
 * keys
+ivy for 2 helper functions:
+#+BEGIN_SRC emacs-lisp
+  ;; help
+  (define-key 'help-command (kbd "v") 'counsel-describe-variable)
+  (define-key 'help-command (kbd "f") 'counsel-describe-function)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (define-key evil-normal-state-map (kbd "s-f") 'swiper)
   (define-key evil-normal-state-map (kbd "s-m") 'slegetank/evil-mc-enable)

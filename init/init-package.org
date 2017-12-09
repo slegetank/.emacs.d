@@ -12,10 +12,8 @@
                                                                          reveal-in-osx-finder
                                                                          slime
                                                                          rainbow-delimiters
-                                                                         elpy
                                                                          recentf-ext
                                                                          s
-                                                                         osx-dictionary
                                                                          nyan-mode
                                                                          skewer-mode
                                                                          sr-speedbar
@@ -58,7 +56,6 @@
 #+BEGIN_SRC emacs-lisp
   (eval-when-compile
     (require 'use-package))
-  (require 'diminish)                ;; if you use :diminish
   (require 'bind-key)                ;; if you use any :bind variant
 #+END_SRC
 ** company
@@ -119,19 +116,6 @@ C-c o 打开当前文件所在的Finder;
   (evil-leader/set-key "fo" 'reveal-in-osx-finder)
 #+END_SRC
 
-** elpy
-   #+BEGIN_SRC emacs-lisp
-     (elpy-enable)
-
-     (defun elpy-key-bind-method ()
-       "Custom key binding"
-       (define-key elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
-       (define-key elpy-mode-map (kbd "s->") 'elpy-goto-definition-other-window)
-       (define-key elpy-mode-map (kbd "s-\,") 'pop-tag-mark)
-       )
-
-     (add-hook 'elpy-mode-hook 'elpy-key-bind-method)
-   #+END_SRC
 ** rainbow-delimiters
    #+BEGIN_SRC emacs-lisp
      (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
@@ -140,10 +124,6 @@ C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
   (setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
   (setq slime-contribs '(slime-fancy))
-#+END_SRC
-** osx-dictionary
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-h z") 'osx-dictionary-search-pointer)
 #+END_SRC
 ** nyan-mode
 #+BEGIN_SRC emacs-lisp

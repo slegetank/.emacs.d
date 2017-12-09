@@ -62,6 +62,7 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "wk" 'delete-other-windows "Kill window"
                                "ws" 'split-window-horizontally "Split window horizontally"
                                "wv" 'split-window-vertically "Split window vertically"
+                               "wf" 'other-frame "Other frame"
                                "e" nil "elisp"
                                "er" 'eval-region "Eval region"
                                "eb" 'eval-buffer "Eval buffer"
