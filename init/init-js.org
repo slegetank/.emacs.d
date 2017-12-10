@@ -27,7 +27,7 @@
     (font-lock-flush))
 
   (add-hook 'web-mode-hook 'xah-syntax-color-hex)
-  (add-hook 'jsx-mode-hook 'xah-syntax-color-hex)
+  (add-hook 'rjsx-mode-hook 'xah-syntax-color-hex)
 #+END_SRC
 * packages
 #+BEGIN_SRC emacs-lisp
@@ -35,13 +35,13 @@
   (require-package 'simple-httpd)
 #+END_SRC
 
-* jsx-mode
+* rjsx-mode
 #+BEGIN_SRC emacs-lisp
-  (require-package 'jsx-mode)
-  (add-to-list 'auto-mode-alist '("\\.jsx$" . jsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.js$" . jsx-mode))
-  (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
+  (require-package 'rjsx-mode)
+  (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
 #+END_SRC
+
 * web-mode
 #+BEGIN_SRC emacs-lisp
   (require-package 'web-mode)
@@ -66,14 +66,14 @@
 #+BEGIN_SRC emacs-lisp
   (require-package 'emmet-mode)
   (add-hook 'web-mode-hook 'emmet-mode)
-  (add-hook 'jsx-mode-hook 'emmet-mode)
+  (add-hook 'rjsx-mode-hook 'emmet-mode)
 #+END_SRC
 * prettier-js
 #+BEGIN_SRC emacs-lisp
   (require-package 'prettier-js)
   (add-hook 'js2-mode-hook 'prettier-js-mode)
   (add-hook 'web-mode-hook 'prettier-js-mode)
-  (add-hook 'jsx-mode-hook 'prettier-js-mode)
+  (add-hook 'rjsx-mode-hook 'prettier-js-mode)
   (setq prettier-js-args '(
                            "--trailing-comma" "all"
                            "--bracket-spacing" "false"
@@ -84,7 +84,7 @@
     (if (buffer-file-name)
         (if (string-match (car my-pair) buffer-file-name)
             (funcall (cdr my-pair)))))
-  (add-hook 'jsx-mode-hook #'(lambda ()
+  (add-hook 'rjsx-mode-hook #'(lambda ()
                                (enable-minor-mode
                                 '("\\.js?\\'" . prettier-js-mode))))
 #+END_SRC
@@ -118,10 +118,11 @@
   (add-hook 'flycheck-mode-hook #'custom-use-eslint-from-node-modules)
 #+END_SRC
 * tern
+自动补全工具
 #+BEGIN_SRC emacs-lisp
-  (evil-define-key 'normal jsx-mode-map (kbd "s-.") 'tern-find-definition)
+  (evil-define-key 'normal rjsx-mode-map (kbd "s-.") 'tern-find-definition)
   (evil-define-key 'normal global-map (kbd "s-,") (lambda ()))
-  (evil-define-key 'normal jsx-mode-map (kbd "s-,") 'tern-pop-find-definition)
+  (evil-define-key 'normal rjsx-mode-map (kbd "s-,") 'tern-pop-find-definition)
 #+END_SRC
 * react
 ** init env
@@ -171,7 +172,7 @@
   (defun custom-save-hook-refresh-browser ()
     "Add refresh html to save hook."
     (let (current-frame (select-frame))
-      (when (or (equal major-mode 'web-mode) (equal major-mode 'jsx-mode))
+      (when (or (equal major-mode 'web-mode) (equal major-mode 'rjsx-mode))
         (custom-browse-this-html-and-back))))
 
   (defun custom-toggle-html-auto-refresh ()

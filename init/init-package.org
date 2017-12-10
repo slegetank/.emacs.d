@@ -69,8 +69,8 @@ company的意思是complete-anything。顾名思义，它可以对用户的输�
 #+END_SRC
 *** company-tern
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'company-backends 'company-tern)
-(add-hook 'jsx-mode-hook (lambda () (tern-mode t)))
+  ;; (add-to-list 'company-backends 'company-tern)
+  (add-hook 'rjsx-mode-hook (lambda () (tern-mode t)))
 #+END_SRC
 ** hungry-delete
 自动删除行最后的空格。
@@ -171,7 +171,6 @@ C-c o 打开当前文件所在的Finder;
 #+END_SRC
 ** skewer-mode
 #+BEGIN_SRC emacs-lisp
-  ;; (add-hook 'jsx-mode-hook 'skewer-mode)
   (add-hook 'css-mode-hook 'skewer-css-mode)
   (add-hook 'web-mode-hook 'skewer-html-mode)
 
@@ -186,7 +185,7 @@ C-c o 打开当前文件所在的Finder;
                                           ; this only installs it for programming mode derivatives; you can also make it global...
     :init
     (add-hook 'org-mode-hook 'auto-highlight-symbol-mode)
-    (add-hook 'jsx-mode-hook 'auto-highlight-symbol-mode)
+    (add-hook 'rjsx-mode-hook 'auto-highlight-symbol-mode)
     (add-hook 'auto-highlight-symbol-mode-hook (lambda ()
                                                  (define-key evil-normal-state-map (kbd "C-p") 'ahs-backward)
                                                  (define-key evil-normal-state-map (kbd "C-n") 'ahs-forward)))
