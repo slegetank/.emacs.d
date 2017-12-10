@@ -175,7 +175,6 @@ C-c o 打开当前文件所在的Finder;
   (add-hook 'web-mode-hook 'skewer-html-mode)
 
 #+END_SRC
-** neotree
 ** auto-highlight-symbol
 #+BEGIN_SRC emacs-lisp
   (require 'auto-highlight-symbol)

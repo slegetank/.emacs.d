@@ -65,7 +65,8 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
         (when (and (get-buffer-window name 'visible)
                    (string-match "^\\*ivy-occur " name))
           (with-current-buffer buffer
-            (ivy-wgrep-change-to-wgrep-mode)
+            ;; (ivy-wgrep-change-to-wgrep-mode)
+
             (evil-define-key 'normal wgrep-mode-map (kbd "q") (lambda ()
                                                                 (interactive)
                                                                 (wgrep-exit)
@@ -80,13 +81,12 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
                                                          (interactive)
                                                          (wgrep-abort-changes)
                                                          (kill-buffer)
-                                                         (delete-window (selected-window))))
-            )))))
+                                                         (delete-window (selected-window)))))))))
 
   (add-hook 'ivy-occur-grep-mode-hook (lambda () (interactive)
                                         (run-with-timer 0.1 nil 'slegetank/ivy-occur-edit)))
 
-  (define-key ivy-mode-map (kbd "s-e") 'ivy-occur)
+  (define-key ivy-mode-map (kbd "s-o") 'ivy-occur)
 #+END_SRC
 
 * avy
@@ -120,7 +120,24 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
 #+BEGIN_SRC emacs-lisp
   (require-package 'wgrep)
   (require 'wgrep)
-  (define-key evil-normal-state-map (kbd "") 'wgrep-change-to-wgrep-mode)
+
+  ;; 编辑完自动保存
+  (setq wgrep-auto-save-buffer t)
+
+  (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "e") 'ivy-wgrep-change-to-wgrep-mode)
+  (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "x") 'winnow-exclude-lines)
+  (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "m") 'winnow-match-lines)
+  (evil-define-key 'normal ivy-occur-mode-map (kbd "q") (lambda ()
+                                                          (interactive)
+                                                          (kill-buffer)
+                                                          (delete-window (selected-window))))
+
+#+END_SRC
+* winnow
+#+BEGIN_SRC emacs-lisp
+  (require-package 'winnow)
+  (add-hook 'compilation-mode-hook 'winnow-mode)
+  (add-hook 'ag-mode-hook 'winnow-mode)
 #+END_SRC
 * keys
 ivy for 2 helper functions:

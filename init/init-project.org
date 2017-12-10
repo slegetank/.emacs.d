@@ -74,14 +74,12 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
                     (lambda ()
                       (interactive)
                       (when (neo-global--window-exists-p)
-                        ;; 仅在切换工程时刷新，不过目前看来没必要
-                        ;; (when (and (fboundp 'projectile-project-p)
-                        ;;            (projectile-project-p)
-                        ;;            (fboundp 'projectile-project-root)
-                        ;;            (not (equal (projectile-project-root) current-neo-buffer-root)))
-                        ;;   )
-                          (neotree-refresh t)
-                        ))))
+                        (when (and (fboundp 'projectile-project-p)
+                                   (projectile-project-p)
+                                   (fboundp 'projectile-project-root))
+                          (neotree-refresh t))))))
+
+  ;; (not (equal (projectile-project-root) current-neo-buffer-root))
 
   (add-hook 'find-file-hook 'slegetank/refresh-neotree)
   (advice-add 'ivy-switch-buffer :after 'slegetank/refresh-neotree)

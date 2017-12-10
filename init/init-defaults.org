@@ -3,7 +3,8 @@ brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件�
 #+BEGIN_SRC emacs-lisp
   (when (memq window-system '(mac ns))
     (let ((default-directory "/usr/local/share/emacs/site-lisp/"))
-      (normal-top-level-add-subdirs-to-load-path)))
+      (when (file-exists-p default-directory)
+        (normal-top-level-add-subdirs-to-load-path))))
 #+END_SRC
 
 处理emacs自带的备份文件。备份文件大多数情况下并没有用而且很烦人。但这是有意义的--我被这救过。不当的操作导致当前的buffer被覆盖，并且保存到了硬盘上。这时才明白，backup有多重要。
