@@ -17,15 +17,12 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
     :ensure t
     :config
     (evil-leader/set-key
-      "pd"  'custom-neotree-toggle-project-dir
-      "pr" (lambda () (interactive) (neotree-refresh t)))
+      "dn"  'custom-neotree-toggle-project-dir)
 
     (setq neo-smart-open t)
     (setq neo-window-fixed-size nil)
 
     (setq neo-hidden-regexp-list '("^\\." "\\.cs\\.meta$" "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "*_flymake.py$"))
-
-    ;; (setq projectile-switch-project-action 'neotree-projectile-action)
 
     (add-hook 'neotree-mode-hook
               (lambda ()
@@ -33,16 +30,17 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
                 (define-key evil-normal-state-local-map (kbd "u") 'neotree-select-up-node)
                 (define-key evil-normal-state-local-map (kbd "v") 'neotree-quick-look)
                 (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
-                (define-key evil-normal-state-local-map (kbd "I") 'neotree-hidden-file-toggle)
-                (define-key evil-normal-state-local-map (kbd "z") 'neotree-stretch-toggle)
+                (define-key evil-normal-state-local-map (kbd "a") 'neotree-hidden-file-toggle)
+                (define-key evil-normal-state-local-map (kbd "]") 'neotree-stretch-toggle)
                 (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
                 (define-key evil-normal-state-local-map (kbd "r") 'neotree-rename-node)
                 (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
                 (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node)
                 (define-key evil-normal-state-local-map (kbd "o") (lambda () (interactive) (shell-command (format "open %s" (neo-buffer--get-filename-current-line)))))
+                (define-key evil-normal-state-local-map (kbd "s-j") 'neotree-select-next-sibling-node)
+                (define-key evil-normal-state-local-map (kbd "s-k") 'neotree-select-previous-sibling-node)
 
-                (define-key evil-normal-state-local-map (kbd "s") 'neotree-enter-vertical-split)
-                (define-key evil-normal-state-local-map (kbd "S") 'neotree-enter-horizontal-split)
+                (define-key evil-normal-state-local-map (kbd "<s-return>") 'neotree-enter-vertical-split)
 
                 (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter))))
 
@@ -65,6 +63,30 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
               (neotree-find file-name))
           (message "Buffer is invalid.")))))
 #+END_SRC
+
+切换文件时刷新neotree：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/refresh-neotree ()
+    (interactive)
+    "Refresh neotree automatically."
+    (setq current-neo-buffer-root (projectile-project-root))
+    (run-with-timer 0.1 nil
+                    (lambda ()
+                      (interactive)
+                      (when (neo-global--window-exists-p)
+                        ;; 仅在切换工程时刷新，不过目前看来没必要
+                        ;; (when (and (fboundp 'projectile-project-p)
+                        ;;            (projectile-project-p)
+                        ;;            (fboundp 'projectile-project-root)
+                        ;;            (not (equal (projectile-project-root) current-neo-buffer-root)))
+                        ;;   )
+                          (neotree-refresh t)
+                        ))))
+
+  (add-hook 'find-file-hook 'slegetank/refresh-neotree)
+  (advice-add 'ivy-switch-buffer :after 'slegetank/refresh-neotree)
+#+END_SRC
+
 * custom
 counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.projectile，一般情况下是可以的，但是对于webpack的工程由于bundle.js不会被忽略，但是又不想搜其中的东西，所以只好摘出来自定义了：
 #+BEGIN_SRC emacs-lisp
