@@ -1,8 +1,7 @@
 * 未分类
 未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
-    (setq package-selected-packages (append package-selected-packages '(use-package
-                                                                         company
+    (setq package-selected-packages (append package-selected-packages '(company
                                                                          company-anaconda
                                                                          company-tern
                                                                          hungry-delete
@@ -52,64 +51,58 @@
       (package-install pkg))))
   #+END_SRC
 * 配置
-** use-package
-#+BEGIN_SRC emacs-lisp
-  (eval-when-compile
-    (require 'use-package))
-  (require 'bind-key)                ;; if you use any :bind variant
-#+END_SRC
 ** company
-   company的意思是complete-anything。顾名思义，它可以对用户的输入进行补全。
-   #+BEGIN_SRC emacs-lisp
-     (global-company-mode t) ; company
-     (with-eval-after-load 'company
-       (define-key company-active-map (kbd "M-n") nil)
-       (define-key company-active-map (kbd "M-p") nil)
-       (define-key company-active-map (kbd "C-j") #'company-select-next)
-       (define-key company-active-map (kbd "C-k") #'company-select-previous))
-   #+END_SRC
+company的意思是complete-anything。顾名思义，它可以对用户的输入进行补全。
+#+BEGIN_SRC emacs-lisp
+  (global-company-mode t) ; company
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-j") #'company-select-next)
+    (define-key company-active-map (kbd "C-k") #'company-select-previous))
+#+END_SRC
 *** company-anaconda
-    #+BEGIN_SRC emacs-lisp
-      (add-hook 'python-mode-hook 'anaconda-mode)
-      (eval-after-load "company"
-        '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
-    #+END_SRC
+#+BEGIN_SRC emacs-lisp
+    (add-hook 'python-mode-hook 'anaconda-mode)
+    (eval-after-load "company"
+    '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
+#+END_SRC
 *** company-tern
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'company-backends 'company-tern)
-  (add-hook 'jsx-mode-hook (lambda () (tern-mode t)))
+(add-to-list 'company-backends 'company-tern)
+(add-hook 'jsx-mode-hook (lambda () (tern-mode t)))
 #+END_SRC
 ** hungry-delete
-   自动删除行最后的空格。
-   #+BEGIN_SRC emacs-lisp
-(global-hungry-delete-mode t) ; hungry delete
-   #+END_SRC
+自动删除行最后的空格。
+#+BEGIN_SRC emacs-lisp
+  (global-hungry-delete-mode t) ; hungry delete
+#+END_SRC
 ** smartparens
-   自动匹配括号、引号等。
-   #+BEGIN_SRC emacs-lisp
-     (require 'smartparens-config)
-     (smartparens-global-mode t) ; smart paren
+自动匹配括号、引号等。
+#+BEGIN_SRC emacs-lisp
+    (require 'smartparens-config)
+    (smartparens-global-mode t) ; smart paren
 
-     ;; elisp单引号不自动配对
-     (sp-local-pair '(emacs-lisp-mode lisp-interaction-mode) "'" nil :actions nil)
+    ;; elisp单引号不自动配对
+    (sp-local-pair '(emacs-lisp-mode lisp-interaction-mode) "'" nil :actions nil)
 
-     ;; 括号匹配
-     (defadvice show-paren-function (around fix-show-paren-function activate)
-       "Highlight enclosing parens."
-       (cond ((looking-at-p "\\s(") ad-do-it)
-             (t (save-excursion
-                  (ignore-errors (backward-up-list))
-                  ad-do-it))))
+    ;; 括号匹配
+    (defadvice show-paren-function (around fix-show-paren-function activate)
+    "Highlight enclosing parens."
+    (cond ((looking-at-p "\\s(") ad-do-it)
+            (t (save-excursion
+                (ignore-errors (backward-up-list))
+                ad-do-it))))
 
 
-   #+END_SRC
+#+END_SRC
 ** popwin
-   更好用的弹出窗口。
-   #+BEGIN_SRC emacs-lisp
-;; popwin
-(require 'popwin)
-(popwin-mode t)
-   #+END_SRC
+更好用的弹出窗口。
+#+BEGIN_SRC emacs-lisp
+    ;; popwin
+    (require 'popwin)
+    (popwin-mode t)
+#+END_SRC
 ** reveal-in-osx-finder
 C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
@@ -184,59 +177,6 @@ C-c o 打开当前文件所在的Finder;
 
 #+END_SRC
 ** neotree
-#+BEGIN_SRC emacs-lisp
-  (require 'neotree)
-  (use-package neotree
-    :ensure t
-    :config
-    (evil-leader/set-key
-      "dn"  'custom-neotree-toggle-project-dir)
-
-    (setq neo-smart-open t)
-    (setq neo-window-fixed-size nil)
-  
-    (setq neo-hidden-regexp-list '("^\\." "\\.cs\\.meta$" "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "*_flymake.py$"))
-
-    ;; (setq projectile-switch-project-action 'neotree-projectile-action)
-
-    (add-hook 'neotree-mode-hook
-              (lambda ()
-                (define-key evil-normal-state-local-map (kbd "<tab>") (neotree-make-executor :dir-fn 'neo-open-dir))
-                (define-key evil-normal-state-local-map (kbd "u") 'neotree-select-up-node)
-                (define-key evil-normal-state-local-map (kbd "v") 'neotree-quick-look)
-                (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
-                (define-key evil-normal-state-local-map (kbd "I") 'neotree-hidden-file-toggle)
-                (define-key evil-normal-state-local-map (kbd "z") 'neotree-stretch-toggle)
-                (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
-                (define-key evil-normal-state-local-map (kbd "r") 'neotree-rename-node)
-                (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
-                (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node)
-                (define-key evil-normal-state-local-map (kbd "o") (lambda () (interactive) (shell-command (format "open %s" (neo-buffer--get-filename-current-line)))))
-
-                (define-key evil-normal-state-local-map (kbd "s") 'neotree-enter-vertical-split)
-                (define-key evil-normal-state-local-map (kbd "S") 'neotree-enter-horizontal-split)
-
-                (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter))))
-
-  (use-package find-file-in-project :ensure t)
-
-  (defun custom-neotree-toggle-project-dir ()
-    "Open NeoTree using the git root. & show imenu"
-    (interactive)
-    ;; (imenu-list-smart-toggle)
-    (if (neo-global--window-exists-p)
-        (progn (neotree-hide)
-               ;; (imenu-list-quit-window)
-               )
-      (let ((project-dir (or (ffip-project-root) (file-name-directory (or (buffer-file-name) ""))))
-            (file-name (buffer-file-name)))
-        ;; (imenu-list-show)
-        (if project-dir
-            (progn
-              (neotree-dir project-dir)
-              (neotree-find file-name))
-          (message "Buffer is invalid.")))))
-#+END_SRC
 ** auto-highlight-symbol
 #+BEGIN_SRC emacs-lisp
   (require 'auto-highlight-symbol)

@@ -34,6 +34,12 @@
        (package-refresh-contents)
        (require-package package min-version t)))))
 
+;; use-package
+(require-package 'use-package)
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)
+
 ;; 要加载的配置文件
 (setq slegetank/init-load-files '("evil"
                                   "org"

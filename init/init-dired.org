@@ -132,6 +132,7 @@ dired会被加入recentf-list:
 
 * Outside
 #+BEGIN_SRC emacs-lisp
+  (require-package 'ivy)
   (require 'ivy) ; swiper 7.0+ should be installed
 
   (defun custom-goto-recent-directory ()
