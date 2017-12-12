@@ -78,6 +78,7 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
                         (neotree-refresh t)))))
 
   (add-hook 'find-file-hook 'slegetank/refresh-neotree)
+  (advice-add 'ido-kill-buffer :after 'slegetank/refresh-neotree)
   (advice-add 'ivy-switch-buffer :after 'slegetank/refresh-neotree)
   (advice-add 'previous-buffer :after 'slegetank/refresh-neotree)
   (advice-add 'next-buffer :after 'slegetank/refresh-neotree)

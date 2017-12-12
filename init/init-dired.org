@@ -78,7 +78,7 @@ dired会被加入recentf-list:
     (define-key dired-mode-map (kbd "H") 'custom-dired-temp-hide-files)
     (define-key dired-mode-map (kbd "O") 'custom-dired-open-file-with-osx)
     (define-key dired-mode-map (kbd "V") nil)
-    (define-key dired-mode-map (kbd "E") 'wdired-change-to-wdired-mode)
+    (define-key dired-mode-map (kbd "e") 'wdired-change-to-wdired-mode)
 
     (add-hook 'view-mode-hook '(lambda () (evil-define-key 'normal view-mode-map (kbd "q") 'View-quit)))
 
