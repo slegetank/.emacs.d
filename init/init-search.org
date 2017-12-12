@@ -31,6 +31,7 @@ https://github.com/abo-abo/swiper
 ivy是强大的查找文件、搜索代码、执行命令的补全工具。
 ** ivy
 #+BEGIN_SRC emacs-lisp
+  (require-package 'ivy)
   (ivy-mode 1)
 #+END_SRC
 swiper提供了更优美的单文件搜索功能，支持正则：
