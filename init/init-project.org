@@ -74,7 +74,8 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
     (run-with-timer 0.1 nil
                     (lambda ()
                       (interactive)
-                      (neotree-refresh t))))
+                      (when (neo-global--window-exists-p)
+                        (neotree-refresh t)))))
 
   (add-hook 'find-file-hook 'slegetank/refresh-neotree)
   (advice-add 'ivy-switch-buffer :after 'slegetank/refresh-neotree)
