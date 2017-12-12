@@ -37,11 +37,12 @@ brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件�
   (defun goto-line-with-feedback ()
     "Show line numbers temporarily, while prompting for the line number input"
     (interactive)
-    (unwind-protect
-        (progn
-          (linum-mode 1)
-          (goto-line (read-number "Goto line: ")))
-      (linum-mode -1)))
+    (unless (symbol-value global-linum-mode)
+      (unwind-protect
+          (progn
+            (global-linum-mode 1)
+            (goto-line (read-number "Goto line: ")))
+        (global-linum-mode -1))))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
