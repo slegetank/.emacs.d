@@ -40,22 +40,26 @@
   (require 'use-package))
 (require 'bind-key)
 
+;; 默认配置
+(org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
+
 ;; 要加载的配置文件
 (setq slegetank/init-load-files '("evil"
                                   "org"
                                   "search"
                                   "package"
-                                  "defaults"
                                   "blog"
                                   "elisp"
                                   "python"
                                   "js"
                                   "dired"
-                                  "mu4e"
                                   "git"
                                   "project"
                                   "tools"
                                   "help"))
+
+(when (executable-find "mu")
+  (add-to-list 'slegetank/init-load-files "mu4e" t))
 
 (dolist (item slegetank/init-load-files nil)
   (org-babel-load-file (expand-file-name (format "init/init-%s.org" item) user-emacs-directory)))
