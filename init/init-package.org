@@ -25,8 +25,6 @@
                                                                          json-mode
                                                                          simpleclip
                                                                          switch-window
-                                                                         afternoon-theme
-                                                                         cnfonts
                                                                          ggtags
                                                                          counsel-gtags
                                                                          irony
@@ -227,18 +225,6 @@ C-c o 打开当前文件所在的Finder;
   ;; (setq switch-window-shortcut-appearance 'asciiart)
   (evil-leader/set-key
     "wo" 'switch-window)
-#+END_SRC
-** theme
-#+BEGIN_SRC emacs-lisp
-  (load-theme 'afternoon t)
-#+END_SRC
-** cnfonts
-#+BEGIN_SRC emacs-lisp
-  (require 'cnfonts)
-  ;; 让 cnfonts 随着 Emacs 自动生效。
-  (cnfonts-enable)
-  ;; 让 spacemacs mode-line 中的 Unicode 图标正确显示。
-  (cnfonts-set-spacemacs-fallback-fonts)
 #+END_SRC
 ** ggtags
 #+BEGIN_SRC emacs-lisp
