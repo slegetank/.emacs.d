@@ -67,7 +67,7 @@ company的意思是complete-anything。顾名思义，它可以对用户的输�
 #+END_SRC
 *** company-tern
 #+BEGIN_SRC emacs-lisp
-  ;; (add-to-list 'company-backends 'company-tern)
+  (add-to-list 'company-backends 'company-tern)
   (add-hook 'rjsx-mode-hook (lambda () (tern-mode t)))
 #+END_SRC
 ** hungry-delete
@@ -203,9 +203,11 @@ C-c o 打开当前文件所在的Finder;
 
 在simpleclip.el中会将(setq interprogram-cut-function nil) 置为nil，而这个方法在evil-mode的x中将会调用到的simple.el中的kill-new中会用到。返回string参数即可修复x无法删除string的bug。
 #+BEGIN_SRC emacs-lisp
-  (defun fix-evil-clip-not-function (string &optional PRED)
-    string)
-  (advice-add 'kill-new :after 'fix-evil-clip-not-function)
+  (defun slegetank/fix-evil-clip-not-function (oldfunc &rest args)
+    (apply oldfunc args)
+    (car args))
+
+  (advice-add 'kill-new :around 'slegetank/fix-evil-clip-not-function)
 #+END_SRC
 
 ** imenu-list

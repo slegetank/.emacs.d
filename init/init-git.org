@@ -14,3 +14,16 @@
   (global-git-gutter-mode +1)
 #+END_SRC
 
+* smerge
+来源：https://github.com/lujun9972/lujun9972.github.com/blob/source/Emacs之怒/smerge-mode帮你解决merge%20confict.org
+更好的merge代码
+文件里有<<<<<<<的时候自动执行merge mode，不过目前看来并不需要：
+#+BEGIN_SRC emacs-lisp
+  ;; (add-hook 'find-file-hook (lambda ()
+  ;;                             (save-excursion
+  ;;                               (goto-char (point-min))
+  ;;                               (when (re-search-forward "^<<<<<<< " nil t)
+  ;;                                 (smerge-mode 1))))
+  ;;           t)
+#+END_SRC
+

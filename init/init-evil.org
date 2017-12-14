@@ -110,13 +110,17 @@ M-x customize-group -> 默认触发为\，改为SPC
   (add-hook 'emacs-lisp-mode-hook #'evil-cleverparens-mode)
   (setq evil-move-beyond-eol t)
 
+  (define-key evil-visual-state-map [escape] 'evil-visual-char)
+#+END_SRC
+
+多次按v自动选择：
+#+BEGIN_SRC emacs-lisp
   (defun evil-visual-char-or-expand-region ()
     (interactive)
     (if (region-active-p)
-          (call-interactively 'er/expand-region)
+        (call-interactively 'er/expand-region)
       (evil-visual-char)))
 
   (define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
   (define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
-  (define-key evil-visual-state-map [escape] 'evil-visual-char)
 #+END_SRC
