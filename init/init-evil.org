@@ -74,6 +74,11 @@ M-x customize-group -> 默认触发为\，改为SPC
   (evil-ex-define-cmd "wq" (lambda () (interactive) (save-buffer) (kill-buffer (current-buffer))))
 #+END_SRC
 
+忽略C-z的emacs mode:
+#+BEGIN_SRC emacs-lisp
+  (evil-define-key '(normal insert visual replace operator motion) 'global (kbd "C-z") 'undo-tree-undo)
+#+END_SRC
+
 * evil-nerd-commenter
 注释
 #+BEGIN_SRC emacs-lisp
