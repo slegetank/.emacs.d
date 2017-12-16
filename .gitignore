@@ -36,3 +36,4 @@ ido.last
 irony/*
 meghanada/*
 /.mc-lists.el
+/company-statistics-cache.el

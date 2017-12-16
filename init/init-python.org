@@ -57,3 +57,5 @@
 
   ;; (eval-after-load 'eshell (define-key eshell-mode-map (kbd "q") 'custom-back-from-eshell-to-python))
 #+END_SRC
+* more
+还有一个库称为anaconda，它试图提供较为精简的python配置，而elpy试图提供一个python的IDE。

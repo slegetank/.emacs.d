@@ -1,0 +1,41 @@
+暂时不用考虑c/c++/oc开发相关的开发配置，只把折腾过的东西存在这里。
+* irony
+mac上先brew install cmake，再执行下面的语句再执行M-x irony-install-server:
+#+BEGIN_SRC shell
+  ### create /usr/local if not there yet
+  sudo mkdir -p /usr/local/lib /usr/local/include
+  ### grab standard libclang
+  sudo cp -p "`xcode-select --print-path`"/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib /usr/local/lib
+  ### (dirty part) supplement with latest llvm clang-c includes
+  cd /tmp
+  svn export http://llvm.org/svn/llvm-project/cfe/trunk/include/clang-c/
+  sudo cp -RP clang-c /usr/local/include
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (require-package 'irony)
+  (use-package irony
+    :ensure t
+    :defer t
+    :init
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'objc-mode-hook 'irony-mode)
+    :config
+    ;; replace the `completion-at-point' and `complete-symbol' bindings in
+    ;; irony-mode's buffers by irony-mode's function
+    (defun my-irony-mode-hook ()
+      (define-key irony-mode-map [remap completion-at-point]
+        'irony-completion-at-point-async)
+      (define-key irony-mode-map [remap complete-symbol]
+        'irony-completion-at-point-async))
+    (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+    )
+#+END_SRC
+*** company-irony
+#+BEGIN_SRC emacs-lisp
+  (require-package 'company-irony)
+  (eval-after-load "company"
+    '(add-to-list 'company-backends '(company-irony company-gtags)))
+#+END_SRC

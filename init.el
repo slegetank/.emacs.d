@@ -45,9 +45,10 @@
 
 ;; 要加载的配置文件
 (setq slegetank/init-load-files '("evil"
-                                  "org"
-                                  "search"
                                   "package"
+                                  "org"
+                                  "company"
+                                  "search"
                                   "blog"
                                   "elisp"
                                   "python"

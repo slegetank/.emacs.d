@@ -1,5 +1,5 @@
 * defaults
-brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件则保存在这里：
+[针对mac] brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件则保存在这里：
 #+BEGIN_SRC emacs-lisp
   (when (memq window-system '(mac ns))
     (let ((default-directory "/usr/local/share/emacs/site-lisp/"))

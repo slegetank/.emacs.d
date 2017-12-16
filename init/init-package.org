@@ -2,8 +2,6 @@
 未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
     (setq package-selected-packages (append package-selected-packages '(company
-                                                                         company-anaconda
-                                                                         company-tern
                                                                          hungry-delete
                                                                          counsel
                                                                          smartparens
@@ -27,10 +25,9 @@
                                                                          switch-window
                                                                          ggtags
                                                                          counsel-gtags
-                                                                         irony
-                                                                         company-irony
                                                                          indent-guide
-                                                                         expand-region)))
+                                                                         expand-region
+                                                                         xah-get-thing)))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
@@ -49,27 +46,6 @@
       (package-install pkg))))
   #+END_SRC
 * 配置
-** company
-company的意思是complete-anything。顾名思义，它可以对用户的输入进行补全。
-#+BEGIN_SRC emacs-lisp
-  (global-company-mode t) ; company
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-j") #'company-select-next)
-    (define-key company-active-map (kbd "C-k") #'company-select-previous))
-#+END_SRC
-*** company-anaconda
-#+BEGIN_SRC emacs-lisp
-    (add-hook 'python-mode-hook 'anaconda-mode)
-    (eval-after-load "company"
-    '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
-#+END_SRC
-*** company-tern
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'company-backends 'company-tern)
-  (add-hook 'rjsx-mode-hook (lambda () (tern-mode t)))
-#+END_SRC
 ** hungry-delete
 自动删除行最后的空格。
 #+BEGIN_SRC emacs-lisp
@@ -97,9 +73,9 @@ company的意思是complete-anything。顾名思义，它可以对用户的输�
 ** popwin
 更好用的弹出窗口。
 #+BEGIN_SRC emacs-lisp
-    ;; popwin
-    (require 'popwin)
-    (popwin-mode t)
+  ;; popwin
+  (require 'popwin)
+  (popwin-mode t)
 #+END_SRC
 ** reveal-in-osx-finder
 C-c o 打开当前文件所在的Finder;
@@ -235,44 +211,6 @@ C-c o 打开当前文件所在的Finder;
               (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
                 (ggtags-mode 1))))
 #+END_SRC
-** irony
-mac上先brew install cmake，再执行下面的语句再执行M-x irony-install-server:
-#+BEGIN_SRC shell
-  ### create /usr/local if not there yet
-  sudo mkdir -p /usr/local/lib /usr/local/include
-  ### grab standard libclang
-  sudo cp -p "`xcode-select --print-path`"/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib /usr/local/lib
-  ### (dirty part) supplement with latest llvm clang-c includes
-  cd /tmp
-  svn export http://llvm.org/svn/llvm-project/cfe/trunk/include/clang-c/
-  sudo cp -RP clang-c /usr/local/include
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (use-package irony
-    :ensure t
-    :defer t
-    :init
-    (add-hook 'c++-mode-hook 'irony-mode)
-    (add-hook 'c-mode-hook 'irony-mode)
-    (add-hook 'objc-mode-hook 'irony-mode)
-    :config
-    ;; replace the `completion-at-point' and `complete-symbol' bindings in
-    ;; irony-mode's buffers by irony-mode's function
-    (defun my-irony-mode-hook ()
-      (define-key irony-mode-map [remap completion-at-point]
-        'irony-completion-at-point-async)
-      (define-key irony-mode-map [remap complete-symbol]
-        'irony-completion-at-point-async))
-    (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-    )
-#+END_SRC
-*** company-irony
-#+BEGIN_SRC emacs-lisp
-  (eval-after-load "company"
-    '(add-to-list 'company-backends '(company-irony company-gtags)))
-#+END_SRC
 ** indent-guide
 #+BEGIN_SRC emacs-lisp
   (require 'indent-guide)
@@ -283,4 +221,9 @@ mac上先brew install cmake，再执行下面的语句再执行M-x irony-install
 #+BEGIN_SRC emacs-lisp
   (require 'expand-region)
   (global-set-key (kbd "S-<double-mouse-1>") 'er/expand-region)
+#+END_SRC
+** xah-get-thing
+http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
+#+BEGIN_SRC emacs-lisp
+(require 'xah-get-thing)
 #+END_SRC
