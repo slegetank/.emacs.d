@@ -32,7 +32,40 @@
 * packages
 #+BEGIN_SRC emacs-lisp
   (require-package 'js2-mode)
-  (require-package 'simple-httpd)
+  ;; (require-package 'simple-httpd)
+#+END_SRC
+* tide
+#+BEGIN_SRC emacs-lisp
+  (require-package 'tide)
+
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    (company-mode +1))
+
+  (use-package tide
+    :ensure t
+    :bind (("s-." . tide-jump-to-definition)
+           ("s-," . tide-jump-back)
+           ("s-h" . tide-documentation-at-point))
+    :init
+    (add-hook 'rjsx-mode-hook #'setup-tide-mode)
+    :config
+    ;; aligns annotation to the right hand side
+    (tide-start-server)
+    (setq company-tooltip-align-annotations t)
+
+    ;; formats the buffer before saving
+    ;; use prettier-js instead
+    ;; (add-hook 'before-save-hook 'tide-format-before-save)
+
+    ;; configure javascript-tide checker to run after your default javascript checker
+    (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+    (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append))
 #+END_SRC
 
 * rjsx-mode
@@ -40,6 +73,9 @@
   (require-package 'rjsx-mode)
   (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
   (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
+
+  ;; jsx缩进4
+  (setq sgml-basic-offset 4)
 #+END_SRC
 
 * web-mode
@@ -91,50 +127,43 @@
 * eslint
 安装完eslint之后，要disable掉默认的flycheck默认的jshint、jsonlist，并且active eslint:
 #+BEGIN_SRC emacs-lisp
-    (setq-default flycheck-disabled-checkers
-                  (append flycheck-disabled-checkers
-                          '(javascript-jshint)))
+  ;; (setq-default flycheck-disabled-checkers
+  ;;               (append flycheck-disabled-checkers
+  ;;                       '(javascript-jshint)))
 
-    (setq-default flycheck-disabled-checkers
-                  (append flycheck-disabled-checkers
-                          '(json-jsonlist)))
+  ;; (setq-default flycheck-disabled-checkers
+  ;;               (append flycheck-disabled-checkers
+  ;;                       '(json-jsonlist)))
 
-    (flycheck-add-mode 'javascript-eslint 'web-mode)
-    (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'web-mode)
+  ;; (flycheck-add-mode 'javascript-eslint 'js2-mode)
 #+END_SRC
 
 如果local路径有安装的eslint，则不使用全局的：
 #+BEGIN_SRC emacs-lisp
-  (defun custom-use-eslint-from-node-modules ()
-    (let* ((root (locate-dominating-file
-                  (or (buffer-file-name) default-directory)
-                  "node_modules"))
-           (eslint (and root
-                        (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                          root))))
-      (when (and eslint (file-executable-p eslint))
-        (setq-local flycheck-javascript-eslint-executable eslint))))
+  ;; (defun custom-use-eslint-from-node-modules ()
+  ;;   (let* ((root (locate-dominating-file
+  ;;                 (or (buffer-file-name) default-directory)
+  ;;                 "node_modules"))
+  ;;          (eslint (and root
+  ;;                       (expand-file-name "node_modules/eslint/bin/eslint.js"
+  ;;                                         root))))
+  ;;     (when (and eslint (file-executable-p eslint))
+  ;;       (setq-local flycheck-javascript-eslint-executable eslint))))
 
-  (add-hook 'flycheck-mode-hook #'custom-use-eslint-from-node-modules)
-#+END_SRC
-* tern
-自动补全工具
-#+BEGIN_SRC emacs-lisp
-  (evil-define-key 'normal rjsx-mode-map (kbd "s-.") 'tern-find-definition)
-  (evil-define-key 'normal global-map (kbd "s-,") (lambda ()))
-  (evil-define-key 'normal rjsx-mode-map (kbd "s-,") 'tern-pop-find-definition)
+  ;; (add-hook 'flycheck-mode-hook #'custom-use-eslint-from-node-modules)
 #+END_SRC
 * react
 ** init env
 #+BEGIN_SRC emacs-lisp
-    (evil-leader/set-key
-      "jr" 'custom-browse-this-html-and-back
-      "jw" 'custom-init-react-window)
+  ;;   (evil-leader/set-key
+  ;;     "jr" 'custom-browse-this-html-and-back
+  ;;     "jw" 'custom-init-react-window)
 
-  (defun custom-init-react-window ()
-    "Device emacs & firefox"
-    (interactive)
-    (shell-command (format "osascript %s" (expand-file-name "init/reactenv.scpt" user-emacs-directory))))
+  ;; (defun custom-init-react-window ()
+  ;;   "Device emacs & firefox"
+  ;;   (interactive)
+  ;;   (shell-command (format "osascript %s" (expand-file-name "init/reactenv.scpt" user-emacs-directory))))
 
 
     ;; (defun custom-init-react-IDE ()
@@ -147,42 +176,42 @@
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key
-    "ja" 'custom-toggle-html-auto-refresh)
+  ;; (evil-leader/set-key
+  ;;   "ja" 'custom-toggle-html-auto-refresh)
 
-  (defun custom-browse-this-html ()
-    (interactive)
-    (unless (process-status "httpd")
-      (httpd-start))
-    (let ((name (file-name-nondirectory (buffer-file-name))))
-      (setq httpd-root (file-name-directory (buffer-file-name)))
-      (shell-command (format "open -a Firefox http://127.0.0.1:%s/%s" httpd-port name))))
+  ;; (defun custom-browse-this-html ()
+  ;;   (interactive)
+  ;;   (unless (process-status "httpd")
+  ;;     (httpd-start))
+  ;;   (let ((name (file-name-nondirectory (buffer-file-name))))
+  ;;     (setq httpd-root (file-name-directory (buffer-file-name)))
+  ;;     (shell-command (format "open -a Firefox http://127.0.0.1:%s/%s" httpd-port name))))
 
-  (defun custom-browse-this-html-and-back ()
-    (interactive)
-    "Browse this file and come back"
-    (run-with-timer
-     0.2 nil
-     (lambda ()
-       (select-frame-set-input-focus (selected-frame))))
-    (custom-browse-this-html))
+  ;; (defun custom-browse-this-html-and-back ()
+  ;;   (interactive)
+  ;;   "Browse this file and come back"
+  ;;   (run-with-timer
+  ;;    0.2 nil
+  ;;    (lambda ()
+  ;;      (select-frame-set-input-focus (selected-frame))))
+  ;;   (custom-browse-this-html))
 
-  (defvar custom-html-auto-refresh-b nil "wheter html refresh browser when save")
+  ;; (defvar custom-html-auto-refresh-b nil "wheter html refresh browser when save")
 
-  (defun custom-save-hook-refresh-browser ()
-    "Add refresh html to save hook."
-    (let (current-frame (select-frame))
-      (when (or (equal major-mode 'web-mode) (equal major-mode 'rjsx-mode))
-        (custom-browse-this-html-and-back))))
+  ;; (defun custom-save-hook-refresh-browser ()
+  ;;   "Add refresh html to save hook."
+  ;;   (let (current-frame (select-frame))
+  ;;     (when (or (equal major-mode 'web-mode) (equal major-mode 'rjsx-mode))
+  ;;       (custom-browse-this-html-and-back))))
 
-  (defun custom-toggle-html-auto-refresh ()
-    "If you're using react, then you should disable this."
-    (interactive)
-    (setq custom-html-auto-refresh-b (not custom-html-auto-refresh-b))
-    (if custom-html-auto-refresh-b
-        (progn (add-hook 'after-save-hook 'custom-save-hook-refresh-browser)
-               (message "Enable auto refresh"))
-      (progn (remove-hook 'after-save-hook 'custom-save-hook-refresh-browser)
-             (message "Disable auto refresh"))))
+  ;; (defun custom-toggle-html-auto-refresh ()
+  ;;   "If you're using react, then you should disable this."
+  ;;   (interactive)
+  ;;   (setq custom-html-auto-refresh-b (not custom-html-auto-refresh-b))
+  ;;   (if custom-html-auto-refresh-b
+  ;;       (progn (add-hook 'after-save-hook 'custom-save-hook-refresh-browser)
+  ;;              (message "Enable auto refresh"))
+  ;;     (progn (remove-hook 'after-save-hook 'custom-save-hook-refresh-browser)
+  ;;            (message "Disable auto refresh"))))
 #+END_SRC
 

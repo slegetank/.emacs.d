@@ -60,6 +60,7 @@
                                   "help"
                                   "theme"))
 
+;; mu4e
 (when (executable-find "mu")
   (add-to-list 'slegetank/init-load-files "mu4e" t))
 

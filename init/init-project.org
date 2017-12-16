@@ -134,6 +134,6 @@ counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.pr
     "pb" 'counsel-projectile-switch-to-buffer
     "pp" 'counsel-projectile-switch-project
     "pn" 'custom-note-init)
-    (define-key evil-motion-state-map (kbd "s-F") 'counsel-projectile-ag)
+    (define-key evil-motion-state-map (kbd "s-F") 'slegetank/projectile-ag)
 #+END_SRC
 

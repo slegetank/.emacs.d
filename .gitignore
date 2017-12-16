@@ -37,3 +37,4 @@ irony/*
 meghanada/*
 /.mc-lists.el
 /company-statistics-cache.el
+/smex-items

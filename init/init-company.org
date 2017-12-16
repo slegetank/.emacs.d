@@ -22,13 +22,17 @@ company - complete anything!
     (define-key company-active-map (kbd "C-j") #'company-select-next)
     (define-key company-active-map (kbd "C-k") #'company-select-previous)
 
+    ;; 我更喜欢command键
+    (dotimes (i 10)
+      (define-key company-active-map (read-kbd-macro (format "s-%d" i)) 'company-complete-number))
+
     (setq company-dabbrev-downcase nil
           ;; make previous/next selection in the popup cycles
           company-selection-wrap-around t
           ;; Some languages use camel case naming convention,
           ;; so company should be case sensitive.
           company-dabbrev-ignore-case nil
-          ;; press M-number to choose candidate
+          ;; press s-number to choose candidate
           company-show-numbers t
           company-idle-delay 0.2
           company-clang-insert-arguments nil
@@ -36,7 +40,7 @@ company - complete anything!
           company-etags-ignore-case t)
     )
    (setq company-minimum-prefix-length 1)
-   
+
   ;; @see https://github.com/redguardtoo/emacs.d/commit/2ff305c1ddd7faff6dc9fa0869e39f1e9ed1182d
      (defadvice company-in-string-or-comment (around company-in-string-or-comment-hack activate)
        ;; you can use (ad-get-arg 0) and (ad-set-arg 0) to tweak the arguments

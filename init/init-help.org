@@ -43,7 +43,7 @@
 #+END_SRC
 
 * melpa-upstream-visit
-快速访问包的主页
+快速访问包的主页; 如果发现包找不到，可以package-refresh-contents，然后重试
 #+BEGIN_SRC emacs-lisp
   (require-package 'melpa-upstream-visit)
 

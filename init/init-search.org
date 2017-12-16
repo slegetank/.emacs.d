@@ -33,6 +33,7 @@ ivy是强大的查找文件、搜索代码、执行命令的补全工具。
 #+BEGIN_SRC emacs-lisp
   (require-package 'ivy)
   (ivy-mode 1)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
 #+END_SRC
 swiper提供了更优美的单文件搜索功能，支持正则：
 ** swiper
