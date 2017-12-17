@@ -33,6 +33,7 @@
 #+BEGIN_SRC emacs-lisp
   (require-package 'js2-mode)
   ;; (require-package 'simple-httpd)
+  (setq js2-strict-trailing-comma-warning nil)
 #+END_SRC
 * tide
 #+BEGIN_SRC emacs-lisp
@@ -51,8 +52,13 @@
     :ensure t
     :bind (("s-." . tide-jump-to-definition)
            ("s-," . tide-jump-back)
-           ("s-h" . tide-documentation-at-point))
+           ("s-h" . tide-documentation-at-point)
+           ("s-i" . imenu-list-smart-toggle)
+           ("M-s-/" . tide-jsdoc-template)
+           ("M-s-÷" . tide-jsdoc-template) ;; for mac
+           )
     :init
+    (require 'tide)
     (add-hook 'rjsx-mode-hook #'setup-tide-mode)
     :config
     ;; aligns annotation to the right hand side

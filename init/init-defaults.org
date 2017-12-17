@@ -21,7 +21,7 @@
   ;; (setq make-backup-files nil)
 #+END_SRC
 
-保存文件的编辑位置。
+保存文件的编辑位置。会造成启动非常卡顿，删掉。
 #+BEGIN_SRC emacs-lisp
   ;; (desktop-save-mode 1)
   ;; (setq history-length 20)
@@ -72,7 +72,7 @@
 
   ;; 更改显示字体大小 16pt
   ;; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
-   (set-face-attribute 'default nil :height 140)
+  (set-face-attribute 'default nil :height 140)
 
   (setq ring-bell-function 'ignore)
 
@@ -83,6 +83,12 @@
   ;; yes/no -> y/n
   (fset 'yes-or-no-p 'y-or-n-p)
 
+  ;; 几个从陈斌那里拿过来的配置
+  (setq use-dialog-box nil)
+  (setq use-file-dialog nil)
+  (setq inhibit-startup-screen t)
+  (setq inhibit-startup-echo-area-message t)
+  (setq indicate-empty-lines t)
 #+END_SRC
 
 emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页之后cursor位置不变，则可以将其设为t
