@@ -38,6 +38,7 @@
 * tide
 #+BEGIN_SRC emacs-lisp
   (require-package 'tide)
+  (require 'tide)
 
   (defun setup-tide-mode ()
     (interactive)
@@ -48,30 +49,27 @@
     (tide-hl-identifier-mode +1)
     (company-mode +1))
 
-  (use-package tide
-    :ensure t
-    :bind (("s-." . tide-jump-to-definition)
-           ("s-," . tide-jump-back)
-           ("s-h" . tide-documentation-at-point)
-           ("s-i" . imenu-list-smart-toggle)
-           ("M-s-/" . tide-jsdoc-template)
-           ("M-s-÷" . tide-jsdoc-template) ;; for mac
-           )
-    :init
-    (require 'tide)
-    (add-hook 'rjsx-mode-hook #'setup-tide-mode)
-    :config
-    ;; aligns annotation to the right hand side
-    (tide-start-server)
-    (setq company-tooltip-align-annotations t)
+  (add-hook 'rjsx-mode-hook #'setup-tide-mode)
 
-    ;; formats the buffer before saving
-    ;; use prettier-js instead
-    ;; (add-hook 'before-save-hook 'tide-format-before-save)
+  (tide-start-server)
 
-    ;; configure javascript-tide checker to run after your default javascript checker
-    (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-    (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append))
+  (setq company-tooltip-align-annotations t)
+
+  ;; formats the buffer before saving
+  ;; use prettier-js instead
+  ;; (add-hook 'before-save-hook 'tide-format-before-save)
+
+  (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+
+  ;; keys
+  (evil-define-key 'normal tide-mode-map (kbd "s-.") 'tide-jump-to-definition)
+  (eval-after-load 'tide
+    (evil-define-key 'normal global-map (kbd "s-,") 'tide-jump-back))
+  (evil-define-key 'normal tide-mode-map (kbd "s-h") 'tide-documentation-at-point)
+  (evil-define-key 'normal tide-mode-map (kbd "s-i") 'imenu-list-smart-toggle)
+  (evil-define-key 'normal tide-mode-map (kbd "s-/") 'tide-jsdoc-template)
+  (evil-define-key 'normal tide-mode-map (kbd "s-÷") 'tide-jsdoc-template)
 #+END_SRC
 
 * rjsx-mode
