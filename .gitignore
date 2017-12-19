@@ -38,3 +38,4 @@ meghanada/*
 /.mc-lists.el
 /company-statistics-cache.el
 /smex-items
+projectile-bookmarks.eld

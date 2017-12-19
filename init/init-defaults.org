@@ -1,3 +1,12 @@
+* packages
+** exec-path-from-shell
+使MacOS上的Emacs能正确的使用shell的环境变量。
+#+BEGIN_SRC emacs-lisp
+  (require-package 'exec-path-from-shell)
+
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
+#+END_SRC
 * defaults
 [针对mac] brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件则保存在这里：
 #+BEGIN_SRC emacs-lisp
@@ -182,15 +191,6 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
   (setf recentf-keep '(keep-default-old-and-visible-recentf-p))
 #+END_SRC
 
-* packages
-** exec-path-from-shell
-使MacOS上的Emacs能正确的使用shell的环境变量。
-#+BEGIN_SRC emacs-lisp
-  (require-package 'exec-path-from-shell)
-
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize))
-#+END_SRC
 * better-defaults
 修正Emacs默认配置的一些不合理配置。
 #+BEGIN_SRC emacs-lisp

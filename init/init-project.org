@@ -5,7 +5,7 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
     (require-package 'counsel-projectile)
     (require 'counsel-projectile)
     (add-to-list 'grep-find-ignored-files "bundle.js")
-    (counsel-projectile-on)
+    (counsel-projectile-mode)
     (setq projectile-require-project-root nil)
 #+END_SRC
 
