@@ -37,45 +37,44 @@
 #+END_SRC
 * tide
 #+BEGIN_SRC emacs-lisp
-    (require-package 'tide)
-    (require 'tide)
+  (require-package 'tide)
+  (require 'tide)
 
-    (defun setup-tide-mode ()
-      (interactive)
-      (tide-setup)
-      (flycheck-mode +1)
-      (setq flycheck-check-syntax-automatically '(save mode-enabled))
-      (eldoc-mode +1)
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
 
-      (setq company-tooltip-align-annotations t)
+    (setq company-tooltip-align-annotations t)
 
-      ;; formats the buffer before saving
-      ;; use prettier-js instead
-      ;; (add-hook 'before-save-hook 'tide-format-before-save)
+    ;; formats the buffer before saving
+    ;; use prettier-js instead
+    ;; (add-hook 'before-save-hook 'tide-format-before-save)
 
-      (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
-      (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
+    (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+    (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
 
-      ;; keys
-      (evil-define-key 'normal tide-mode-map (kbd "s-.") 'tide-jump-to-definition)
-      (eval-after-load 'tide
-        (evil-define-key 'normal global-map (kbd "s-,") 'tide-jump-back))
-      (evil-define-key 'normal tide-mode-map (kbd "s-h") 'tide-documentation-at-point)
-      (evil-define-key 'normal tide-mode-map (kbd "s-i") 'imenu-list-smart-toggle)
-      (evil-define-key 'normal tide-mode-map (kbd "s-/") 'tide-jsdoc-template)
-      (evil-define-key 'normal tide-mode-map (kbd "s-÷") 'tide-jsdoc-template)
+    ;; keys
+    (evil-define-key 'normal tide-mode-map (kbd "s-.") 'tide-jump-to-definition)
+    (evil-define-key 'normal tide-mode-map (kbd "s-,") 'tide-jump-back)
+    (evil-define-key 'normal tide-mode-map (kbd "s-h") 'tide-documentation-at-point)
+    (evil-define-key 'normal tide-mode-map (kbd "s-i") 'imenu-list-smart-toggle)
+    (evil-define-key 'normal tide-mode-map (kbd "s-/") 'tide-jsdoc-template)
+    (evil-define-key 'normal tide-mode-map (kbd "s-÷") 'tide-jsdoc-template)
 
-      (add-hook 'rjsx-mode-hook
-                (lambda ()
-                  (set (make-local-variable 'company-backends)
-                       '(
-                         company-tide
-                         company-dabbrev-code
-                         company-keywords
-                         company-files
-                         company-yasnippet)))))
+    (add-hook 'rjsx-mode-hook
+              (lambda ()
+                (set (make-local-variable 'company-backends)
+                     '(
+                       company-tide
+                       company-dabbrev-code
+                       company-keywords
+                       company-files
+                       company-yasnippet)))))
 
-    (add-hook 'rjsx-mode-hook #'setup-tide-mode)
+  (add-hook 'rjsx-mode-hook #'setup-tide-mode)
 #+END_SRC
 
 tsserver返回的消息有时太长，忽略太长的minibuffer信息：
@@ -91,6 +90,7 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
   (require-package 'rjsx-mode)
   (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
   (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts$" . rjsx-mode))
 
   ;; jsx缩进4
   (setq sgml-basic-offset 4)

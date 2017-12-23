@@ -39,3 +39,4 @@ meghanada/*
 /company-statistics-cache.el
 /smex-items
 projectile-bookmarks.eld
+.emacs-custom.el

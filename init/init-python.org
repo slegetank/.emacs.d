@@ -8,6 +8,8 @@
 
      (defun elpy-key-bind-method ()
        "Custom key binding"
+       (when (boundp 'imenu-list-minor-mode)
+         (evil-define-key 'normal elpy-mode-map (kbd "s-i") 'imenu-list-smart-toggle))
        (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
        (evil-define-key 'normal elpy-mode-map (kbd "s->") 'elpy-goto-definition-other-window)
        (evil-define-key 'normal elpy-mode-map (kbd "s-,") 'pop-tag-mark))
@@ -16,15 +18,12 @@
    #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-    (defun add-py-breakpoint ()  
+    (defun add-py-breakpoint ()
       (interactive)
-      (let ((start))
-        (back-to-indentation)
-        (setq start (current-column))
-        (move-end-of-line nil)
-        (insert "\n")
-        (move-to-column start t)
-        (insert "import pdb; pdb.set_trace();")))
+      (when (boundp 'evil-mode)
+        (evil-open-below 1)
+        (insert "import pdb; pdb.set_trace();")
+        (evil-normal-state)))
 
     (defun my-python-config ()
       "For python"

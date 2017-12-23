@@ -24,7 +24,6 @@
                                                                         switch-window
                                                                         ggtags
                                                                         indent-guide
-                                                                        expand-region
                                                                         xah-get-thing)))
   #+END_SRC
 
@@ -192,12 +191,17 @@ C-c o 打开当前文件所在的Finder;
 
   (evil-define-key 'normal imenu-list-major-mode-map (kbd "v") 'imenu-list-display-entry)
   (evil-define-key 'normal imenu-list-major-mode-map (kbd "<tab>") 'hs-toggle-hiding)
-  (evil-define-key 'normal imenu-list-major-mode-map (kbd "<RET>") (lambda () (interactive)
-                                                                     (imenu-list-goto-entry)
-                                                                     (imenu-list-quit-window)))
+  (defun slegetank/imenu-goto-and-quit ()
+    (interactive)
+    (with-current-buffer (current-buffer)
+      (imenu-list-goto-entry)
+      (imenu-list-quit-window)))
+
+  (global-set-key (kbd "s-i") 'imenu-list-smart-toggle)
+
+  (evil-define-key 'normal imenu-list-major-mode-map (kbd "<return>") 'slegetank/imenu-goto-and-quit)
   (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") 'imenu-list-quit-window)
   (evil-define-key 'normal imenu-list-major-mode-map (kbd "g") 'imenu-list-refresh)
-
 #+END_SRC
 ** switch-window
 #+BEGIN_SRC emacs-lisp
@@ -222,11 +226,6 @@ C-c o 打开当前文件所在的Finder;
   (require 'indent-guide)
   (indent-guide-global-mode)
   ;; (setq indent-guide-delay 0.1)
-#+END_SRC
-** expand-region
-#+BEGIN_SRC emacs-lisp
-  (require 'expand-region)
-  (global-set-key (kbd "S-<double-mouse-1>") 'er/expand-region)
 #+END_SRC
 ** xah-get-thing
 http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html

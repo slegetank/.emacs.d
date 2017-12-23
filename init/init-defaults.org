@@ -314,8 +314,18 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
   (define-key 'help-command (kbd "C-v") 'find-variable)
   (define-key 'help-command (kbd "C-f") 'find-function)
 
+  (defadvice find-function-do-it (around add-find-function-mark activate)
+    "Find function/variable/key pop back"
+    (xref-push-marker-stack)
+    ad-do-it)
+
+  (global-set-key (kbd "s-,") (lambda () (interactive)
+                                (if (and (boundp 'avy-ring) (not (ring-empty-p avy-ring)))
+                                    (avy-pop-mark)
+                                  (xref-pop-marker-stack))))
+
   ;; replace eval command from alt-x
-  (global-set-key (kbd "C-x C-m") 'execute-extended-command)
+  (global-set-key (kbd "C-x C-m") 'counsel-M-x)
 
   (defun clean-message-buffer ()
     "Fast way to clean message buffer's output"

@@ -118,8 +118,12 @@ M-x customize-group -> 默认触发为\，改为SPC
   (define-key evil-visual-state-map [escape] 'evil-visual-char)
 #+END_SRC
 
+* expand-region
 多次按v自动选择：
 #+BEGIN_SRC emacs-lisp
+  (require-package 'expand-region)
+  (require 'expand-region)
+
   (defun evil-visual-char-or-expand-region ()
     (interactive)
     (if (region-active-p)

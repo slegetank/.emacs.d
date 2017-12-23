@@ -67,6 +67,23 @@
     (slegetank/leader-define-key nil "hp" 'slegetank/melpa-upstream-visit "Find package's homepage")
 #+END_SRC
 
+* command-log-mode
+#+BEGIN_SRC emacs-lisp
+  (require-package 'command-log-mode)
+  (use-package command-log-mode
+    :commands global-command-log-mode
+    :init
+    (slegetank/leader-define-key nil "hc" 'global-command-log-mode "Show keystroke realtime")
+    :config
+    (setq clm/log-command-exceptions* (append clm/log-command-exceptions*
+                                              '(evil-next-line
+                                                evil-previous-line
+                                                evil-forward-char
+                                                evil-backward-char
+                                                ivy-next-line
+                                                ivy-previous-line))
+          command-log-mode-auto-show t))
+#+END_SRC
 * dictionary
 调用osx字典
 #+BEGIN_SRC emacs-lisp
