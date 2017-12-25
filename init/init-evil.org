@@ -35,7 +35,7 @@ M-x customize-group -> 默认触发为\，改为SPC
 
   (defun slegetank/leader-define-key (map key def desc &rest seq)
     "Custom method to define key and add comment to which-key"
-    (let ((map (unless map evil-leader--default-map))
+    (let ((map (if map map evil-leader--default-map))
           (fkey (concat "<SPC>" key))
           (fdesc desc)
           keyDescList)

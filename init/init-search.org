@@ -96,8 +96,10 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
 ** ace-pinyin
 支持中文：
 #+BEGIN_SRC emacs-lisp
+  (require-package 'ace-jump-mode)
   (require-package 'ace-pinyin)
   (require 'ace-pinyin)
+  (setq ace-pinyin-use-avy nil)
   (ace-pinyin-global-mode +1)
 #+END_SRC
 ** avy
@@ -152,5 +154,5 @@ ivy for 2 helper functions:
 #+BEGIN_SRC emacs-lisp
   (define-key evil-normal-state-map (kbd "s-f") 'swiper)
   (define-key evil-normal-state-map (kbd "s-m") 'slegetank/evil-mc-enable)
-  (define-key evil-normal-state-map (kbd "s-g") 'avy-goto-word-1)
+  (define-key evil-normal-state-map (kbd "s-g") 'ace-jump-char-mode)
 #+END_SRC

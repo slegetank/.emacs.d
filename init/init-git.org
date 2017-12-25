@@ -24,5 +24,12 @@
                                 (when (re-search-forward "^<<<<<<< " nil t)
                                   (smerge-mode 1))))
             t)
+
+  (defun slegetank/smerge-mode-setup ()
+    (slegetank/leader-define-key nil
+                                 "gn" 'smerge-next "Next conflict"
+                                 "gp" 'smerge-prev "Prev conflict")
+    (run-with-timer 0.1 nil 'smerge-next))
+  (add-hook 'smerge-mode-hook 'slegetank/smerge-mode-setup)
 #+END_SRC
 

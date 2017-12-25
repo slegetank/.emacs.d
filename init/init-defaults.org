@@ -314,6 +314,9 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
   (define-key 'help-command (kbd "C-v") 'find-variable)
   (define-key 'help-command (kbd "C-f") 'find-function)
 
+  (with-eval-after-load "evil-leader"
+    (evil-define-key 'normal emacs-lisp-mode-map (kbd "s-.") 'find-function))
+
   (defadvice find-function-do-it (around add-find-function-mark activate)
     "Find function/variable/key pop back"
     (xref-push-marker-stack)
