@@ -9,7 +9,6 @@
                                                                         slime
                                                                         rainbow-delimiters
                                                                         recentf-ext
-                                                                        s
                                                                         nyan-mode
                                                                         skewer-mode
                                                                         sr-speedbar

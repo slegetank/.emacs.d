@@ -139,7 +139,12 @@ M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
   (when (and (memq window-system '(mac ns))
              (executable-find "keyboardSwitcher"))
+    (let ((temp-text (shell-command-to-string "keyboardSwitcher enabled")))
+      (if (s-contains? "ABC" temp-text)
+          (setq slegetank/en-input-source "ABC")
+        (setq slegetank/en-input-source "U.S.")))
+
     (add-hook 'evil-normal-state-entry-hook
               (lambda ()
-                (call-process-shell-command "keyboardSwitcher select ABC" nil 0))))
+                (call-process-shell-command (format "keyboardSwitcher select %s" slegetank/en-input-source) nil 0))))
 #+END_SRC
