@@ -92,9 +92,13 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
 #+END_SRC
 
 * avy
-通过提示键进行当前屏幕内的跳转：
-** ace-pinyin
-支持中文：
+** avy
+#+BEGIN_SRC emacs-lisp
+  (require-package 'avy)
+#+END_SRC
+
+* ace-pinyin
+通过提示键进行当前屏幕内的跳转,支持中文：
 #+BEGIN_SRC emacs-lisp
   (require-package 'ace-jump-mode)
   (require-package 'ace-pinyin)
@@ -102,11 +106,6 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
   (setq ace-pinyin-use-avy nil)
   (ace-pinyin-global-mode +1)
 #+END_SRC
-** avy
-#+BEGIN_SRC emacs-lisp
-  (require-package 'avy)
-#+END_SRC
-
 * anzu
 在使用普通搜索功能时在状态栏显示匹配数目：
 #+BEGIN_SRC emacs-lisp

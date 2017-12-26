@@ -58,7 +58,7 @@
 
     ;; keys
     (evil-define-key 'normal tide-mode-map (kbd "s-.") 'tide-jump-to-definition)
-    (evil-define-key 'normal tide-mode-map (kbd "s-,") 'tide-jump-back)
+    ;; (evil-define-key 'normal tide-mode-map (kbd "s-,") 'tide-jump-back)
     (evil-define-key 'normal tide-mode-map (kbd "s-h") 'tide-documentation-at-point)
     (evil-define-key 'normal tide-mode-map (kbd "s-i") 'imenu-list-smart-toggle)
     (evil-define-key 'normal tide-mode-map (kbd "s-/") 'tide-jsdoc-template)
@@ -132,6 +132,7 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
                            "--trailing-comma" "all"
                            "--bracket-spacing" "false"
                            "--tab-width" "4"
+                           "--print-width" "120"
                            ))
   (defun enable-minor-mode (my-pair)
     "Enable minor mode if filename match the regexp.  MY-PAIR is a cons cell (regexp . minor-mode)."

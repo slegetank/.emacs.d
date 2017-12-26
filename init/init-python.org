@@ -12,7 +12,8 @@
          (evil-define-key 'normal elpy-mode-map (kbd "s-i") 'imenu-list-smart-toggle))
        (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
        (evil-define-key 'normal elpy-mode-map (kbd "s->") 'elpy-goto-definition-other-window)
-       (evil-define-key 'normal elpy-mode-map (kbd "s-,") 'pop-tag-mark))
+       ;; (evil-define-key 'normal elpy-mode-map (kbd "s-,") 'pop-tag-mark)
+       )
 
      (add-hook 'elpy-mode-hook 'elpy-key-bind-method)
    #+END_SRC
