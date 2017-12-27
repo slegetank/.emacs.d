@@ -39,19 +39,19 @@ company - complete anything!
           company-require-match nil
           company-etags-ignore-case t)
     )
-   (setq company-minimum-prefix-length 1)
+  (setq company-minimum-prefix-length 1)
 
   ;; @see https://github.com/redguardtoo/emacs.d/commit/2ff305c1ddd7faff6dc9fa0869e39f1e9ed1182d
-     (defadvice company-in-string-or-comment (around company-in-string-or-comment-hack activate)
-       ;; you can use (ad-get-arg 0) and (ad-set-arg 0) to tweak the arguments
-       (if (memq major-mode '(php-mode html-mode rjsx-mode web-mode nxml-mode))
-           (setq ad-return-value nil)
-         ad-do-it))
+  (defadvice company-in-string-or-comment (around company-in-string-or-comment-hack activate)
+    ;; you can use (ad-get-arg 0) and (ad-set-arg 0) to tweak the arguments
+    (if (memq major-mode '(php-mode html-mode rjsx-mode web-mode nxml-mode))
+        (setq ad-return-value nil)
+      ad-do-it))
 
-     ;; press SPACE will accept the highlighted candidate and insert a space
-     ;; `M-x describe-variable company-auto-complete-chars` for details
-     ;; That's BAD idea.
-     (setq company-auto-complete nil)
+  ;; press SPACE will accept the highlighted candidate and insert a space
+  ;; `M-x describe-variable company-auto-complete-chars` for details
+  ;; That's BAD idea.
+  (setq company-auto-complete nil)
 #+END_SRC
 
 * company-statics
@@ -62,4 +62,10 @@ company - complete anything!
     '(progn
        (require 'company-statistics)
        (company-statistics-mode)))
+#+END_SRC
+* company-quickhelp
+#+BEGIN_SRC emacs-lisp
+  (require-package 'company-quickhelp)
+  (company-quickhelp-mode 1)
+  (setq company-quickhelp-delay 1)
 #+END_SRC

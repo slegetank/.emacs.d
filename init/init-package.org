@@ -25,7 +25,7 @@
                                                                         indent-guide
                                                                         xah-get-thing
                                                                         protobuf-mode
-                                                                        popup)))
+                                                                        pos-tip)))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
@@ -232,4 +232,15 @@ C-c o 打开当前文件所在的Finder;
 http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
 #+BEGIN_SRC emacs-lisp
 (require 'xah-get-thing)
+#+END_SRC
+** protobuf-mode
+#+BEGIN_SRC emacs-lisp
+  (require 'protobuf-mode)
+
+  (defconst my-protobuf-style
+    '((c-basic-offset . 4)
+      (indent-tabs-mode . nil)))
+
+  (add-hook 'protobuf-mode-hook
+            (lambda () (c-add-style "my-style" my-protobuf-style t)))
 #+END_SRC
