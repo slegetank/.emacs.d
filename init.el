@@ -58,7 +58,7 @@
                                   "project"
                                   "tools"
                                   "help"
-                                  "theme"))
+                                  "UI"))
 
 ;; mu4e
 (when (executable-find "mu")

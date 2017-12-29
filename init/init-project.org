@@ -23,6 +23,7 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
       (setq neo-smart-open t)
       (setq neo-window-fixed-size nil)
       (setq neo-force-change-root t)
+      (setq projectile-switch-project-action 'neotree-projectile-action)
 
     (setq neo-hidden-regexp-list '("^\\." "\\.cs\\.meta$" "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "*_flymake.py$"))
 
@@ -90,6 +91,24 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
 
   (add-hook 'neo-after-create-hook 'slegetank/neo-auto-refresh)
 #+END_SRC
+
+*** collapse all
+折叠除当前文件夹之外的文件夹：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/neotree-collapse-all ()
+    (interactive)
+    "Collapse all except current parent node"
+    (neo-global--select-window)
+    (let ((file-name (neo-buffer--get-filename-current-line)))
+      (setq neo-buffer--expanded-node-list nil)
+      (neotree-select-up-node)
+      (funcall (neotree-make-executor :dir-fn 'neo-open-dir))
+      (neotree-find file-name)))
+
+  (add-hook 'neotree-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "S-<tab>") 'slegetank/neotree-collapse-all)))
+#+END_SRC
 * custom
 counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.projectile，一般情况下是可以的，但是对于webpack的工程由于bundle.js不会被忽略，但是又不想搜其中的东西，所以只好摘出来自定义了：
 #+BEGIN_SRC emacs-lisp
@@ -136,11 +155,10 @@ counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.pr
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key
-    "pf" 'counsel-projectile-find-file
-    "pb" 'counsel-projectile-switch-to-buffer
-    "pp" 'counsel-projectile-switch-project
-    "pn" 'custom-note-init)
-    (define-key evil-motion-state-map (kbd "s-F") 'slegetank/projectile-ag)
+  (slegetank/leader-define-key nil "pf" 'counsel-projectile-find-file "File in project"
+                               "pb" 'counsel-projectile-switch-to-buffer "Buffer in project"
+                               "pp" 'counsel-projectile-switch-project "Other project"
+                               "pn" 'custom-note-init)
+  (define-key evil-motion-state-map (kbd "s-F") 'slegetank/projectile-ag)
 #+END_SRC
 

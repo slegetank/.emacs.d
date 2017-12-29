@@ -40,3 +40,4 @@ meghanada/*
 /smex-items
 projectile-bookmarks.eld
 .emacs-custom.el
+/projectile.cache

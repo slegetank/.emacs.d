@@ -84,11 +84,16 @@
                                                 ivy-previous-line))
           command-log-mode-auto-show t))
 #+END_SRC
-* dictionary
+* translate
 调用osx字典
 #+BEGIN_SRC emacs-lisp
   (require-package  'osx-dictionary)
-  (slegetank/leader-define-key nil "hd" 'osx-dictionary-search-input "Dictionary")
+  (slegetank/leader-define-key nil "ht" 'osx-dictionary-search-input "Dictionary")
+#+END_SRC
+* devdocs
+#+BEGIN_SRC emacs-lisp
+  (require-package 'devdocs)
+  (slegetank/leader-define-key nil "hd" 'devdocs-search "dev docs")
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp

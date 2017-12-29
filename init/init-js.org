@@ -58,13 +58,16 @@
 
     ;; keys
     (evil-define-key 'normal tide-mode-map (kbd "s-.") 'tide-jump-to-definition)
+    ;; 用全局的
     ;; (evil-define-key 'normal tide-mode-map (kbd "s-,") 'tide-jump-back)
     (evil-define-key 'normal tide-mode-map (kbd "s-h") 'tide-documentation-at-point)
     (evil-define-key 'normal tide-mode-map (kbd "s-i") 'imenu-list-smart-toggle)
-    (evil-define-key 'normal tide-mode-map (kbd "s-/") 'tide-jsdoc-template)
-    (evil-define-key 'normal tide-mode-map (kbd "s-÷") 'tide-jsdoc-template)
+    ;; 用js-doc的
+    ;; (evil-define-key 'normal tide-mode-map (kbd "M-s-/") 'tide-jsdoc-template)
+    ;; (evil-define-key 'normal tide-mode-map (kbd "M-s-÷") 'tide-jsdoc-template)
 
-    (add-hook 'rjsx-mode-hook
+    (
+     add-hook 'rjsx-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-backends)
                      '(
@@ -84,7 +87,22 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
     (when (< (length text) 1000)
       ad-do-it))
 #+END_SRC
+* js-doc
+#+BEGIN_SRC emacs-lisp
+  (require-package 'js-doc)
+  (require 'js-doc)
 
+  (setq js-doc-mail-address (s-trim-right (shell-command-to-string "git config --global user.email") )
+        js-doc-author (format "%s <%s>" (shell-command-to-string "git config --global user.name") js-doc-mail-address)
+        js-doc-url nil
+        js-doc-license nil)
+
+  (add-hook 'js2-mode-hook
+            #'(lambda ()
+                (evil-define-key 'normal js2-mode-map (kbd "M-s-/") 'js-doc-insert-function-doc)
+                (evil-define-key 'normal js2-mode-map (kbd "M-s-÷") 'js-doc-insert-function-doc)
+                (define-key js2-mode-map "@" 'js-doc-insert-tag)))
+#+END_SRC
 * rjsx-mode
 #+BEGIN_SRC emacs-lisp
   (require-package 'rjsx-mode)

@@ -25,7 +25,8 @@
                                                                         indent-guide
                                                                         xah-get-thing
                                                                         protobuf-mode
-                                                                        pos-tip)))
+                                                                        pos-tip
+                                                                        quickrun)))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
@@ -74,6 +75,46 @@
   ;; popwin
   (require 'popwin)
   (popwin-mode t)
+
+  (setq popwin:popup-window-height 35
+          popwin:special-display-config
+          '(("*Miniedit Help*" :noselect t)
+            (help-mode :noselect nil)
+            ("*quickrun*" :stick t)
+            (completion-list-mode :noselect t)
+            (compilation-mode :noselect nil)
+            (grep-mode :noselect t)
+            (occur-mode :noselect t)
+            ("*Pp Macroexpand Output*" :noselect t)
+            ("*Shell Command Output*")
+            ("*Async Shell Command*")
+            ("*vc-diff*")
+            ("*vc-change-log*")
+            (" *undo-tree*" :width 60 :position right)
+            ("^\\*anything.*\\*$" :regexp t)
+            ("*slime-apropos*")
+            ("*slime-macroexpansion*")
+            ("*slime-description*")
+            ("*slime-compilation*" :noselect t)
+            ("*slime-xref*")
+            ("*Flycheck errors*")
+            ("*Warnings*")
+            ("*Error*")
+            ("*Process List*")
+            ("*Smex: Unbound Commands*")
+            ("*Paradox Report*" :noselect nil)
+            ("*Package Commit List*" :noselect nil)
+            ("*Diff*" :noselect nil)
+            ("*Messages*" :noselect nil)
+            ("*Google Maps*" :noselect nil)
+            ("*ag search*" :noselect nil)
+            ("*PDF-Occur*" :noselect nil)
+            ("*PDF-Metadata*" :noselect nil)
+            ("^\\*Outline .*\\.pdf\\*$" :regexp t :noselect nil)
+            ("*MULTI-TERM-DEDICATED*" :noselect nil :stick t)
+            (sldb-mode :stick t)
+            (slime-repl-mode)
+            (slime-connection-list-mode)))
 #+END_SRC
 ** reveal-in-osx-finder
 C-c o 打开当前文件所在的Finder;
@@ -243,4 +284,17 @@ http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
 
   (add-hook 'protobuf-mode-hook
             (lambda () (c-add-style "my-style" my-protobuf-style t)))
+#+END_SRC
+** quickrun
+#+BEGIN_SRC emacs-lisp
+  (require 'quickrun)
+  (defun slegetank/quickrun ()
+    "Custom quickrun command"
+    (interactive) 
+    (if (region-active-p)
+        (call-interactively 'quickrun-region)
+      (call-interactively 'quickrun)))
+
+  (global-set-key (kbd "s-r") 'slegetank/quickrun)
+  (evil-define-key 'normal quickrun--mode-map (kbd "q") 'quit-window)
 #+END_SRC
