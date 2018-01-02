@@ -72,6 +72,8 @@
   (write-region "" nil custom-file))
 (load custom-file)
 
+(setq custom-safe-themes t)
+
 ;;(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))
 
 ;; (find-file "~/.emacs.d/initpage.org")

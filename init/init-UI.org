@@ -2,11 +2,15 @@
 
 * theme
 #+BEGIN_SRC emacs-lisp
+  (setq custom-safe-themes t)
   (require-package 'afternoon-theme)
   (require-package 'monokai-theme)
   (require-package 'ujelly-theme)
   (require-package 'sublime-themes)
+  (require-package 'organic-green-theme)
   ;; (load-theme 'afternoon t)
+
+  (slegetank/leader-define-key nil "tu" 'customize-themes "Custom theme")
 #+END_SRC
 * beacon
 #+BEGIN_SRC emacs-lisp

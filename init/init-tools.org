@@ -30,8 +30,6 @@ make-term version:
                                                                (if (string= event "finished\n")
                                                                    (kill-buffer-and-window))))))))
 
-  (evil-leader/set-key "tt"  'fast-terminal)
-
   (add-hook 'term-mode-hook '(lambda ()
                                (evil-define-key 'normal term-raw-map (kbd "q") '(lambda () (interactive) (other-window -1) (delete-window (get-buffer-window "*terminal*"))))
                                (evil-define-key 'normal term-raw-map (kbd "C-r") 'term-send-reverse-search-history)
@@ -70,3 +68,9 @@ eshell version:
     ;; (global-set-key (kbd "<f12>") 'fast-terminal-eshell)
     ;; (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'quit-eshell-window)))
 #+END_SRC
+* keys
+#+BEGIN_SRC emacs-lisp
+  (slegetank/leader-define-key nil "t" nil "Tools"
+                               "tt" 'fast-terminal "Open terminal")
+#+END_SRC
+
