@@ -67,6 +67,7 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
             (message "Buffer is invalid.")))))
 #+END_SRC
 
+*** autorefresh
 自动刷新 不知道为什么neotree自动刷新间隔为2s。自定义之
 #+BEGIN_SRC emacs-lisp
   (setq neo-autorefresh t)
@@ -93,17 +94,18 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
 #+END_SRC
 
 *** collapse all
-折叠所有文件夹：
+折叠除当前文件外的所有文件夹：
 #+BEGIN_SRC emacs-lisp
   (defun slegetank/neotree-collapse-all ()
     (interactive)
     "Collapse all"
     (neo-global--select-window)
-    (let ((file-name (neo-buffer--get-filename-current-line)))
+    (let ((filename (neo-buffer--get-filename-current-line)))
       (setq neo-buffer--expanded-node-list nil)
-      (neotree-select-up-node)
-      ;; (funcall (neotree-make-executor :dir-fn 'neo-open-dir))
-      ;; (neotree-find file-name)
+      (neotree-find filename)
+      ;; (if (file-directory-p filename)
+      ;;     (neo-buffer--set-expand filename (neo-buffer--expanded-node-p filename))
+      ;;   (neotree-select-up-node))
       ))
 
   (add-hook 'neotree-mode-hook

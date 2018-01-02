@@ -105,7 +105,7 @@
             ("*Paradox Report*" :noselect nil)
             ("*Package Commit List*" :noselect nil)
             ("*Diff*" :noselect nil)
-            ("*Messages*" :noselect nil)
+            ;; ("*Messages*" :noselect nil)
             ("*Google Maps*" :noselect nil)
             ("*ag search*" :noselect nil)
             ("*PDF-Occur*" :noselect nil)

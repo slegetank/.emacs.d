@@ -8,6 +8,8 @@
   (require-package 'ujelly-theme)
   (require-package 'sublime-themes)
   (require-package 'organic-green-theme)
+  (require-package 'zenburn-theme)
+  (require-package 'metalheart-theme)
   ;; (load-theme 'afternoon t)
 
   (slegetank/leader-define-key nil "tu" 'customize-themes "Custom theme")
