@@ -93,17 +93,18 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
 #+END_SRC
 
 *** collapse all
-折叠除当前文件夹之外的文件夹：
+折叠所有文件夹：
 #+BEGIN_SRC emacs-lisp
   (defun slegetank/neotree-collapse-all ()
     (interactive)
-    "Collapse all except current parent node"
+    "Collapse all"
     (neo-global--select-window)
     (let ((file-name (neo-buffer--get-filename-current-line)))
       (setq neo-buffer--expanded-node-list nil)
       (neotree-select-up-node)
-      (funcall (neotree-make-executor :dir-fn 'neo-open-dir))
-      (neotree-find file-name)))
+      ;; (funcall (neotree-make-executor :dir-fn 'neo-open-dir))
+      ;; (neotree-find file-name)
+      ))
 
   (add-hook 'neotree-mode-hook
             (lambda ()
