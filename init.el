@@ -72,6 +72,7 @@
   (write-region "" nil custom-file))
 (load custom-file)
 
+;; 加载theme的时候不提问
 (setq custom-safe-themes t)
 
 ;;(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))

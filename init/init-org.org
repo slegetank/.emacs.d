@@ -29,8 +29,8 @@
 #+END_SRC
 * capture
 #+BEGIN_SRC emacs-lisp
-  (setq custom-org-note-self "~/Work/cloud/workorg/self.org")
-  (setq custom-org-note-work "~/Work/cloud/workorg/project.org")
+  (setq custom-org-note-self "~/Work/cloud/cloud/workorg/self.org")
+  (setq custom-org-note-work "~/Work/cloud/cloud/workorg/project.org")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -48,7 +48,7 @@
 #+END_SRC
 * todo
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files '("~/Work/cloud/workorg/project.org"))
+  (setq org-agenda-files '("~/Work/cloud/cloud/workorg/project.org"))
   (setq org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA")
 
   (evil-leader/set-key

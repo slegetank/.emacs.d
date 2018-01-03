@@ -133,6 +133,13 @@ M-x customize-group -> 默认触发为\，改为SPC
   (define-key evil-normal-state-map "v" 'evil-visual-char-or-expand-region)
   (define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
 #+END_SRC
+
+* evil-find-char-pinyin
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-find-char-pinyin)
+  (require 'evil-find-char-pinyin)
+  (evil-find-char-pinyin-mode +1)
+#+END_SRC
 * [macos] auto switch input source
 当进入evil-normal-mode时，自动切换回英文输入法
 # https://github.com/Lutzifer/keyboardSwitcher
