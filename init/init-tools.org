@@ -68,6 +68,12 @@ eshell version:
     ;; (global-set-key (kbd "<f12>") 'fast-terminal-eshell)
     ;; (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'quit-eshell-window)))
 #+END_SRC
+* ediff
+#+BEGIN_SRC emacs-lisp
+  (setq ediff-split-window-function 'split-window-horizontally)
+  (require-package 'evil-ediff)
+  (evil-ediff-init)
+#+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
   (slegetank/leader-define-key nil "t" nil "Tools"

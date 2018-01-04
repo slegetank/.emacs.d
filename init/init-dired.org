@@ -58,6 +58,11 @@ dired会被加入recentf-list:
   (require-package 'diredful)
   (diredful-mode 1)
 #+END_SRC
+** stripe-buffer
+#+BEGIN_SRC emacs-lisp
+  (require-package 'stripe-buffer)
+  (add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
+#+END_SRC
 * Inside
 #+BEGIN_SRC emacs-lisp
     (defun custom-dired-open-file-with-osx ()

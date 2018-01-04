@@ -1,6 +1,6 @@
 * defaults
 基于elpy: https://github.com/jorgenschaefer/elpy
-首先需要安装
+配置：https://github.com/jorgenschaefer/elpy/wiki/Configuration
 ** elpy
    #+BEGIN_SRC emacs-lisp
      (require-package 'elpy)
