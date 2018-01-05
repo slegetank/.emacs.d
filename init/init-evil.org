@@ -141,7 +141,7 @@ M-x customize-group -> 默认触发为\，改为SPC
   (evil-find-char-pinyin-mode +1)
 #+END_SRC
 * [macos] auto switch input source
-当进入evil-normal-mode时，自动切换回英文输入法
+当进入evil-normal-mode时，自动切换回英文输入法；由于某些未知原因，中文输入法的切换并不能马上生效，必须deactive再focus才可以，所以这里不做此功能。
 # https://github.com/Lutzifer/keyboardSwitcher
 #+BEGIN_SRC emacs-lisp
   (when (and (equal system-type 'darwin)

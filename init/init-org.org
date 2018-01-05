@@ -202,7 +202,7 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
 #+END_SRC
 ** epresent
 #+BEGIN_SRC emacs-lisp
-  (require-package 'epresent)
+  ;; (require-package 'epresent)
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
