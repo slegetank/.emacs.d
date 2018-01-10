@@ -144,7 +144,7 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
 #+BEGIN_SRC emacs-lisp
   (require-package 'prettier-js)
   (add-hook 'js2-mode-hook 'prettier-js-mode)
-  (add-hook 'web-mode-hook 'prettier-js-mode)
+  ;; (add-hook 'web-mode-hook 'prettier-js-mode)
   (add-hook 'rjsx-mode-hook 'prettier-js-mode)
   (setq prettier-js-args '(
                            "--trailing-comma" "all"

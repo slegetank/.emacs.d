@@ -59,6 +59,7 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "bn" 'next-buffer "Next buffer"
                                "bp" 'previous-buffer "Previous buffer"
                                "w" nil "Windows"
+                               "wp" 'previous-multiframe-window "Previous window"
                                "wk" 'delete-other-windows "Kill window"
                                "ws" 'split-window-horizontally "Split window horizontally"
                                "wv" 'split-window-vertically "Split window vertically"
