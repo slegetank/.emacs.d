@@ -41,3 +41,4 @@ meghanada/*
 projectile-bookmarks.eld
 .emacs-custom.el
 /projectile.cache
+/pyim/dcache/*

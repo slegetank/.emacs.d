@@ -1,0 +1,65 @@
+更好的中文支持
+* 远离搜狗，珍爱生命
+搜狗输入法的用户输入习惯是闭源的，换句话说，用户平常的输入习惯并不完全属于用户自己。当然了，搜狗本身是免费的，这么做也无可厚非。
+这里推荐：http://rime.im 开源，强大，最重要的是自己的输入习惯终于属于自己了！
+配置、导入、导出等见这篇博客：http://www.dreamxu.com/install-config-squirrel/
+
+* 输入法
+https://github.com/tumashu/pyim
+#+BEGIN_SRC emacs-lisp
+  (require-package 'pyim)
+  (require 'pyim)
+  (require 'pyim-basedict)
+  (pyim-basedict-enable)
+  (setq default-input-method "pyim")
+
+  (setq pyim-default-scheme 'quanpin)
+
+  ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
+  (setq-default pyim-english-input-switch-functions
+                '(
+                  pyim-probe-isearch-mode
+                  pyim-probe-program-mode
+                  pyim-probe-org-structure-template))
+
+  ;; (setq-default pyim-punctuation-half-width-functions
+  ;;               '(pyim-probe-punctuation-line-beginning
+  ;;                 pyim-probe-punctuation-after-punctuation))
+
+  ;; 开启拼音搜索功能
+  (pyim-isearch-mode 1)
+
+  ;; 使用 pupup-el 来绘制选词框
+  (if (>= emacs-major-version 26)
+      (setq pyim-page-tooltip 'child-frame)
+    (setq pyim-page-tooltip 'popup))
+
+  ;; 选词框显示5个候选词
+  (setq pyim-page-length 5)
+
+  ;; 让 Emacs 启动时自动加载 pyim 词库
+  (add-hook 'emacs-startup-hook
+            #'(lambda () (pyim-restart-1 t)))
+
+  (global-set-key (kbd "C-`") 'toggle-input-method)
+  (define-key pyim-mode-map (kbd "<tab>") 'pyim-page-next-page)
+  (define-key pyim-mode-map (kbd "C-j") 'pyim-page-next-page)
+  (define-key pyim-mode-map (kbd "C-k") 'pyim-page-previous-page)
+  (define-key pyim-mode-map (kbd "<escape>") 'pyim-quit-clear)
+#+END_SRC
+** 添加词库
+1. 到https://pinyin.sogou.com/dict/ 找到自己想要使用的词库文件
+2. https://github.com/E-Neo/scel2pyim 下载转换工具并编译
+3. 转换文件
+   #+BEGIN_SRC shell
+     scel2pyim xxx.scel sougou-xxx.pyim
+     mv sougou.pyim ~/.emacs.d/pyim
+   #+END_SRC
+4. 添加加载路径
+   #+BEGIN_SRC emacs-lisp
+     (setq pyim-dicts
+           `((:name "big" :file ,(expand-file-name "pyim/pyim-bigdict.pyim" user-emacs-directory))
+             (:name "sougou-develop" :file ,(expand-file-name "pyim/sougou-develop.pyim" user-emacs-directory))
+             (:name "sougou-jindaishi" :file ,(expand-file-name "pyim/sougou-jindaishi.pyim" user-emacs-directory))))
+   #+END_SRC
+

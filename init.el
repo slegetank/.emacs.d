@@ -58,7 +58,8 @@
                                   "project"
                                   "tools"
                                   "help"
-                                  "UI"))
+                                  "UI"
+                                  "chinese"))
 
 ;; mu4e
 (when (executable-find "mu")
