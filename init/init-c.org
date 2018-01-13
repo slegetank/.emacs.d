@@ -36,6 +36,6 @@ mac上先brew install cmake，再执行下面的语句再执行M-x irony-install
 *** company-irony
 #+BEGIN_SRC emacs-lisp
   (require-package 'company-irony)
-  (eval-after-load "company"
-    '(add-to-list 'company-backends '(company-irony company-gtags)))
+  (with-eval-after-load "company"
+    (add-to-list 'company-backends '(company-irony company-gtags)))
 #+END_SRC

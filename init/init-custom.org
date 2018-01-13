@@ -1,0 +1,8 @@
+某些自定义的配置放到这里
+
+云文件夹，有些配置文件，比如词典的翻译记录、拼音输入法的自定义词库文件可以放到这里，更方便的同步
+#+BEGIN_SRC emacs-lisp
+  (setq slegetank/cloud-dir (expand-file-name "~/work/cloud/cloud"))
+  (unless (file-exists-p slegetank/cloud-dir)
+    (setq slegetank/cloud-dir (expand-file-name "~")))
+#+END_SRC

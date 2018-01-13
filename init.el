@@ -44,7 +44,8 @@
 (org-babel-load-file (expand-file-name "init/init-defaults.org" user-emacs-directory))
 
 ;; 要加载的配置文件
-(setq slegetank/init-load-files '("evil"
+(setq slegetank/init-load-files '("custom"
+                                  "evil"
                                   "package"
                                   "org"
                                   "company"

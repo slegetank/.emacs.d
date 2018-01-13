@@ -146,6 +146,11 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
   (global-highlight-parentheses-mode)
 #+END_SRC
 
+emacs 26 以上 insert-string 调整为insert
+#+BEGIN_SRC emacs-lisp
+  (defalias 'insert-string 'insert)
+#+END_SRC
+
 ** trailing space
 #+BEGIN_SRC emacs-lisp
   ;; Show trailing whitespace

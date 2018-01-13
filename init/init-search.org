@@ -58,45 +58,6 @@ swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
 #+BEGIN_SRC emacs-lisp
   (define-key swiper-map (kbd "s-r") 'swiper-query-replace)
 #+END_SRC
-*** pinyin
-!搜索中文
-#+BEGIN_SRC emacs-lisp
-  (require-package 'pinyinlib)
-  (defun re-builder-pinyin (str)
-    (or (pinyin-to-utf8 str)
-        (ivy--regex-plus str)
-        (ivy--regex-ignore-order str)))
-
-  (setq ivy-re-builders-alist
-        '((t . re-builder-pinyin)))
-
-  (defun my-pinyinlib-build-regexp-string (str)
-    (cond ((equal str ".*")
-           ".*")
-          (t
-           (pinyinlib-build-regexp-string str t))))
-
-  (defun my-pinyin-regexp-helper (str)
-    (cond ((equal str " ")
-           ".*")
-          ((equal str "")
-           nil)
-          (t
-           str)))
-
-  (defun pinyin-to-utf8 (str)
-    (cond ((equal 0 (length str))
-           nil)
-          ((equal (substring str 0 1) "!")
-           (mapconcat 'my-pinyinlib-build-regexp-string
-                      (remove nil (mapcar 'my-pinyin-regexp-helper
-                                          (split-string
-                                           (replace-regexp-in-string "!" "" str ) "")))
-                      ""))
-          (t
-           nil)))
-#+END_SRC
-
 ** edit
 swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的替换、编辑：
 #+BEGIN_SRC emacs-lisp
@@ -138,14 +99,10 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
   (require-package 'avy)
 #+END_SRC
 
-* ace-pinyin
-通过提示键进行当前屏幕内的跳转,支持中文：
+* ace-jump
+屏幕内跳转
 #+BEGIN_SRC emacs-lisp
   (require-package 'ace-jump-mode)
-  (require-package 'ace-pinyin)
-  (require 'ace-pinyin)
-  (setq ace-pinyin-use-avy nil)
-  (ace-pinyin-global-mode +1)
 #+END_SRC
 * anzu
 在使用普通搜索功能时在状态栏显示匹配数目：

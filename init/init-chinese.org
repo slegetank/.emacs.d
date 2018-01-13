@@ -16,6 +16,7 @@ https://github.com/tumashu/pyim
   (setq pyim-default-scheme 'quanpin)
 
   ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
+  ;; pyim-probe-dynamic-english不大符合我的要求
   (setq-default pyim-english-input-switch-functions
                 '(
                   pyim-probe-isearch-mode
@@ -63,3 +64,83 @@ https://github.com/tumashu/pyim
              (:name "sougou-jindaishi" :file ,(expand-file-name "pyim/sougou-jindaishi.pyim" user-emacs-directory))))
    #+END_SRC
 
+* evil-find-char-pinyin
+evil f t 支持中文首字母
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "evil"
+    (require-package 'evil-find-char-pinyin)
+    (require 'evil-find-char-pinyin)
+    (evil-find-char-pinyin-mode +1))
+#+END_SRC
+* swiper
+swiper搜索支持中文 !首字母匹配
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "swiper"
+    (require-package 'pinyinlib)
+    (defun re-builder-pinyin (str)
+      (or (pinyin-to-utf8 str)
+          (ivy--regex-plus str)
+          (ivy--regex-ignore-order str)))
+
+    (setq ivy-re-builders-alist
+          '((t . re-builder-pinyin)))
+
+    (defun my-pinyinlib-build-regexp-string (str)
+      (cond ((equal str ".*")
+             ".*")
+            (t
+             (pinyinlib-build-regexp-string str t))))
+
+    (defun my-pinyin-regexp-helper (str)
+      (cond ((equal str " ")
+             ".*")
+            ((equal str "")
+             nil)
+            (t
+             str)))
+
+    (defun pinyin-to-utf8 (str)
+      (cond ((equal 0 (length str))
+             nil)
+            ((equal (substring str 0 1) "!")
+             (mapconcat 'my-pinyinlib-build-regexp-string
+                        (remove nil (mapcar 'my-pinyin-regexp-helper
+                                            (split-string
+                                             (replace-regexp-in-string "!" "" str ) "")))
+                        ""))
+            (t
+             nil))))
+#+END_SRC
+
+* ace-pinyin
+ace跳转支持中文：
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load "ace-jump-mode"
+    (require-package 'ace-pinyin)
+    (require 'ace-pinyin)
+    (setq ace-pinyin-use-avy nil)
+    (ace-pinyin-global-mode +1))
+#+END_SRC
+* cnfonts
+emacs中文字体配置工具。可以快速方便的的实现中文字体和英文字体等宽（也就是常说的中英文对齐）。
+如果发现仍然不能对齐，可以使用`cnfonts-edit-profile'进行配置。
+#+BEGIN_SRC emacs-lisp
+  (require-package 'cnfonts)
+  (require 'cnfonts)
+  (cnfonts-enable)
+  (cnfonts-set-spacemacs-fallback-fonts)
+#+END_SRC
+* 有道词典
+#+BEGIN_SRC emacs-lisp
+  (require-package  'youdao-dictionary)
+  (setq url-automatic-caching t)
+
+  (slegetank/leader-define-key nil "hy" 'youdao-dictionary-search-from-input "Yudao")
+
+  (with-eval-after-load "popwin"
+    (push "*Youdao Dictionary*" popwin:special-display-config))
+
+  (if (boundp 'slegetank/cloud-dir)
+      (setq youdao-dictionary-search-history-file (expand-file-name ".youdao" slegetank/cloud-dir))
+    (setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao"))
+#+END_SRC

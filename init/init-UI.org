@@ -30,10 +30,3 @@
   (setq sml/no-confirm-load-theme t)
   (sml/setup)
 #+END_SRC
-* 中文字体
-#+BEGIN_SRC emacs-lisp
-  (require-package 'cnfonts)
-  (require 'cnfonts)
-  (cnfonts-enable)
-  (cnfonts-set-spacemacs-fallback-fonts)
-#+END_SRC

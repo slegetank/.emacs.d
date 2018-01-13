@@ -58,10 +58,9 @@ company - complete anything!
 匹配过的项自动前提:
 #+BEGIN_SRC emacs-lisp
   (require-package 'company-statistics)
-  (eval-after-load 'company
-    '(progn
-       (require 'company-statistics)
-       (company-statistics-mode)))
+  (with-eval-after-load 'company
+    (require 'company-statistics)
+    (company-statistics-mode))
 #+END_SRC
 * company-quickhelp
 #+BEGIN_SRC emacs-lisp
