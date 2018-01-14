@@ -1,0 +1,11 @@
+alias gs "magit-status"
+alias gf "git" "fetch"
+alias gr "git" "rebase"
+alias gch "git" "cherry-pick"
+alias gc "git" "checkout"
+
+alias todo "open" "https://confluence.linkplay.com/display/ET/2017+iOS"
+alias jira "open" "https://jira.linkplay.com/browse/IOS-844\?filter=-1"
+alias jenkins "open" "https://sh.linkplay.com:8082/view/ios_build/job/ios_build_internal/build"
+alias artifactory "open" "https://sh.linkplay.com:8081/artifactory/webapp/#/artifacts/browse/tree/General/ios"
+alias wpush "python" "~/ScriptHelper/wiimupush.py"

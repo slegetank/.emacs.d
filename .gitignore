@@ -9,7 +9,8 @@ recentf
 backups
 /.emacs.desktop*
 /tutorial/Chinese-GBK.tut
-/eshell*
+/eshell/history
+/eshell/lastdir
 /url
 /tramp
 /bookmarks
