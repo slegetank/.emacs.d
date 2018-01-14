@@ -1,0 +1,129 @@
+emacs 是个操作系统，怎么能没有自己的shell呢。
+
+* default
+最后操作的shell
+#+BEGIN_SRC emacs-lisp
+  (setq slegetank/eshell-buffer nil)
+#+END_SRC
+
+** 快速打开：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/fast-terminal-eshell ()
+    "Opens up a new shell in the directory associated with the current buffer's file."
+    (interactive)
+    (let* ((parent (if (buffer-file-name)
+                       (file-name-directory (buffer-file-name))
+                     default-directory))
+           (name (car (last (split-string parent "/" t)))))
+      (split-window-sensibly)
+      (other-window 1)
+      (if (buffer-live-p slegetank/eshell-buffer)
+          (switch-to-buffer slegetank/eshell-buffer)
+        (progn
+          (eshell "new")
+          (rename-buffer (concat "*eshell: " name "*"))
+          (insert (concat "ls"))
+          (eshell-send-input)
+          (setq slegetank/eshell-buffer (current-buffer))))))
+#+END_SRC
+
+** exit关闭窗口；q for evil
+#+BEGIN_SRC emacs-lisp
+  (defun quit-eshell-window (&optional window)
+    "Remove WINDOW from the display.  Default is `selected-window'.
+  If WINDOW is the only one in its frame, then `delete-frame' too."
+    (interactive)
+    (save-current-buffer
+      (setq window (or window (selected-window)))
+      (select-window window)
+      (kill-buffer)
+      (if (one-window-p t)
+          (delete-frame)
+        (delete-window (selected-window)))))
+
+  (add-hook 'eshell-exit-hook 'delete-window)
+
+  (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'delete-window)))
+#+END_SRC
+
+** 支持拖动路径：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/shell-drag-deal-function (event)
+    "Shell supports drag file path"
+    (interactive "e")
+    "deal with mouse drag file into org"
+    (x-focus-frame nil)
+    (let* ((payload (car (last event)))
+           (type (car payload))
+           (fromname (cadr payload)))
+      (when (and (eq 'drag-n-drop (car event))
+                 (eq 'file type))
+        (insert fromname))))
+
+  (add-hook 'eshell-mode-hook '(lambda ()
+                                 (define-key eshell-mode-map (kbd "<drag-n-drop>") 'slegetank/shell-drag-deal-function)))
+#+END_SRC
+** alias
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
+
+* package
+** eshell-prompt-extras
+更好的UI
+#+BEGIN_SRC emacs-lisp
+(require-package 'eshell-prompt-extras)
+
+(with-eval-after-load "esh-opt"
+  (autoload 'epe-theme-lambda "eshell-prompt-extras")
+  (setq eshell-highlight-prompt t
+        eshell-prompt-function 'epe-theme-lambda))
+#+END_SRC
+** eshell-git-prompt
+更好的UI for git
+#+BEGIN_SRC emacs-lisp
+  (require-package 'eshell-git-prompt)
+  (eshell-git-prompt-use-theme 'powerline)
+#+END_SRC
+** eshell-z
+z for eshell
+#+BEGIN_SRC emacs-lisp
+  (require-package 'eshell-z)
+  (require 'eshell-z)
+#+END_SRC
+** eshell-did-you-mean
+错误提示
+#+BEGIN_SRC emacs-lisp
+  (require-package 'eshell-did-you-mean)
+  (eshell-did-you-mean-setup)
+#+END_SRC
+** eshell-fringe-status
+显示结果提示
+#+BEGIN_SRC emacs-lisp
+  (require-package 'eshell-fringe-status)
+  (add-hook 'eshell-mode-hook 'eshell-fringe-status-mode)
+#+END_SRC
+** esh-autosuggest
+自动提示
+#+BEGIN_SRC emacs-lisp
+  (require-package 'esh-autosuggest)
+  (require 'esh-autosuggest)
+  (add-hook 'eshell-mode-hook #'esh-autosuggest-mode)
+
+  (setq ivy-do-completion-in-region t) ; this is the default
+  (define-key esh-autosuggest-active-map (kbd "C-e") 'company-complete-selection)
+
+  (defun setup-eshell-ivy-completion ()
+    (define-key eshell-mode-map [remap eshell-pcomplete] 'completion-at-point)
+    ;; only if you want to use the minibuffer for completions instead of the
+    ;; in-buffer interface
+    (setq-local ivy-display-functions-alist
+                (remq (assoc 'ivy-completion-in-region ivy-display-functions-alist)
+                      ivy-display-functions-alist)))
+
+  (add-hook 'eshell-mode-hook #'setup-eshell-ivy-completion)
+#+END_SRC
+* keys
+#+BEGIN_SRC emacs-lisp
+  (slegetank/leader-define-key nil "tt" 'slegetank/fast-terminal-eshell "terminal")
+#+END_SRC

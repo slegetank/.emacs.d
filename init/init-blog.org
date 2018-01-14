@@ -320,14 +320,6 @@
 #+END_SRC
 
 * Edit
-** Keys
-#+BEGIN_SRC emacs-lisp
-  (define-key org-mode-map (kbd "<s-right>") (lambda () (interactive) (custom-blog-modify-type 1)))
-  (define-key org-mode-map (kbd "<s-left>") (lambda () (interactive) (custom-blog-modify-type -1)))
-
-  (slegetank/leader-define-key nil "blu" 'custom-blog-timestamp-update "Update timestamp")
-#+END_SRC
-
 ** Functions
 自定义时间戳更新方法：
 #+BEGIN_SRC emacs-lisp
@@ -338,6 +330,22 @@
       (search-forward-regexp "^#\\+DATE:.*?$")
       (replace-match (concat "#+DATE: " (format-time-string "<%Y-%m-%d %H:%M>")))
       (save-buffer)))
+#+END_SRC
+
+自定义修改博客type的方法：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/blog-type-update ()
+    "Update blog's type"
+    (interactive)
+    (let* ((blogtypes (with-temp-buffer
+                        (insert-file-contents (expand-file-name "blogtype" my-blog-post-base))
+                        (split-string (buffer-string) "\n" t)))
+           (blogtype (ivy-completing-read "Select article type: " blogtypes nil t)))
+      (with-current-buffer (current-buffer)
+        (goto-char (point-min))
+        (search-forward-regexp "^#\\+blogtype:.*?$")
+        (replace-match (concat "#+blogtype: " blogtype))
+        (save-buffer))))
 #+END_SRC
 
 判断是否为博客org文件：
@@ -418,42 +426,8 @@
       ;; (shell-command "git push")
       ))
 #+END_SRC
-
-在#+blogtype行按"s-right s-left"会根据已有的标签进行提示
+** Keys
 #+BEGIN_SRC emacs-lisp
-  (setq custom-blog-current-type "")
-  (defun custom-blog-modify-type (direction)
-    "Modify blog file type"
-    (when (string-match "^#\\+blogtype:" (thing-at-point 'line t))
-      (let* ((files (directory-files (concat my-blog-post-base "/blog") 1 "\\.org$"))
-             file
-             (infolist '()))
-        (while (setq file (pop files))
-          (let ((file-buf (find-file-noselect file nil)))
-            (with-current-buffer file-buf
-              (goto-char (point-min))
-              (let ((beg (re-search-forward "^#\\+blogtype:" nil t)))
-                (when beg
-                  (let* ((end (progn (goto-char beg) (line-end-position)))
-                         (type (s-trim (buffer-substring beg end))))
-                    (unless (cl-position type infolist :test 'equal)
-                      (setq infolist (cons type infolist)))))))))
-        (if (equal custom-blog-current-type "")
-            (setq custom-blog-current-type (car infolist))
-          (let ((beginindex (+ (cl-position custom-blog-current-type infolist :test 'equal) direction)))
-            (when (= beginindex (length infolist))
-              (setq beginindex 0))
-            (when (= beginindex -1)
-              (setq beginindex (1- (length infolist))))
-
-            (setq custom-blog-current-type (car (nthcdr beginindex infolist)))))
-        )
-
-      (with-current-buffer (current-buffer)
-        (goto-char (point-min))
-        (search-forward-regexp "^#\\+blogtype:.*?$")
-        (replace-match (concat "#+blogtype: " custom-blog-current-type))
-        (save-buffer))))
-
+    (slegetank/leader-define-key nil "blu" 'custom-blog-timestamp-update "Update timestamp"
+                                 "blt" 'slegetank/blog-type-update "Update type")
 #+END_SRC
-

@@ -60,6 +60,7 @@
                                   "tools"
                                   "help"
                                   "UI"
+                                  "eshell"
                                   "chinese"))
 
 ;; mu4e

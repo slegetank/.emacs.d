@@ -9,6 +9,8 @@
 
     (setq org-src-fontify-natively t)
 
+    (setq org-M-RET-may-split-line '((default . nil))) ; s-enter/m-enter 不会切断header
+
     ;; ditaa for chart
     (org-babel-do-load-languages
      'org-babel-load-languages
@@ -160,7 +162,7 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
                   (eq 'file type))
         (cond ((and (fboundp 'custom-blog-drag-image) (custom-org-blog-p)) (custom-blog-drag-image fromname)) ; blog
               ((and (fboundp 'custom-mail-drag-attach) (custom-org-mail-p)) (custom-mail-drag-attach fromname)) ; mail
-              (t (message "Found no deal method; Abort"))))))
+              (t (find-file fromname))))))
 
   (define-key org-mode-map (kbd "<drag-n-drop>") 'custom-org-drag-file-method)
 #+END_SRC

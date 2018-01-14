@@ -172,7 +172,8 @@ emacs 26 以上 insert-string 调整为insert
                             term-mode-hook
                             mu4e-view-mode-hook
                             mu4e-org-mode-hook
-                            mu4e-main-mode-hook))
+                            mu4e-main-mode-hook
+                            eshell-mode-hook))
   (dolist (element no-trailing-modes nil)
     (add-hook element 'no-trailing-whitespace))
 #+END_SRC
