@@ -322,6 +322,8 @@ emacs 26 以上 insert-string 调整为insert
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "s-k") nil)
+  
   ;; help
   (define-key 'help-command (kbd "C-k") 'find-function-on-key)
   (define-key 'help-command (kbd "C-v") 'find-variable)

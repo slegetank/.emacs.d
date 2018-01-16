@@ -61,14 +61,18 @@
                                   "help"
                                   "UI"
                                   "eshell"
-                                  "chinese"))
+                                  "chinese"
+                                  "linkplay"))
 
 ;; mu4e
 (when (executable-find "mu")
   (add-to-list 'slegetank/init-load-files "mu4e" t))
 
-(dolist (item slegetank/init-load-files nil)
-  (org-babel-load-file (expand-file-name (format "init/init-%s.org" item) user-emacs-directory)))
+(let (orgpath)
+  (dolist (item slegetank/init-load-files nil)
+    (setq orgpath (expand-file-name (format "init/init-%s.org" item) user-emacs-directory))
+    (when (file-exists-p orgpath)
+      (org-babel-load-file orgpath))))
 
 (setq custom-file (expand-file-name ".emacs-custom.el" user-emacs-directory))
 (unless (file-exists-p custom-file)

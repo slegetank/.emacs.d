@@ -1,72 +1,12 @@
 emacs 是个操作系统，怎么能没有自己的shell呢。
 
-* default
-最后操作的shell
-#+BEGIN_SRC emacs-lisp
-  (setq slegetank/eshell-buffer nil)
-#+END_SRC
-
-** 快速打开：
-#+BEGIN_SRC emacs-lisp
-  (defun slegetank/fast-terminal-eshell ()
-    "Opens up a new shell in the directory associated with the current buffer's file."
-    (interactive)
-    (let* ((parent (if (buffer-file-name)
-                       (file-name-directory (buffer-file-name))
-                     default-directory))
-           (name (car (last (split-string parent "/" t)))))
-      (split-window-sensibly)
-      (other-window 1)
-      (if (buffer-live-p slegetank/eshell-buffer)
-          (switch-to-buffer slegetank/eshell-buffer)
-        (progn
-          (eshell "new")
-          (rename-buffer (concat "*eshell: " name "*"))
-          (insert (concat "ls"))
-          (eshell-send-input)
-          (setq slegetank/eshell-buffer (current-buffer))))))
-#+END_SRC
-
-** exit关闭窗口；q for evil
-#+BEGIN_SRC emacs-lisp
-  (defun quit-eshell-window (&optional window)
-    "Remove WINDOW from the display.  Default is `selected-window'.
-  If WINDOW is the only one in its frame, then `delete-frame' too."
-    (interactive)
-    (save-current-buffer
-      (setq window (or window (selected-window)))
-      (select-window window)
-      (kill-buffer)
-      (if (one-window-p t)
-          (delete-frame)
-        (delete-window (selected-window)))))
-
-  (add-hook 'eshell-exit-hook 'delete-window)
-
-  (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'delete-window)))
-#+END_SRC
-
-** 支持拖动路径：
-#+BEGIN_SRC emacs-lisp
-  (defun slegetank/shell-drag-deal-function (event)
-    "Shell supports drag file path"
-    (interactive "e")
-    "deal with mouse drag file into org"
-    (x-focus-frame nil)
-    (let* ((payload (car (last event)))
-           (type (car payload))
-           (fromname (cadr payload)))
-      (when (and (eq 'drag-n-drop (car event))
-                 (eq 'file type))
-        (insert fromname))))
-
-  (add-hook 'eshell-mode-hook '(lambda ()
-                                 (define-key eshell-mode-map (kbd "<drag-n-drop>") 'slegetank/shell-drag-deal-function)))
-#+END_SRC
+* 文章
+** 自定义方法
+https://www.emacswiki.org/emacs/EshellFunctions
 ** alias
-#+BEGIN_SRC emacs-lisp
-
-#+END_SRC
+https://www.emacswiki.org/emacs/EshellAlias
+** 提示
+https://www.masteringemacs.org/article/pcomplete-context-sensitive-completion-emacs
 
 * package
 ** eshell-prompt-extras
@@ -123,7 +63,231 @@ z for eshell
 
   (add-hook 'eshell-mode-hook #'setup-eshell-ivy-completion)
 #+END_SRC
+** shell-switcher
+#+BEGIN_SRC emacs-lisp
+  (require-package 'shell-switcher)
+  (require 'shell-switcher)
+  (add-hook 'eshell-mode-hook 'shell-switcher-manually-register-shell)
+  (add-hook 'eshell-mode-hook (lambda ()
+                                (setq-local shell-switcher-mode t)))
+#+END_SRC
+* custom
+** smart
+#+BEGIN_SRC emacs-lisp
+  (require 'em-smart)
+  (setq eshell-where-to-jump 'begin)
+  (setq eshell-review-quick-commands nil)
+  (setq eshell-smart-space-goes-to-end t)
+#+END_SRC
+** 快速打开：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell-fast-open ()
+    "Open or switch."
+    (interactive)
+    (let* ((parent (if (buffer-file-name)
+                       (file-name-directory (buffer-file-name))
+                     default-directory))
+           (name (car (last (split-string parent "/" t)))))
+      (split-window-sensibly)
+      (other-window 1)
+      (if (rswitcher-empty-p sswitcher--ring)
+          (progn
+            (eshell "new")
+            (rename-buffer (concat "*eshell: " name " <0>*"))
+            (insert (concat "ls"))
+            (eshell-send-input))
+        (switch-to-buffer (sswitcher--most-recent)))
+      (goto-char (point-max))
+      (evil-insert-state)))
+
+  (defun slegetank/eshell-new-inside ()
+    "New eshell in shell."
+    (interactive)
+    (let* ((parent (if (buffer-file-name)
+                       (file-name-directory (buffer-file-name))
+                     default-directory))
+           (name (car (last (split-string parent "/" t))))
+           (newname (concat "*eshell: " name " <0>*"))
+           (index 0))
+      (eshell "new")
+      (while (get-buffer newname)
+        (setq newname (concat "*eshell: " name " <" (number-to-string index) ">*"))
+        (setq index (1+ index)))
+      (rename-buffer newname)
+      (insert (concat "ls"))
+      (eshell-send-input)
+      (goto-char (point-max))
+      (evil-insert-state)))
+
+  (defun slegetank/eshell-switch ()
+    "Switch multi shell wrapper."
+    (interactive)
+    (if (>= 1 (rswitcher-length sswitcher--ring))
+        (slegetank/eshell-new-inside)
+      (shell-switcher-switch-buffer)))
+
+  (define-key shell-switcher-mode-map (kbd "C-'")
+    'slegetank/eshell-switch)
+#+END_SRC
+
+** exit关闭窗口；q for evil
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/exit-eshell-window (&optional window)
+    "Really kill eshell window."
+    (interactive)
+    (save-current-buffer
+      (setq window (or window (selected-window)))
+      (select-window window)
+      (if (one-window-p t)
+          (previous-buffer)
+        (when (= (rswitcher-length sswitcher--ring) 1)
+          (delete-window (selected-window))))))
+
+  (defun slegetank/quit-eshell-window (&optional window)
+    "Quit but not kill eshell window."
+    (interactive)
+    (save-current-buffer
+      (setq window (or window (selected-window)))
+      (select-window window)
+      (if (one-window-p t)
+          (previous-buffer)
+        (delete-window (selected-window)))))
+
+  (add-hook 'eshell-exit-hook (lambda () (rswitcher-delete-most-recent sswitcher--ring)))
+  (add-hook 'eshell-exit-hook 'slegetank/exit-eshell-window)
+
+  (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'slegetank/quit-eshell-window)))
+#+END_SRC
+
+** 支持拖动路径：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/shell-drag-deal-function (event)
+    "Shell supports drag file path"
+    (interactive "e")
+    "deal with mouse drag file into org"
+    (x-focus-frame nil)
+    (let* ((payload (car (last event)))
+           (type (car payload))
+           (fromname (cadr payload)))
+      (when (and (eq 'drag-n-drop (car event))
+                 (eq 'file type))
+        (insert (format "\"%s\"" fromname)))))
+
+  (add-hook 'eshell-mode-hook '(lambda ()
+                                 (define-key eshell-mode-map (kbd "<drag-n-drop>") 'slegetank/shell-drag-deal-function)))
+#+END_SRC
+
+** 清屏自定义
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell/clear-screen ()
+    "Custom clear method"
+    (interactive)
+    (let ((input (eshell-get-old-input)))
+      (eshell/clear-scrollback)
+      (eshell-emit-prompt)
+      (insert input)))
+#+END_SRC
+
+** buffer名同路径
+#+BEGIN_SRC emacs-lisp
+    (add-hook 'eshell-directory-change-hook (lambda () (let* ((parent (if (buffer-file-name)
+                                                                          (file-name-directory (buffer-file-name))
+                                                                        default-directory))
+                                                              (name (car (last (split-string parent "/" t))))
+                                                              (index (substring (car (s-match " <.*?>\\*" (buffer-name))) 2 -2)))
+                                                         (rename-buffer (concat "*eshell: " name (format " <%s>*" index))))))
+#+END_SRC
+
+** history
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell-history ()
+    "Interactive search eshell history."
+    (interactive)
+    (require 'em-hist)
+    (save-excursion
+      (let* ((start-pos (eshell-bol))
+             (end-pos (point-at-eol))
+             (input (buffer-substring-no-properties start-pos end-pos)))
+        (let* ((command (ivy-read "Command: "
+                                  (delete-dups
+                                   (when (> (ring-size eshell-history-ring) 0)
+                                     (ring-elements eshell-history-ring)))
+                                  :preselect input
+                                  :action #'ivy-completion-in-region-action))
+               (cursor-move (length command)))
+          (kill-region (+ start-pos cursor-move) (+ end-pos cursor-move))
+          )))
+    ;; move cursor to eol
+    (end-of-line)
+    )
+#+END_SRC
+* alias
+Go to xcode dir:
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell/goto-xcode-directory ()
+    "eshell go to current xcode dir"
+    (eshell/cd (file-name-as-directory
+                (file-name-directory
+                 (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'"))))))
+#+END_SRC
+
+Go to Finder dir:
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell/goto-finder-directory ()
+    "eshell go to current finder dir"
+    (eshell/cd (file-name-as-directory
+                (s-trim
+                 (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
+#+END_SRC
+
+Go to last buffer's dir:
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell/goto-last-buffer-directory ()
+    "eshell go to last buffer's dir"
+    (let (previousdir)
+      (with-current-buffer (other-buffer (current-buffer) 1)
+        (setq previousdir (file-name-directory (or (buffer-file-name) ""))))
+      (eshell/cd previousdir)))
+#+END_SRC
+
 * keys
 #+BEGIN_SRC emacs-lisp
-  (slegetank/leader-define-key nil "tt" 'slegetank/fast-terminal-eshell "terminal")
+  (defun slegetank/eshell-setup ()
+    (define-key eshell-mode-map (kbd "s-k") 'slegetank/eshell/clear-screen)
+    (define-key eshell-mode-map (kbd "s-t") 'slegetank/eshell-new-inside)
+    (define-key eshell-mode-map (kbd "s-w") 'kill-current-buffer)
+
+    (evil-define-key '(insert normal) eshell-mode-map (kbd "C-r") 'slegetank/eshell-history)
+    (evil-define-key '(insert normal) eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
+    (evil-define-key '(insert normal) eshell-mode-map (kbd "C-p") 'eshell-previous-matching-input-from-input)
+    (evil-define-key '(insert normal) eshell-mode-map (kbd "C-j") 'eshell-next-matching-input-from-input)
+    (evil-define-key '(insert normal) eshell-mode-map (kbd "C-k") 'eshell-previous-matching-input-from-input)
+    (evil-define-key 'normal eshell-mode-map (kbd "A") (lambda ()
+                                                         "A goto last command's end."
+                                                         (interactive)
+                                                         (goto-char (point-max))
+                                                         (evil-insert-state)))
+
+    (evil-define-key 'normal eshell-mode-map (kbd "<return>") (lambda ()
+                                                         "Enter goto last command's end and execute."
+                                                         (interactive)
+                                                         (goto-char (point-max))
+                                                         (evil-insert-state)
+                                                         (eshell-send-input)))
+
+    ;; 默认设置
+    (setq eshell-scroll-to-bottom-on-input t
+          eshell-error-if-no-glob t
+          eshell-hist-ignoredups t
+          eshell-save-history-on-exit t
+          eshell-prefer-lisp-functions nil
+          eshell-destroy-buffer-when-process-dies t))
+
+  (global-set-key (kbd "s-t") 'slegetank/eshell-fast-open)
+  (add-hook 'eshell-mode-hook 'slegetank/eshell-setup)
+
+  (slegetank/leader-define-key nil "tt" (lambda () (interactive)
+                                          (if (bound-and-true-p eshell-mode)
+                                              (slegetank/quit-eshell-window)
+                                            (slegetank/eshell-fast-open))) "terminal")
 #+END_SRC
