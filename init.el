@@ -82,6 +82,9 @@
 ;; 加载theme的时候不提问
 (setq custom-safe-themes t)
 
-;;(mapc 'org-babel-load-file (directory-files (expand-file-name "init" user-emacs-directory) t "\\.org$"))
+;; open eshell
+(eshell)
+(rename-buffer "*eshell: ~ <0>*")
+(evil-normal-state)
 
 ;; (find-file "~/.emacs.d/initpage.org")

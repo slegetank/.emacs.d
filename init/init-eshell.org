@@ -1,13 +1,5 @@
 emacs 是个操作系统，怎么能没有自己的shell呢。
 
-* 文章
-** 自定义方法
-https://www.emacswiki.org/emacs/EshellFunctions
-** alias
-https://www.emacswiki.org/emacs/EshellAlias
-** 提示
-https://www.masteringemacs.org/article/pcomplete-context-sensitive-completion-emacs
-
 * package
 ** eshell-prompt-extras
 更好的UI
@@ -291,3 +283,10 @@ Go to last buffer's dir:
                                               (slegetank/quit-eshell-window)
                                             (slegetank/eshell-fast-open))) "terminal")
 #+END_SRC
+* 文章
+1. 自定义方法
+   https://www.emacswiki.org/emacs/EshellFunctions
+2. alias
+   https://www.emacswiki.org/emacs/EshellAlias
+3. 提示
+   https://www.masteringemacs.org/article/pcomplete-context-sensitive-completion-emacs
