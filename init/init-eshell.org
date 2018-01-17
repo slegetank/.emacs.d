@@ -71,6 +71,25 @@ z for eshell
   (setq eshell-review-quick-commands nil)
   (setq eshell-smart-space-goes-to-end t)
 #+END_SRC
+** readonly
+https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-in-eshell-and-repl-buffers
+#+BEGIN_SRC emacs-lisp
+  (defun eshell-interactive-output-readonly ()
+    "Make output of interactive commands in eshell read-only.
+  This should be the last entry in eshell-output-filter-functions!"
+    (let ((end eshell-last-output-end))
+      (save-excursion
+        (goto-char end)
+        (end-of-line 0)
+        (setq end (point)))
+      (when (< eshell-last-output-block-begin end)
+        (put-text-property eshell-last-output-block-begin end 'read-only "Read-only interactive eshell output"))))
+
+  (defun eshell-make-interactive-output-readonly ()
+    (add-hook 'eshell-output-filter-functions 'eshell-interactive-output-readonly 'append))
+
+  (add-hook 'eshell-mode-hook 'eshell-make-interactive-output-readonly)
+#+END_SRC
 ** 快速打开：
 #+BEGIN_SRC emacs-lisp
   (defun slegetank/eshell-switch-buffer (buffer-or-name)
