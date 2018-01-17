@@ -73,6 +73,14 @@ z for eshell
 #+END_SRC
 ** 快速打开：
 #+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell-switch-buffer (buffer-or-name)
+    "Switch eshell and update list index."
+    (let ((buffer (get-buffer buffer-or-name)))
+      (rswitcher--delete sswitcher--ring
+                         (cl-position buffer (rswitcher--elements sswitcher--ring)))
+      (rswitcher-add sswitcher--ring buffer)
+      (switch-to-buffer buffer)))
+
   (defun slegetank/eshell-fast-open (buffer)
     "Open or switch."
     (interactive)
@@ -88,7 +96,7 @@ z for eshell
             (rename-buffer (concat "*eshell: " name " <1>*"))
             (insert (concat "ls"))
             (eshell-send-input))
-        (switch-to-buffer (or buffer (sswitcher--most-recent))))
+        (slegetank/eshell-switch-buffer (or buffer (sswitcher--most-recent))))
       (goto-char (point-max))
       (evil-insert-state)))
 
@@ -221,12 +229,12 @@ ivy搜索历史
           foundp)
       (while (and (not foundp) list)
         (setq buffer (car list))
-        (when (s-match (format "<%d>" num) (buffer-name buffer))
-          (setq foundp buffer)
-          (switch-to-buffer buffer))
-        (setq list (cdr list))
-        (unless list
-          (message "Found no shell %d" num)))))
+        (when (s-match (format " <%d>*" num) (buffer-name buffer))
+          (setq foundp t)
+          (slegetank/eshell-switch-buffer buffer))
+        (setq list (cdr list)))
+      (unless foundp
+        (message "Found no shell %d" num))))
 #+END_SRC
 ** ivy switch
 #+BEGIN_SRC emacs-lisp
@@ -243,7 +251,7 @@ ivy搜索历史
           (setq list (cdr list)))
         (setq buffer (ivy-completing-read "Switch to: " namelist nil t))
         (if (bound-and-true-p eshell-mode)
-            (switch-to-buffer buffer)
+            (slegetank/eshell-switch-buffer buffer)
           (slegetank/eshell-fast-open buffer)))))
 #+END_SRC
 * alias

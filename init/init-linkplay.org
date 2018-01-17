@@ -1,7 +1,7 @@
 公司相关的配置
 
 * eshell
-alias muzo
+** alias muzo
 #+BEGIN_SRC emacs-lisp
   (defun slegetank/linkplay-muzo-project-path ()
     (let* ((currentDir (eshell/pwd))
@@ -43,4 +43,10 @@ alias muzo
             (setq exclude (delete file exclude)))
           (setq current (cdr current)))
         (cdr files))))
+#+END_SRC
+* private
+不适合放到github上的配置
+#+BEGIN_SRC emacs-lisp
+  (when (boundp 'slegetank/cloud-dir)
+    (load (format "%s/init-work" slegetank/cloud-dir)))
 #+END_SRC
