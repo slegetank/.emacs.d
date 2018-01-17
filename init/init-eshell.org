@@ -140,8 +140,9 @@ z for eshell
       (select-window window)
       (if (one-window-p t)
           (previous-buffer)
-        (when (= (rswitcher-length sswitcher--ring) 1)
-          (delete-window (selected-window))))))
+        (if (= (rswitcher-length sswitcher--ring) 1)
+            (delete-window (selected-window))
+          (slegetank/eshell-switch-buffer (sswitcher--most-recent))))))
 
   (defun slegetank/quit-eshell-window (&optional window)
     "Quit but not kill eshell window."
