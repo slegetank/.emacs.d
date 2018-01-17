@@ -73,7 +73,7 @@ z for eshell
 #+END_SRC
 ** 快速打开：
 #+BEGIN_SRC emacs-lisp
-  (defun slegetank/eshell-fast-open ()
+  (defun slegetank/eshell-fast-open (buffer)
     "Open or switch."
     (interactive)
     (let* ((parent (if (buffer-file-name)
@@ -85,10 +85,10 @@ z for eshell
       (if (rswitcher-empty-p sswitcher--ring)
           (progn
             (eshell "new")
-            (rename-buffer (concat "*eshell: " name " <0>*"))
+            (rename-buffer (concat "*eshell: " name " <1>*"))
             (insert (concat "ls"))
             (eshell-send-input))
-        (switch-to-buffer (sswitcher--most-recent)))
+        (switch-to-buffer (or buffer (sswitcher--most-recent))))
       (goto-char (point-max))
       (evil-insert-state)))
 
@@ -99,8 +99,8 @@ z for eshell
                        (file-name-directory (buffer-file-name))
                      default-directory))
            (name (car (last (split-string parent "/" t))))
-           (newname (concat "*eshell: " name " <0>*"))
-           (index 0))
+           (newname (concat "*eshell: " name " <1>*"))
+           (index 1))
       (eshell "new")
       (while (get-buffer newname)
         (setq newname (concat "*eshell: " name " <" (number-to-string index) ">*"))
@@ -191,6 +191,7 @@ z for eshell
 #+END_SRC
 
 ** history
+ivy搜索历史
 #+BEGIN_SRC emacs-lisp
   (defun slegetank/eshell-history ()
     "Interactive search eshell history."
@@ -212,6 +213,38 @@ z for eshell
     ;; move cursor to eol
     (end-of-line)
     )
+#+END_SRC
+** s-number 切换shell
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell-switch-by-num (num)
+    (let ((list (rswitcher--elements sswitcher--ring))
+          foundp)
+      (while (and (not foundp) list)
+        (setq buffer (car list))
+        (when (s-match (format "<%d>" num) (buffer-name buffer))
+          (setq foundp buffer)
+          (switch-to-buffer buffer))
+        (setq list (cdr list))
+        (unless list
+          (message "Found no shell %d" num)))))
+#+END_SRC
+** ivy switch
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell-ivy-switch ()
+    "Switch use ivy."
+    (interactive)
+    (if (rswitcher-empty-p sswitcher--ring)
+        (message "Found no shell buffer.")
+      (let ((list (rswitcher--elements sswitcher--ring))
+            namelist
+            buffer)
+        (while list
+          (add-to-list 'namelist (buffer-name (car list)))
+          (setq list (cdr list)))
+        (setq buffer (ivy-completing-read "Switch to: " namelist nil t))
+        (if (bound-and-true-p eshell-mode)
+            (switch-to-buffer buffer)
+          (slegetank/eshell-fast-open buffer)))))
 #+END_SRC
 * alias
 Go to xcode dir:
@@ -248,6 +281,11 @@ Go to last buffer's dir:
     (define-key eshell-mode-map (kbd "s-k") 'slegetank/eshell/clear-screen)
     (define-key eshell-mode-map (kbd "s-t") 'slegetank/eshell-new-inside)
     (define-key eshell-mode-map (kbd "s-w") 'kill-current-buffer)
+    (define-key eshell-mode-map (kbd "s-1") (lambda () (interactive) (slegetank/eshell-switch-by-num 1)))
+    (define-key eshell-mode-map (kbd "s-2") (lambda () (interactive) (slegetank/eshell-switch-by-num 2)))
+    (define-key eshell-mode-map (kbd "s-3") (lambda () (interactive) (slegetank/eshell-switch-by-num 3)))
+    (define-key eshell-mode-map (kbd "s-4") (lambda () (interactive) (slegetank/eshell-switch-by-num 4)))
+    (define-key eshell-mode-map (kbd "s-5") (lambda () (interactive) (slegetank/eshell-switch-by-num 5)))
 
     (evil-define-key '(insert normal) eshell-mode-map (kbd "C-r") 'slegetank/eshell-history)
     (evil-define-key '(insert normal) eshell-mode-map (kbd "C-n") 'eshell-next-matching-input-from-input)
@@ -261,11 +299,11 @@ Go to last buffer's dir:
                                                          (evil-insert-state)))
 
     (evil-define-key 'normal eshell-mode-map (kbd "<return>") (lambda ()
-                                                         "Enter goto last command's end and execute."
-                                                         (interactive)
-                                                         (goto-char (point-max))
-                                                         (evil-insert-state)
-                                                         (eshell-send-input)))
+                                                                "Enter goto last command's end and execute."
+                                                                (interactive)
+                                                                (goto-char (point-max))
+                                                                (evil-insert-state)
+                                                                (eshell-send-input)))
 
     ;; 默认设置
     (setq eshell-scroll-to-bottom-on-input t
@@ -275,13 +313,18 @@ Go to last buffer's dir:
           eshell-prefer-lisp-functions nil
           eshell-destroy-buffer-when-process-dies t))
 
-  (global-set-key (kbd "s-t") 'slegetank/eshell-fast-open)
+  (global-set-key (kbd "s-t") (lambda ()
+                                (interactive)
+                                (slegetank/eshell-fast-open nil)))
+
   (add-hook 'eshell-mode-hook 'slegetank/eshell-setup)
 
   (slegetank/leader-define-key nil "tt" (lambda () (interactive)
                                           (if (bound-and-true-p eshell-mode)
                                               (slegetank/quit-eshell-window)
-                                            (slegetank/eshell-fast-open))) "terminal")
+                                            (slegetank/eshell-fast-open nil))) "terminal"
+                                            "ts" 'slegetank/eshell-ivy-switch
+                                            )
 #+END_SRC
 * 文章
 1. 自定义方法

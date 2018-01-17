@@ -84,7 +84,7 @@
 
 ;; open eshell
 (eshell)
-(rename-buffer "*eshell: ~ <0>*")
+(rename-buffer "*eshell: ~ <1>*")
 (evil-normal-state)
 
 ;; (find-file "~/.emacs.d/initpage.org")
