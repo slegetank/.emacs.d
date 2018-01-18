@@ -308,7 +308,7 @@ Go to last buffer's dir:
   (defun slegetank/eshell-setup ()
     (define-key eshell-mode-map (kbd "s-k") 'slegetank/eshell/clear-screen)
     (define-key eshell-mode-map (kbd "s-t") 'slegetank/eshell-new-inside)
-    (define-key eshell-mode-map (kbd "s-w") 'kill-current-buffer)
+    (define-key eshell-mode-map (kbd "s-w") 'kill-this-buffer)
     (define-key eshell-mode-map (kbd "s-1") (lambda () (interactive) (slegetank/eshell-switch-by-num 1)))
     (define-key eshell-mode-map (kbd "s-2") (lambda () (interactive) (slegetank/eshell-switch-by-num 2)))
     (define-key eshell-mode-map (kbd "s-3") (lambda () (interactive) (slegetank/eshell-switch-by-num 3)))
