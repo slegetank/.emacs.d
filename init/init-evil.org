@@ -56,8 +56,6 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "b" nil "Buffers"
                                "bb" 'ivy-switch-buffer "Switch buffer"
                                "bk" 'kill-buffer "Kill buffer"
-                               "bn" 'next-buffer "Next buffer"
-                               "bp" 'previous-buffer "Previous buffer"
                                "w" nil "Windows"
                                "wp" 'previous-multiframe-window "Previous window"
                                "wk" 'delete-other-windows "Kill window"

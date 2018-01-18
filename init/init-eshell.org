@@ -119,6 +119,16 @@ https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-
       (goto-char (point-max))
       (evil-insert-state)))
 
+  (defun slegetank/eshell-exist-for-index (index)
+    "Check if the eshell buffer for index is exist"
+    (let ((exist nil)
+          (eshelllist (rswitcher--elements sswitcher--ring)))
+      (while (and eshelllist (not exist))
+        (if (string-match (format "\*eshell:.*?<%d>\*" index) (buffer-name (car eshelllist)))
+            (setq exist t)
+          (setq eshelllist (cdr eshelllist))))
+      exist))
+
   (defun slegetank/eshell-new-inside ()
     "New eshell in shell."
     (interactive)
@@ -126,13 +136,11 @@ https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-
                        (file-name-directory (buffer-file-name))
                      default-directory))
            (name (car (last (split-string parent "/" t))))
-           (newname (concat "*eshell: " name " <1>*"))
            (index 1))
       (eshell "new")
-      (while (get-buffer newname)
-        (setq newname (concat "*eshell: " name " <" (number-to-string index) ">*"))
+      (while (slegetank/eshell-exist-for-index index)
         (setq index (1+ index)))
-      (rename-buffer newname)
+      (rename-buffer (concat "*eshell: " name " <" (number-to-string index) ">*"))
       (insert (concat "ls"))
       (eshell-send-input)
       (goto-char (point-max))
@@ -157,9 +165,10 @@ https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-
     (save-current-buffer
       (setq window (or window (selected-window)))
       (select-window window)
+      (rswitcher-delete-most-recent sswitcher--ring)
       (if (one-window-p t)
           (previous-buffer)
-        (if (= (rswitcher-length sswitcher--ring) 1)
+        (if (= (rswitcher-length sswitcher--ring) 0)
             (delete-window (selected-window))
           (slegetank/eshell-switch-buffer (sswitcher--most-recent))))))
 
@@ -173,7 +182,6 @@ https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-
           (previous-buffer)
         (delete-window (selected-window)))))
 
-  (add-hook 'eshell-exit-hook (lambda () (rswitcher-delete-most-recent sswitcher--ring)))
   (add-hook 'eshell-exit-hook 'slegetank/exit-eshell-window)
 
   (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'slegetank/quit-eshell-window)))
@@ -274,6 +282,20 @@ ivy搜索历史
             (slegetank/eshell-switch-buffer buffer)
           (slegetank/eshell-fast-open buffer)))))
 #+END_SRC
+** advice switch buffer
+直接切换buffer到eshell下会打乱顺序，修饰之：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/eshell-advice-switch-buffer (oldfunc &rest args)
+    (let ((destbuf (apply oldfunc args)))
+      (with-current-buffer (get-buffer destbuf)
+        (when (bound-and-true-p eshell-mode)
+          (rswitcher--delete sswitcher--ring
+                             (cl-position (current-buffer) (rswitcher--elements sswitcher--ring)))
+          (rswitcher-add sswitcher--ring (current-buffer))))))
+
+  (advice-add 'ivy-switch-buffer :around 'slegetank/eshell-advice-switch-buffer)
+#+END_SRC
+
 * alias
 Go to xcode dir:
 #+BEGIN_SRC emacs-lisp
