@@ -47,6 +47,7 @@
 * private
 不适合放到github上的配置
 #+BEGIN_SRC emacs-lisp
-  (when (and (boundp 'slegetank/cloud-dir) (file-exists-p slegetank/cloud-dir))
-    (load (format "%s/init-work" slegetank/cloud-dir)))
+  (let ((workel (format "%s/%s" slegetank/cloud-dir "init-work.el")))
+    (when (file-exists-p workel)
+      (load workel)))
 #+END_SRC
