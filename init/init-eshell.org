@@ -295,7 +295,14 @@ ivy搜索历史
 
   (advice-add 'ivy-switch-buffer :around 'slegetank/eshell-advice-switch-buffer)
 #+END_SRC
+** async shell buffer q->quit
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/async-shell-set-quit-key ()
+    (when (string= (buffer-name) "*Async Shell Command*")
+      (local-set-key (kbd "q") #'quit-window)))
 
+  (add-hook 'shell-mode-hook #'slegetank/async-shell-set-quit-key)
+#+END_SRC
 * alias
 Go to xcode dir:
 #+BEGIN_SRC emacs-lisp
