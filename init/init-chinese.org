@@ -36,7 +36,7 @@ https://github.com/tumashu/pyim
     (setq pyim-page-tooltip 'popup))
 
   ;; 选词框显示10个候选词
-  (setq pyim-page-length 10)
+  (setq pyim-page-length 9)
 
   ;; 让 Emacs 启动时自动加载 pyim 词库
   (add-hook 'emacs-startup-hook

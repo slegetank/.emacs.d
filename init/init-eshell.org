@@ -13,6 +13,7 @@ emacs 是个操作系统，怎么能没有自己的shell呢。
 #+END_SRC
 ** eshell-git-prompt
 更好的UI for git
+如果UI出现错误，需要先下载字体：https://github.com/powerline/fonts
 #+BEGIN_SRC emacs-lisp
   (require-package 'eshell-git-prompt)
   (eshell-git-prompt-use-theme 'powerline)
@@ -66,10 +67,11 @@ z for eshell
 * custom
 ** smart
 #+BEGIN_SRC emacs-lisp
-  (require 'em-smart)
-  (setq eshell-where-to-jump 'begin)
-  (setq eshell-review-quick-commands nil)
-  (setq eshell-smart-space-goes-to-end t)
+  (defun slegetank/setup-eshell-smart ()
+    (require 'em-smart)
+    (eshell-smart-initialize)
+    (add-to-list 'eshell-smart-display-navigate-list 'simpleclip-paste)
+    (add-to-list 'eshell-smart-display-navigate-list 'evil-paste-after))
 #+END_SRC
 ** readonly
 https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-in-eshell-and-repl-buffers
@@ -172,8 +174,10 @@ https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-
             (delete-window (selected-window))
           (slegetank/eshell-switch-buffer (sswitcher--most-recent))))))
 
+  (add-hook 'eshell-exit-hook 'slegetank/exit-eshell-window)
+
   (defun slegetank/quit-eshell-window (&optional window)
-    "Quit but not kill eshell window."
+    "Quit but not kill eshell window. For 'q'."
     (interactive)
     (save-current-buffer
       (setq window (or window (selected-window)))
@@ -181,10 +185,6 @@ https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-
       (if (one-window-p t)
           (previous-buffer)
         (delete-window (selected-window)))))
-
-  (add-hook 'eshell-exit-hook 'slegetank/exit-eshell-window)
-
-  (add-hook 'eshell-mode-hook '(lambda () (evil-define-key 'normal eshell-mode-map (kbd "q") 'slegetank/quit-eshell-window)))
 #+END_SRC
 
 ** 支持拖动路径：
@@ -218,12 +218,12 @@ https://emacs.stackexchange.com/questions/19163/how-do-i-protect-command-output-
 
 ** buffer名同路径
 #+BEGIN_SRC emacs-lisp
-    (add-hook 'eshell-directory-change-hook (lambda () (let* ((parent (if (buffer-file-name)
-                                                                          (file-name-directory (buffer-file-name))
-                                                                        default-directory))
-                                                              (name (car (last (split-string parent "/" t))))
-                                                              (index (substring (car (s-match " <.*?>\\*" (buffer-name))) 2 -2)))
-                                                         (rename-buffer (concat "*eshell: " name (format " <%s>*" index))))))
+  (add-hook 'eshell-directory-change-hook (lambda () (let* ((parent (if (buffer-file-name)
+                                                                        (file-name-directory (buffer-file-name))
+                                                                      default-directory))
+                                                            (name (car (last (split-string parent "/" t))))
+                                                            (index (substring (car (s-match " <.*?>\\*" (buffer-name))) 2 -2)))
+                                                       (rename-buffer (concat "*eshell: " name (format " <%s>*" index))))))
 #+END_SRC
 
 ** history
@@ -321,13 +321,14 @@ Go to last buffer's dir:
     "eshell go to last buffer's dir"
     (let (previousdir)
       (with-current-buffer (other-buffer (current-buffer) 1)
-        (setq previousdir (file-name-directory (or (buffer-file-name) ""))))
+        (setq previousdir (file-name-directory (or default-directory ""))))
       (eshell/cd previousdir)))
 #+END_SRC
 
-* keys
+* setup
 #+BEGIN_SRC emacs-lisp
   (defun slegetank/eshell-setup ()
+    ;; (slegetank/setup-eshell-smart)
     (define-key eshell-mode-map (kbd "s-k") 'slegetank/eshell/clear-screen)
     (define-key eshell-mode-map (kbd "s-t") 'slegetank/eshell-new-inside)
     (define-key eshell-mode-map (kbd "s-w") 'kill-this-buffer)
@@ -354,6 +355,8 @@ Go to last buffer's dir:
                                                                 (goto-char (point-max))
                                                                 (evil-insert-state)
                                                                 (eshell-send-input)))
+
+    (evil-define-key 'normal eshell-mode-map (kbd "q") 'slegetank/quit-eshell-window)
 
     ;; 默认设置
     (setq eshell-scroll-to-bottom-on-input t
