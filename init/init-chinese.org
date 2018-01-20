@@ -42,7 +42,7 @@ https://github.com/tumashu/pyim
   (add-hook 'emacs-startup-hook
             #'(lambda () (pyim-restart-1 t)))
 
-  (global-set-key (kbd "C-`") 'toggle-input-method)
+  (global-set-key (kbd "C-\\") 'toggle-input-method)
   (define-key pyim-mode-map (kbd "<tab>") 'pyim-page-next-page)
   (define-key pyim-mode-map (kbd "C-j") 'pyim-page-next-page)
   (define-key pyim-mode-map (kbd "C-k") 'pyim-page-previous-page)
@@ -130,7 +130,7 @@ emacs中文字体配置工具。可以快速方便的的实现中文字体和英
   (cnfonts-enable)
   (cnfonts-set-spacemacs-fallback-fonts)
 #+END_SRC
-* 有道词典
+* 有道词典 [h-y]
 #+BEGIN_SRC emacs-lisp
   (require-package  'youdao-dictionary)
   (setq url-automatic-caching t)

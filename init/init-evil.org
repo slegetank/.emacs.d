@@ -12,6 +12,7 @@ evil-leader配上which-key 效果非常棒
   (require-package 'which-key)
   (which-key-mode 1)
   (setq which-key-side-window-max-height 0.25)
+  (setq which-key-idle-delay 0.1)
   ;; (which-key-add-key-based-replacements
   ;;   "<SPC>f" "File"
   ;;   "<SPC>d" "Directory"
@@ -57,9 +58,10 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "bb" 'ivy-switch-buffer "Switch buffer"
                                "bk" 'kill-buffer "Kill buffer"
                                "bm" nil "Bookmark"
+                               "bo" 'ivy-switch-buffer-other-window "Switch buffer in other window"
                                "bmm" 'bookmark-set "Bookmark set"
                                "bml" 'bookmark-bmenu-list "Bookmark list"
-                               "bmb" 'counsel-bookmark "Bookmark switch"
+                               "bms" 'counsel-bookmark "Bookmark switch"
                                "w" nil "Windows"
                                "wp" 'previous-multiframe-window "Previous window"
                                "wk" 'delete-other-windows "Kill window"

@@ -3,13 +3,13 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
-(package-initialize)
-
 ;; source point to China
 (when (>= emacs-major-version 24)
     (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
                              ("melpa"   . "http://elpa.emacs-china.org/melpa/")
                              )))
+
+(package-initialize)
 
 ;; http://orgmode.org 下载org mode的源码
 ;; 配过在线安装的，但是并不好用

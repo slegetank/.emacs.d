@@ -13,6 +13,7 @@
                                    ("RN-github" "https://github.com/jondot/awesome-react-native" "RN")
                                    ("emmet" "https://github.com/smihica/emmet-mode" "js")
                                    ("material-ui" "http://www.material-ui.com/#/" "react")
+                                   ("oc block" "http://blog.slegetank.com/article/20160721-block.org?blogtype=iOS")
                                    ))
 
   (defun custom-help-open-article (remote)
@@ -42,7 +43,7 @@
     (custom-help-open-article "remote"))
 #+END_SRC
 
-* melpa-upstream-visit
+* melpa-upstream-visit [h-p]
 快速访问包的主页
 #+BEGIN_SRC emacs-lisp
     (require-package 'melpa-upstream-visit)
@@ -67,7 +68,7 @@
     (slegetank/leader-define-key nil "hp" 'slegetank/melpa-upstream-visit "Find package's homepage")
 #+END_SRC
 
-* command-log-mode
+* command-log-mode [h-c]
 #+BEGIN_SRC emacs-lisp
   (require-package 'command-log-mode)
   (use-package command-log-mode
@@ -84,10 +85,40 @@
                                                 ivy-previous-line))
           command-log-mode-auto-show t))
 #+END_SRC
-* devdocs
+* devdocs [h-d]
 #+BEGIN_SRC emacs-lisp
   (require-package 'devdocs)
   (slegetank/leader-define-key nil "hd" 'devdocs-search "dev docs")
+#+END_SRC
+* search engine [h-s]
+有一个engine-mode，但是跟evil-leader不是很搭，自己写一个简单的：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/search-web (engine key)
+    (browse-url
+     (cond ((equal engine 'google)
+            (format "http://www.google.com/search?ie=utf-8&oe=utf-8&q=%s" (url-hexify-string key)))
+           ((equal engine 'baidu)
+            (format "https://www.baidu.com/s?wd=%s" (url-hexify-string key)))
+           ((equal engine 'symbolhound)
+            (format "http://symbolhound.com/?q=%s" (url-hexify-string key))))))
+
+  (defun slegetank/search-google (key)
+    (interactive "sGoogle: ")
+    (slegetank/search-web 'google key))
+
+  (defun slegetank/search-symbolhound (key)
+    (interactive "sSymbolhound: ")
+    (slegetank/search-web 'symbolhound key))
+
+  (defun slegetank/search-baidu (key)
+    (interactive "s百度: ")
+    (slegetank/search-web 'baidu key))
+
+  (slegetank/leader-define-key nil
+                               "hs" nil "Search web"
+                               "hsg" 'slegetank/search-google "Search google"
+                               "hss" 'slegetank/search-symbolhound "Search symbolhound"
+                               "hsb" 'slegetank/search-baidu "Search 百度")
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
