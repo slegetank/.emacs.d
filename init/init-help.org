@@ -46,26 +46,26 @@
 * melpa-upstream-visit [h-p]
 快速访问包的主页
 #+BEGIN_SRC emacs-lisp
-      (require-package 'melpa-upstream-visit)
+  (require-package 'melpa-upstream-visit)
 
-      (defun slegetank/melpa-upstream-visit ()
-        "Though muv has already supplied thing-at-point, but there's a problem for the listp code in org-mode: `thing-at-point in org returns diff from in el. So I have to do it myself for better exp."
-        (interactive)
-        (when (< (length package-archive-contents) 1000)
-          (package-refresh-contents))
-        (let* ((packages (mapcar (lambda (el)
-                                   (format "[%s] - %s" (symbol-name (car el)) (package-desc-summary (cadr el))))
-                                 package-archive-contents))
-               (p-at-point
-                ;; xah-get-thing is better
-                (if (fboundp 'xah-get-thing-at-point)
-                    (xah-get-thing-at-point 'word)
-                  (thing-at-point 'word)))
+  (defun slegetank/melpa-upstream-visit ()
+    "Though muv has already supplied thing-at-point, but there's a problem for the listp code in org-mode: `thing-at-point in org returns diff from in el. So I have to do it myself for better exp."
+    (interactive)
+    (when (< (length package-archive-contents) 1000)
+      (package-refresh-contents))
+    (let* ((packages (mapcar (lambda (el)
+                               (format "%-30s %s" (symbol-name (car el)) (package-desc-summary (cadr el))))
+                             package-archive-contents))
+           (p-at-point
+            ;; xah-get-thing is better
+            (if (fboundp 'xah-get-thing-at-point)
+                (xah-get-thing-at-point 'word)
+              (thing-at-point 'word)))
 
-               (package-name (ivy-completing-read "Access home of package: " packages nil t p-at-point)))
-          (muv package-name)))
+           (package-name (ivy-completing-read "Access home of package: " packages nil t p-at-point)))
+      (muv (car (s-split " " package-name t)))))
 
-      (slegetank/leader-define-key nil "hp" 'slegetank/melpa-upstream-visit "Find package's homepage")
+  (slegetank/leader-define-key nil "hp" 'slegetank/melpa-upstream-visit "Find package's homepage")
 #+END_SRC
 
 * command-log-mode [h-c]
