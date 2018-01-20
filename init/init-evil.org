@@ -12,7 +12,7 @@ evil-leader配上which-key 效果非常棒
   (require-package 'which-key)
   (which-key-mode 1)
   (setq which-key-side-window-max-height 0.25)
-  (setq which-key-idle-delay 0.1)
+  (setq which-key-idle-delay 0.3)
   ;; (which-key-add-key-based-replacements
   ;;   "<SPC>f" "File"
   ;;   "<SPC>d" "Directory"
