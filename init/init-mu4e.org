@@ -460,6 +460,7 @@ http://thomasf.github.io/solarized-css/test/org-hacks.html
 
 在body中C-c C-c时，使用`mu4e-compose-mode的方法：
 #+BEGIN_SRC emacs-lisp
+  (require-package 'org-mime)
   (require 'org-mime)
 
   (defun custom-htmlize-and-send ()

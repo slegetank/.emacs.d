@@ -152,7 +152,12 @@ M-x customize-group -> 默认触发为\，改为SPC
 
     (add-hook 'evil-normal-state-entry-hook
               (lambda ()
-                (call-process-shell-command (format "keyboardSwitcher select %s" slegetank/en-input-source) nil 0))))
+                (call-process-shell-command (format "keyboardSwitcher select %s" slegetank/en-input-source) nil 0)))
+
+    (add-hook 'focus-in-hook (lambda ()
+                               "When focus on emacs, if state is normal, change input method to english"
+                               (when (equal evil-state 'normal)
+                                 (call-process-shell-command (format "keyboardSwitcher select %s" slegetank/en-input-source) nil 0)))))
 #+END_SRC
 * bookmark
 #+BEGIN_SRC emacs-lisp

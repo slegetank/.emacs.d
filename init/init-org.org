@@ -18,6 +18,7 @@
   #+END_SRC
 ** bullets
 #+BEGIN_SRC emacs-lisp
+  (require-package 'org-bullets)
   (require 'org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+END_SRC
@@ -202,10 +203,11 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
   (evil-leader/set-key
     "opp" 'org-pomodoro)
 #+END_SRC
-** epresent
+** org-tree-slide
 #+BEGIN_SRC emacs-lisp
-  ;; (require-package 'epresent)
+(require-package 'org-tree-slide)
 #+END_SRC
+
 * keys
 #+BEGIN_SRC emacs-lisp
   (defun my-org-config ()

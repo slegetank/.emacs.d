@@ -212,6 +212,7 @@ emacs 26 以上 insert-string 调整为insert
 #+END_SRC
 * TRAMP
 #+BEGIN_SRC emacs-lisp
+  (require 'tramp)
   (tramp-set-completion-function "sshx"
                                  '((tramp-parse-sconfig "/etc/ssh_config")
                                    (tramp-parse-sconfig "~/.ssh/config")))

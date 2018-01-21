@@ -14,15 +14,6 @@
 
   (slegetank/leader-define-key nil "tu" 'customize-themes "Custom theme")
 #+END_SRC
-* beacon
-#+BEGIN_SRC emacs-lisp
-  (require-package 'beacon)
-  (beacon-mode 1)
-  (setq beacon-push-mark 35)
-  (setq beacon-blink-when-focused t)
-  (setq beacon-blink-duration 0.8)
-  (setq beacon-blink-delay 0.8)
-#+END_SRC
 * smart-mode-line
 #+BEGIN_SRC emacs-lisp
   (require-package 'smart-mode-line)

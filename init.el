@@ -7,14 +7,9 @@
 (when (>= emacs-major-version 24)
     (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
                              ("melpa"   . "http://elpa.emacs-china.org/melpa/")
-                             )))
+                             ("org" . "https://orgmode.org/elpa/"))))
 
 (package-initialize)
-
-;; http://orgmode.org 下载org mode的源码
-;; 配过在线安装的，但是并不好用
-(add-to-list 'load-path "~/org-9.0.9/lisp/")
-(add-to-list 'load-path "~/org-9.0.9/contrib/lisp/" t)
 
 ;; get from Purcell
 ;; 自动在线安装第三方包
@@ -36,6 +31,9 @@
 
 ;; use-package
 (require-package 'use-package)
+(require-package 'org-plus-contrib)
+;; (require 'org)
+
 (eval-when-compile
   (require 'use-package))
 (require 'bind-key)

@@ -117,7 +117,12 @@
           (slime-repl-mode)
           (slime-connection-list-mode)))
 
-  (add-hook 'popwin:after-popup-hook 'turn-off-evil-mode)
+  (defun slegetank/popwin-after-pop ()
+    "Some pop window I need evil"
+    (unless (equal major-mode 'help-mode)
+      (turn-off-evil-mode)))
+
+  (add-hook 'popwin:after-popup-hook 'slegetank/popwin-after-pop)
   (bind-keys :map popwin:window-map
              ((kbd "<escape>") . popwin:close-popup-window))
 #+END_SRC

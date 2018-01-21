@@ -42,7 +42,7 @@ https://github.com/tumashu/pyim
   (add-hook 'emacs-startup-hook
             #'(lambda () (pyim-restart-1 t)))
 
-  (global-set-key (kbd "C-\\") 'toggle-input-method)
+  (global-set-key (kbd "C-;") 'toggle-input-method)
   (define-key pyim-mode-map (kbd "<tab>") 'pyim-page-next-page)
   (define-key pyim-mode-map (kbd "C-j") 'pyim-page-next-page)
   (define-key pyim-mode-map (kbd "C-k") 'pyim-page-previous-page)
