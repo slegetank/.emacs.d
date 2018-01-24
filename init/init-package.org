@@ -1,7 +1,7 @@
 * 未分类
 未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
-    (setq package-selected-packages (append package-selected-packages '(smex ;; commands sort by time; ivy will use this automatically
+    (setq package-selected-packages (append package-selected-packages '(smex
                                                                         hungry-delete
                                                                         smartparens
                                                                         popwin
@@ -27,7 +27,8 @@
                                                                         protobuf-mode
                                                                         pos-tip
                                                                         quickrun
-                                                                        popup)))
+                                                                        popup
+                                                                        htmlize)))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。

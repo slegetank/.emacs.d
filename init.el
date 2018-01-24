@@ -32,7 +32,6 @@
 ;; use-package
 (require-package 'use-package)
 (require-package 'org-plus-contrib)
-;; (require 'org)
 
 (eval-when-compile
   (require 'use-package))

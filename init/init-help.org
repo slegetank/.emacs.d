@@ -56,11 +56,7 @@
     (let* ((packages (mapcar (lambda (el)
                                (format "%-30s %s" (symbol-name (car el)) (package-desc-summary (cadr el))))
                              package-archive-contents))
-           (p-at-point
-            ;; xah-get-thing is better
-            (if (fboundp 'xah-get-thing-at-point)
-                (xah-get-thing-at-point 'word)
-              (thing-at-point 'word)))
+           (p-at-point (slegetank/thing-at-point))
 
            (package-name (ivy-completing-read "Access home of package: " packages nil t p-at-point)))
       (muv (car (s-split " " package-name t)))))

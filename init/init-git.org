@@ -33,3 +33,13 @@
   (add-hook 'smerge-mode-hook 'slegetank/smerge-mode-setup)
 #+END_SRC
 
+* custom
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/git-xcode-project ()
+    "Open current XCode project path with magit"
+    (interactive)
+    (dired (file-name-as-directory (file-name-directory (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'")))))
+    (magit-status))
+
+  (slegetank/leader-define-key nil "gx" 'slegetank/git-xcode-project "Git xcode")
+#+END_SRC

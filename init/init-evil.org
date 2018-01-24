@@ -71,7 +71,7 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "e" nil "elisp"
                                "er" 'eval-region "Eval region"
                                "eb" 'eval-buffer "Eval buffer"
-                               "." 'repeat "Repeat")
+                               "." 'counsel-command-history "Repeat")
 
   ;; q for kill-buffer, not for exit emacss
   (evil-ex-define-cmd "q" (lambda () (interactive) (kill-buffer (current-buffer))))

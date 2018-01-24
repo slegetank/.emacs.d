@@ -1,5 +1,5 @@
-* subject
 有些命令工具不想单独摘出来，就放到这里吧。
+
 * terminal
 改用eshell，废弃
 ** make-term version

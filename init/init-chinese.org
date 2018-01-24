@@ -132,15 +132,39 @@ emacs中文字体配置工具。可以快速方便的的实现中文字体和英
 #+END_SRC
 * 有道词典 [h-y]
 #+BEGIN_SRC emacs-lisp
-  (require-package  'youdao-dictionary)
-  (setq url-automatic-caching t)
+    (require-package  'youdao-dictionary)
+    (setq url-automatic-caching t)
 
-  (slegetank/leader-define-key nil "hy" 'youdao-dictionary-search-from-input "Yudao")
+    (with-eval-after-load "popwin"
+      (push "*Youdao Dictionary*" popwin:special-display-config))
 
-  (with-eval-after-load "popwin"
-    (push "*Youdao Dictionary*" popwin:special-display-config))
-
-  (if (boundp 'slegetank/cloud-dir)
-      (setq youdao-dictionary-search-history-file (expand-file-name ".youdao" slegetank/cloud-dir))
-    (setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao"))
+    (if (boundp 'slegetank/cloud-dir)
+        (setq youdao-dictionary-search-history-file (expand-file-name ".youdao" slegetank/cloud-dir))
+      (setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao"))
 #+END_SRC
+自定义查询函数：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/youdao-guess-input ()
+    "Guess input for youdao dictionary."
+    (let* ((thing-at-point (if (use-region-p)
+                               (buffer-substring-no-properties (region-beginning) (region-end))
+                             (slegetank/thing-at-point))))
+      (if (and thing-at-point (> (length thing-at-point) 0))
+          thing-at-point
+        (if (fboundp 'simpleclip-get-contents)
+            (simpleclip-get-contents)
+          thing-at-point))))
+
+  (defun slegetank/youdao-search (word)
+    (interactive (list (let* ((guessword (slegetank/youdao-guess-input))
+                              (readword (read-string (format "Word(%s): " guessword) nil 'youdao-dictionary-history)))
+                         (if (> (length readword) 0)
+                             readword
+                           guessword))))
+    (if (> (length word) 0)
+        (youdao-dictionary-search word)
+      (message "Input empyt. About.")))
+
+  (slegetank/leader-define-key nil "hy" 'slegetank/youdao-search "Yudao")
+#+END_SRC
+

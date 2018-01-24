@@ -210,6 +210,15 @@ emacs 26 以上 insert-string 调整为insert
   (require-package 'better-defaults)
   (require 'better-defaults)
 #+END_SRC
+* custom
+更好的方法：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/thing-at-point ()
+    "Better thing at point"
+    (if (fboundp 'xah-get-thing-at-point)
+        (xah-get-thing-at-point 'word)
+      (thing-at-point 'word)))
+#+END_SRC
 * TRAMP
 #+BEGIN_SRC emacs-lisp
   (require 'tramp)

@@ -146,9 +146,7 @@ dired会被加入recentf-list:
     (unless recentf-mode (recentf-mode 1))
     (let ((collection
            (delete-dups
-            (append (delq nil (mapcar (lambda (filename) (and (file-exists-p (file-name-directory filename)) (file-name-directory filename))) recentf-list))
-                    (if (file-exists-p "~/.z") ; append top 20 dirs
-                        (mapcar (lambda (directory) (and (file-exists-p directory) (concat directory "/"))) (split-string (shell-command-to-string "cat ~/.z | sort -r -n -k 2 -t \"|\" | cut -f 1 -d \"|\" | head -n 20") "\n" t)))))))
+            (delq nil (mapcar (lambda (filename) (and (file-exists-p (file-name-directory filename)) (file-name-directory filename))) recentf-list)))))
       (ivy-read "directories:" collection :action 'dired)))
 
   (defun custom-goto-finder-directory ()
@@ -156,11 +154,10 @@ dired会被加入recentf-list:
     (interactive)
     (dired (file-name-as-directory (s-trim (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
 
-  (defun custom-goto-xcode-project ()
+  (defun slegetank/goto-xcode-project ()
     "Open current XCode project path with dired"
     (interactive)
-    (dired (file-name-as-directory (file-name-directory (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'")))))
-    (magit-status))
+    (dired (file-name-as-directory (file-name-directory (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'"))))))
 
   (defun custom-open-xcode-file ()
     "Open current XCode editing file with emacs"
@@ -192,7 +189,7 @@ dired会被加入recentf-list:
     "do" 'dired-jump-other-window
     "dr" 'custom-goto-recent-directory
     "df" 'custom-goto-finder-directory
-    "dx" 'custom-goto-xcode-project
+    "dx" 'slegetank/goto-xcode-project
     "fx" 'custom-open-xcode-file
     "dm" 'custom-ido-bookmark-jump)
 
