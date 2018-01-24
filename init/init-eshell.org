@@ -334,6 +334,9 @@ Go to last buffer's dir:
 
 * setup
 #+BEGIN_SRC emacs-lisp
+  (setq eshell-cmpl-ignore-case t)
+  (setq eshell-glob-case-insensitive t)
+
   (defun slegetank/eshell-setup ()
     ;; (slegetank/setup-eshell-smart)
     (define-key eshell-mode-map (kbd "s-k") 'slegetank/eshell/clear-screen)
