@@ -139,6 +139,17 @@ M-x customize-group -> 默认触发为\，改为SPC
   (define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
 #+END_SRC
 
+* select last paste text
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/evil-select-pasted ()
+    "Visually select last pasted text."
+    (interactive)
+    (evil-goto-mark ?[)
+                    (evil-visual-char)
+                    (evil-goto-mark ?]))
+
+  (evil-define-key 'normal 'global "gp" 'slegetank/evil-select-pasted)
+#+END_SRC
 * [macos] auto switch input source
 当进入evil-normal-mode时，自动切换回英文输入法；由于某些未知原因，中文输入法的切换并不能马上生效，必须deactive再focus才可以，所以这里不做此功能。可以考虑emacs内置的输入法来解决这个问题。
 首先下载配置：https://github.com/Lutzifer/keyboardSwitcher

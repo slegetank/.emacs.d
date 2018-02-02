@@ -213,7 +213,7 @@ C-c o 打开当前文件所在的Finder;
                                                  (define-key evil-normal-state-map (kbd "C-p") 'ahs-backward)
                                                  (define-key evil-normal-state-map (kbd "C-n") 'ahs-forward)))
     :config
-    (setq ahs-idle-interval 1.0) ;; if you want instant highlighting, set it to 0, but I find it annoying
+    (setq ahs-idle-interval 0.3) ;; if you want instant highlighting, set it to 0, but I find it annoying
     (setq ahs-default-range 'ahs-range-whole-buffer) ;; highlight every occurence in buffer
     )
 

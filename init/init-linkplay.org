@@ -13,7 +13,10 @@
   (defun slegetank/linkplay-muzo (&rest params)
     (let ((tPath (slegetank/linkplay-muzo-project-path)))
       (if tPath
-          (shell-command (format "python3 %s/MuzoManager/MuzoManager.py %s &" tPath (s-join " " (car params))))
+          (progn
+            (goto-char (point-max))
+            (insert (format "python3 %s/MuzoManager/MuzoManager.py %s" tPath (s-join " " (car params))))
+            (run-with-timer 0.1 nil 'eshell-send-input))
         (eshell/echo "Not in muzo project."))))
 
   (defconst pcmpl-muzo-commands

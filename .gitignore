@@ -8,7 +8,6 @@ recentf
 /init/*.el
 backups
 /.emacs.desktop*
-/tutorial/Chinese-GBK.tut
 /eshell/history
 /eshell/lastdir
 /url
@@ -43,3 +42,4 @@ projectile-bookmarks.eld
 .emacs-custom.el
 /projectile.cache
 /pyim/dcache/*
+/tutorial/*

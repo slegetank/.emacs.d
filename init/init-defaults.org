@@ -228,6 +228,11 @@ emacs 26 以上 insert-string 调整为insert
 
   (setq tramp-default-method "sshx")
 #+END_SRC
+* bookmark+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path (expand-file-name "bookmark-plus" user-emacs-directory))
+  (require 'bookmark+)
+#+END_SRC
 * w3m
 #+BEGIN_SRC emacs-lisp
   ;; (setq browse-url-browser-function 'w3m-browse-url)
