@@ -42,7 +42,7 @@ M-x customize-group -> 默认触发为\，改为SPC
           keyDescList)
       (while key
         (when def
-          (define-key map (read-kbd-macro key) def))
+          (define-key map key def))
         (setq key (pop seq)
               def (pop seq)
               desc (pop seq))

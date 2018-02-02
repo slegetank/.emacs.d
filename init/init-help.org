@@ -89,7 +89,10 @@
 * search engine [h-s]
 有一个engine-mode，但是跟evil-leader不是很搭，自己写一个简单的：
 #+BEGIN_SRC emacs-lisp
+  (setq slegetank/last-search-engine 'google)
+
   (defun slegetank/search-web (engine key)
+    (setq slegetank/last-search-engine engine)
     (browse-url
      (cond ((equal engine 'google)
             (format "http://www.google.com/search?ie=utf-8&oe=utf-8&q=%s" (url-hexify-string key)))
@@ -110,11 +113,16 @@
     (interactive "s百度: ")
     (slegetank/search-web 'baidu key))
 
+  (defun slegetank/search-with-last (key)
+    (interactive (list (read-string (format "%s: " slegetank/last-search-engine))))
+    (slegetank/search-web slegetank/last-search-engine key))
+
   (slegetank/leader-define-key nil
                                "hs" nil "Search web"
                                "hsg" 'slegetank/search-google "Search google"
                                "hss" 'slegetank/search-symbolhound "Search symbolhound"
-                               "hsb" 'slegetank/search-baidu "Search 百度")
+                               "hsb" 'slegetank/search-baidu "Search 百度"
+                               (format "hs%s" (kbd "RET")) 'slegetank/search-with-last (format "Search %s" slegetank/last-search-engine))
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
