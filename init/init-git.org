@@ -26,7 +26,7 @@
             t)
 
   (defun slegetank/smerge-mode-setup ()
-    (slegetank/leader-define-key nil
+    (slegetank/leader-define-key
                                  "gn" 'smerge-next "Next conflict"
                                  "gp" 'smerge-prev "Prev conflict")
     (run-with-timer 0.1 nil 'smerge-next))
@@ -41,5 +41,5 @@
     (dired (file-name-as-directory (file-name-directory (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'")))))
     (magit-status))
 
-  (slegetank/leader-define-key nil "gx" 'slegetank/git-xcode-project "Git xcode")
+  (slegetank/leader-define-key "gx" 'slegetank/git-xcode-project "Git xcode")
 #+END_SRC

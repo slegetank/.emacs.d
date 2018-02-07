@@ -165,6 +165,7 @@ ivy for 2 helper functions:
 
 #+BEGIN_SRC emacs-lisp
   (define-key evil-normal-state-map (kbd "s-f") 'swiper)
+  (define-key global-map (kbd "s-f") 'swiper)
   (define-key evil-normal-state-map (kbd "s-m") 'slegetank/evil-mc-enable)
   (define-key evil-normal-state-map (kbd "s-g") 'ace-jump-char-mode)
 #+END_SRC

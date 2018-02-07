@@ -27,9 +27,6 @@ https://github.com/tumashu/pyim
   ;;               '(pyim-probe-punctuation-line-beginning
   ;;                 pyim-probe-punctuation-after-punctuation))
 
-  ;; 开启拼音搜索功能
-  (pyim-isearch-mode 1)
-
   ;; 使用 pupup-el 来绘制选词框
   (if (>= emacs-major-version 26)
       (setq pyim-page-tooltip 'child-frame)
@@ -39,8 +36,8 @@ https://github.com/tumashu/pyim
   (setq pyim-page-length 9)
 
   ;; 让 Emacs 启动时自动加载 pyim 词库
-  (add-hook 'emacs-startup-hook
-            #'(lambda () (pyim-restart-1 t)))
+  ;; (add-hook 'emacs-startup-hook
+  ;;           #'(lambda () (pyim-restart-1 t)))
 
   (global-set-key (kbd "C-;") 'toggle-input-method)
   (define-key pyim-mode-map (kbd "<tab>") 'pyim-page-next-page)
@@ -144,19 +141,8 @@ emacs中文字体配置工具。可以快速方便的的实现中文字体和英
 #+END_SRC
 自定义查询函数：
 #+BEGIN_SRC emacs-lisp
-  (defun slegetank/youdao-guess-input ()
-    "Guess input for youdao dictionary."
-    (let* ((thing-at-point (if (use-region-p)
-                               (buffer-substring-no-properties (region-beginning) (region-end))
-                             (slegetank/thing-at-point))))
-      (if (and thing-at-point (> (length thing-at-point) 0))
-          thing-at-point
-        (if (fboundp 'simpleclip-get-contents)
-            (simpleclip-get-contents)
-          thing-at-point))))
-
   (defun slegetank/youdao-search (word)
-    (interactive (list (let* ((guessword (slegetank/youdao-guess-input))
+    (interactive (list (let* ((guessword (slegetank/guess-input))
                               (readword (read-string (format "Word(%s): " guessword) nil 'youdao-dictionary-history)))
                          (if (> (length readword) 0)
                              readword
@@ -165,6 +151,6 @@ emacs中文字体配置工具。可以快速方便的的实现中文字体和英
         (youdao-dictionary-search word)
       (message "Input empyt. About.")))
 
-  (slegetank/leader-define-key nil "hy" 'slegetank/youdao-search "Yudao")
+  (slegetank/leader-define-key "hy" 'slegetank/youdao-search "Yudao")
 #+END_SRC
 

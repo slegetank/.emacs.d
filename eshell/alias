@@ -12,3 +12,6 @@ alias wlipo "python" "~/ScriptHelper/wlipo.py" "-x" $1
 alias wpush "python" "~/ScriptHelper/wiimupush.py"
 alias e find-file $1
 alias ff find-file $1
+alias vi find-file $1
+alias vim find-file $1
+alias iterm "open" "/Applications/iTerm.app"

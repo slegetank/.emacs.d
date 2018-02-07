@@ -159,7 +159,7 @@ counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.pr
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-  (slegetank/leader-define-key nil
+  (slegetank/leader-define-key
                                "p" nil "Project"
                                "pf" 'counsel-projectile-find-file "File in project"
                                "pb" 'counsel-projectile-switch-to-buffer "Buffer in project"

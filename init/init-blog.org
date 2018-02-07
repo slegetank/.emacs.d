@@ -101,7 +101,7 @@
 * Export
 ** Keys
 #+BEGIN_SRC emacs-lisp
-  (slegetank/leader-define-key nil
+  (slegetank/leader-define-key
                                "bl" nil "Blog"
                                "blc" 'custom-blog-commit "Org-publish & git commit"
                                "bli" 'custom-blog-init "Blog init"
@@ -428,6 +428,6 @@
 #+END_SRC
 ** Keys
 #+BEGIN_SRC emacs-lisp
-    (slegetank/leader-define-key nil "blu" 'custom-blog-timestamp-update "Update timestamp"
+    (slegetank/leader-define-key "blu" 'custom-blog-timestamp-update "Update timestamp"
                                  "blt" 'slegetank/blog-type-update "Update type")
 #+END_SRC

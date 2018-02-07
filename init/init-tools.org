@@ -1,5 +1,18 @@
 有些命令工具不想单独摘出来，就放到这里吧。
 
+* helper commands
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/guess-input ()
+    "Guess input for youdao dictionary."
+    (let* ((thing-at-point (if (use-region-p)
+                               (buffer-substring-no-properties (region-beginning) (region-end))
+                             (slegetank/thing-at-point))))
+      (if (and thing-at-point (> (length thing-at-point) 0))
+          thing-at-point
+        (if (fboundp 'simpleclip-get-contents)
+            (simpleclip-get-contents)
+          thing-at-point))))
+#+END_SRC
 * terminal
 改用eshell，废弃
 ** make-term version
@@ -46,6 +59,6 @@ exit之后自动关闭buffer:
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-  (slegetank/leader-define-key nil "t" nil "Tools")
+  (slegetank/leader-define-key "t" nil "Tools")
 #+END_SRC
 

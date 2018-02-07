@@ -34,9 +34,9 @@ M-x customize-group -> 默认触发为\，改为SPC
   (evil-mode t)
   (setq evil-leader/no-prefix-mode-rx '("w3m.*-mode" "cfw:calendar-mode")) ; w3m mode needs this too!
 
-  (defun slegetank/leader-define-key (map key def desc &rest seq)
-    "Custom method to define key and add comment to which-key"
-    (let ((map (if map map evil-leader--default-map))
+  (defun slegetank/leader-define-key (key def desc &rest seq)
+    "Custom method to define key and add comment to which-key."
+    (let ((map evil-leader--default-map)
           (fkey (concat "<SPC>" key))
           (fdesc desc)
           keyDescList)
@@ -51,8 +51,21 @@ M-x customize-group -> 默认触发为\，改为SPC
           (push (concat "<SPC>" key) keyDescList)))
       (apply 'which-key-add-key-based-replacements fkey fdesc keyDescList)))
 
-  (slegetank/leader-define-key nil
-                               "f" nil "Files"
+  (defun slegetank/repeat-last-command ()
+    "Custom repeat last command."
+    (interactive)
+    (let ((lastcommand nil)
+          (tempcommand nil))
+      (when (/= 0 (length command-history))
+        (setq tempcommand command-history)
+        (while (and (not lastcommand) tempcommand)
+          (if (where-is-internal (caar tempcommand) evil-leader--default-map)
+              (setq lastcommand (caar tempcommand))
+            (setq tempcommand (cdr tempcommand)))))
+      (when lastcommand
+        (call-interactively lastcommand))))
+
+  (slegetank/leader-define-key "f" nil "Files"
                                "ff" 'counsel-find-file "Find file"
                                "b" nil "Buffers"
                                "bb" 'ivy-switch-buffer "Switch buffer"
@@ -71,7 +84,7 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "e" nil "elisp"
                                "er" 'eval-region "Eval region"
                                "eb" 'eval-buffer "Eval buffer"
-                               "." 'counsel-command-history "Repeat")
+                               "." 'slegetank/repeat-last-command "Repeat")
 
   ;; q for kill-buffer, not for exit emacss
   (evil-ex-define-cmd "q" (lambda () (interactive) (kill-buffer (current-buffer))))
@@ -118,6 +131,7 @@ M-x customize-group -> 默认触发为\，改为SPC
   (require-package 'evil-cleverparens)
 
   (add-hook 'emacs-lisp-mode-hook #'evil-cleverparens-mode)
+  (add-hook 'lisp-mode-hook #'evil-cleverparens-mode)
   (setq evil-move-beyond-eol t)
 
   (define-key evil-visual-state-map [escape] 'evil-visual-char)

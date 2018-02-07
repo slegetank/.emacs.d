@@ -6,7 +6,6 @@
                                                                         smartparens
                                                                         popwin
                                                                         reveal-in-osx-finder
-                                                                        slime
                                                                         rainbow-delimiters
                                                                         recentf-ext
                                                                         nyan-mode
@@ -55,19 +54,19 @@
 ** smartparens
 自动匹配括号、引号等。
 #+BEGIN_SRC emacs-lisp
-    (require 'smartparens-config)
-    (smartparens-global-mode t) ; smart paren
+  (require 'smartparens-config)
+  (smartparens-global-mode t) ; smart paren
 
-    ;; elisp单引号不自动配对
-    (sp-local-pair '(emacs-lisp-mode lisp-interaction-mode) "'" nil :actions nil)
+  ;; elisp单引号不自动配对
+  (sp-local-pair '(emacs-lisp-mode lisp-interaction-mode lisp-mode) "'" nil :actions nil)
 
-    ;; 括号匹配
-    (defadvice show-paren-function (around fix-show-paren-function activate)
+  ;; 括号匹配
+  (defadvice show-paren-function (around fix-show-paren-function activate)
     "Highlight enclosing parens."
     (cond ((looking-at-p "\\s(") ad-do-it)
-            (t (save-excursion
-                (ignore-errors (backward-up-list))
-                ad-do-it))))
+          (t (save-excursion
+               (ignore-errors (backward-up-list))
+               ad-do-it))))
 
 
 #+END_SRC
@@ -137,11 +136,6 @@ C-c o 打开当前文件所在的Finder;
    #+BEGIN_SRC emacs-lisp
      (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
    #+END_SRC
-** slime
-#+BEGIN_SRC emacs-lisp
-  (setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
-  (setq slime-contribs '(slime-fancy))
-#+END_SRC
 ** nyan-mode
 #+BEGIN_SRC emacs-lisp
   (nyan-mode t)
@@ -207,8 +201,9 @@ C-c o 打开当前文件所在的Finder;
   (use-package auto-highlight-symbol
                                           ; this only installs it for programming mode derivatives; you can also make it global...
     :init
-    (add-hook 'org-mode-hook 'auto-highlight-symbol-mode)
-    (add-hook 'rjsx-mode-hook 'auto-highlight-symbol-mode)
+    ;; (add-hook 'org-mode-hook 'auto-highlight-symbol-mode)
+    ;; (add-hook 'rjsx-mode-hook 'auto-highlight-symbol-mode)
+    (add-hook 'hexl-mode-hook 'disable-hi)
     (add-hook 'auto-highlight-symbol-mode-hook (lambda ()
                                                  (define-key evil-normal-state-map (kbd "C-p") 'ahs-backward)
                                                  (define-key evil-normal-state-map (kbd "C-n") 'ahs-forward)))
@@ -264,6 +259,7 @@ C-c o 打开当前文件所在的Finder;
         '("a" "s" "d" "f" "j" "k" "l" ";" "w" "e" "i" "o"))
   (setq switch-window-increase 17)
   ;; (setq switch-window-shortcut-appearance 'asciiart)
+
   (evil-leader/set-key
     "wo" 'switch-window)
 #+END_SRC

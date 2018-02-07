@@ -12,7 +12,7 @@
   (require-package 'metalheart-theme)
   ;; (load-theme 'afternoon t)
 
-  (slegetank/leader-define-key nil "tu" 'customize-themes "Custom theme")
+  (slegetank/leader-define-key "tu" 'customize-themes "Custom theme")
 #+END_SRC
 * smart-mode-line
 #+BEGIN_SRC emacs-lisp

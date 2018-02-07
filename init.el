@@ -44,22 +44,22 @@
 (setq slegetank/init-load-files '("custom"
                                   "evil"
                                   "package"
+                                  "tools"
                                   "org"
                                   "company"
                                   "search"
                                   "blog"
-                                  "elisp"
                                   "python"
                                   "js"
                                   "dired"
                                   "git"
                                   "project"
-                                  "tools"
                                   "help"
                                   "UI"
                                   "eshell"
                                   "chinese"
-                                  "linkplay"))
+                                  "linkplay"
+                                  "commonlisp"))
 
 ;; mu4e
 (when (executable-find "mu")

@@ -61,7 +61,7 @@
            (package-name (ivy-completing-read "Access home of package: " packages nil t p-at-point)))
       (muv (car (s-split " " package-name t)))))
 
-  (slegetank/leader-define-key nil "hp" 'slegetank/melpa-upstream-visit "Find package's homepage")
+  (slegetank/leader-define-key "hp" 'slegetank/melpa-upstream-visit "Find package's homepage")
 #+END_SRC
 
 * command-log-mode [h-c]
@@ -70,7 +70,7 @@
   (use-package command-log-mode
     :commands global-command-log-mode
     :init
-    (slegetank/leader-define-key nil "hc" 'global-command-log-mode "Show keystroke realtime")
+    (slegetank/leader-define-key "hc" 'global-command-log-mode "Show keystroke realtime")
     :config
     (setq clm/log-command-exceptions* (append clm/log-command-exceptions*
                                               '(evil-next-line
@@ -84,12 +84,13 @@
 * devdocs [h-d]
 #+BEGIN_SRC emacs-lisp
   (require-package 'devdocs)
-  (slegetank/leader-define-key nil "hd" 'devdocs-search "dev docs")
+  (slegetank/leader-define-key "hd" 'devdocs-search "dev docs")
 #+END_SRC
 * search engine [h-s]
 有一个engine-mode，但是跟evil-leader不是很搭，自己写一个简单的：
 #+BEGIN_SRC emacs-lisp
   (setq slegetank/last-search-engine 'google)
+  (setq slegetank/search-engine-history-list nil)
 
   (defun slegetank/search-web (engine key)
     (setq slegetank/last-search-engine engine)
@@ -100,6 +101,8 @@
             (format "https://www.baidu.com/s?wd=%s" (url-hexify-string key)))
            ((equal engine 'symbolhound)
             (format "http://symbolhound.com/?q=%s" (url-hexify-string key))))))
+
+
 
   (defun slegetank/search-google (key)
     (interactive "sGoogle: ")
@@ -114,10 +117,14 @@
     (slegetank/search-web 'baidu key))
 
   (defun slegetank/search-with-last (key)
-    (interactive (list (read-string (format "%s: " slegetank/last-search-engine))))
+    (interactive (list (let* ((guessword (slegetank/guess-input))
+                              (readword (read-string (format "%s(%s): " slegetank/last-search-engine guessword) nil slegetank/search-engine-history-list)))
+                         (if (> (length readword) 0)
+                             readword
+                           guessword))))
     (slegetank/search-web slegetank/last-search-engine key))
 
-  (slegetank/leader-define-key nil
+  (slegetank/leader-define-key
                                "hs" nil "Search web"
                                "hsg" 'slegetank/search-google "Search google"
                                "hss" 'slegetank/search-symbolhound "Search symbolhound"
@@ -126,7 +133,7 @@
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-  (slegetank/leader-define-key nil "h" nil "Help"
+  (slegetank/leader-define-key "h" nil "Help"
                                "hl" 'custom-help-open-local-article "Local help"
                                "hr" 'custom-help-open-remote-article "Remote help")
 #+END_SRC

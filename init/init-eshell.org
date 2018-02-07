@@ -55,6 +55,7 @@ z for eshell
                       ivy-display-functions-alist)))
 
   (add-hook 'eshell-mode-hook #'setup-eshell-ivy-completion)
+
 #+END_SRC
 ** shell-switcher
 #+BEGIN_SRC emacs-lisp
@@ -63,6 +64,25 @@ z for eshell
   (add-hook 'eshell-mode-hook 'shell-switcher-manually-register-shell)
   (add-hook 'eshell-mode-hook (lambda ()
                                 (setq-local shell-switcher-mode t)))
+#+END_SRC
+** python-autocomplete
+#+BEGIN_SRC emacs-lisp
+  ;; (defun slegetank/python-autocomplete-setup ()
+  ;;       (interactive)
+  ;;       (set (make-local-variable 'pcomplete-parse-arguments-function)
+  ;;            'pcomplete-parse-foo-arguments)
+  ;;       (set (make-local-variable 'pcomplete-default-completion-function)
+  ;;            'slegetank/pcomplete-python-default-completion))
+
+  ;; (defun slegetank/pcomplete-python-default-completion ()
+  ;;      (pcomplete-here foo-all-completions))
+
+  ;; (add-hook 'eshell-mode-hook 'slegetank/python-autocomplete-setup)
+
+
+  ;; (let ((running-process (get-buffer-process (current-buffer))))
+  ;;   (when (and running-process (s-contains? "python" (process-name running-process)))
+  ;;     (message "123")))
 #+END_SRC
 * custom
 ** smart
@@ -303,6 +323,19 @@ ivy搜索历史
 
   (add-hook 'shell-mode-hook #'slegetank/async-shell-set-quit-key)
 #+END_SRC
+** 环境变量
+#+BEGIN_SRC emacs-lisp
+  (when (and (getenv "SHELL") (file-exists-p "~/.zshrc"))
+    (with-temp-buffer
+      (insert-file-contents "~/.zshrc")
+
+      (dolist (line (s-match-strings-all "^EXPORT.*?\n" (buffer-string)) nil)
+        (let* ((arr (s-split "=" (s-chop-prefix "export " (s-chomp (car line)))))
+               (env (s-chop-prefix "\"" (s-chop-suffix "\"" (car arr))))
+               (value (s-chop-prefix "\"" (s-chop-suffix "\"" (cadr arr)))))
+          (unless (equal env "PATH")
+            (setenv env value))))))
+#+END_SRC
 * alias
 Go to xcode dir:
 #+BEGIN_SRC emacs-lisp
@@ -331,7 +364,6 @@ Go to last buffer's dir:
         (setq previousdir (file-name-directory (or default-directory ""))))
       (eshell/cd previousdir)))
 #+END_SRC
-
 * setup
 #+BEGIN_SRC emacs-lisp
   (setq eshell-cmpl-ignore-case t)
@@ -382,7 +414,7 @@ Go to last buffer's dir:
 
   (add-hook 'eshell-mode-hook 'slegetank/eshell-setup)
 
-  (slegetank/leader-define-key nil "tt" (lambda () (interactive)
+  (slegetank/leader-define-key "tt" (lambda () (interactive)
                                           (if (bound-and-true-p eshell-mode)
                                               (slegetank/quit-eshell-window)
                                             (slegetank/eshell-fast-open nil))) "terminal"
