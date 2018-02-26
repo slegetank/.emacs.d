@@ -46,9 +46,11 @@ dired会被加入recentf-list:
 ** dired+
 #+BEGIN_SRC emacs-lisp
   ;; (require-package 'dired+)
-  ;; ;
-                                          ; only use one buffer
-  ;; (diredp-toggle-find-file-reuse-dir 1)
+  (add-to-list 'load-path (expand-file-name "dired+" user-emacs-directory))
+  (require 'dired+)
+  
+  ;; only use one buffer
+  (diredp-toggle-find-file-reuse-dir 1)
 #+END_SRC
 ** diryed-icon
 #+BEGIN_SRC emacs-lisp
