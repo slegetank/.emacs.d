@@ -41,5 +41,16 @@
     (dired (file-name-as-directory (file-name-directory (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'")))))
     (magit-status))
 
-  (slegetank/leader-define-key "gx" 'slegetank/git-xcode-project "Git xcode")
+  (defun slegetank/git-android-project ()
+    "Open current XCode project path with magit"
+    (interactive)
+    (dired (file-name-as-directory (file-name-directory (s-chop-suffix "]"
+                                                                       (s-chop-prefix "["
+                                                                                      (car (s-match "\\[.*?\\]"
+                                                                                                    (s-trim
+                                                                                                     (shell-command-to-string "osascript -e 'tell application \"System Events\" to get the {title} of window 1 of process \"Android Studio\"'")))))))))
+    (magit-status))
+
+  (slegetank/leader-define-key "gx" 'slegetank/git-xcode-project "Git xcode"
+                               "ga" 'slegetank/git-android-project "Git android")
 #+END_SRC

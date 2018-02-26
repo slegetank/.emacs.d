@@ -43,11 +43,11 @@
            :with-author t
            :with-creator nil
            :sitemap-filename "index.org"
-           :sitemap-title "index"
+           ;; :sitemap-title "index"
            :sitemap-sort-files anti-chronologically
            :html-preamble my-blog-home-header
            :html-postamble ,my-blog-footer
-           :auto-sitemap t
+           :auto-sitemap nil
            :sitemap-function my-blog-sitemap
            :recursive t
            :section-numbers nil
@@ -146,12 +146,9 @@
 
 读取目录下博客org文件的信息：
 #+BEGIN_SRC emacs-lisp
-  (defun my-blog-org-files-info (project)
+  (defun my-blog-org-files-info ()
     "Generate info list for org files"
-
-    (let* ((project-plist (cdr project))
-           (files (directory-files (concat my-blog-post-base "/blog/") t ".org$"))
-           (sitemap-sans-extension (plist-get project-plist :sitemap-sans-extension))
+    (let* ((files (directory-files (concat my-blog-post-base "/blog/") t ".org$"))
            (postdir (file-name-as-directory my-blog-post-base))
            file
            (infolist '()))
@@ -160,8 +157,6 @@
         (unless (or (s-ends-with? "index.org" (file-truename file)) (s-ends-with? "archive.org" (file-truename file)) (s-ends-with? "tag.org" (file-truename file)))
           (let ((link (file-relative-name file (file-name-as-directory
                                                 (expand-file-name (file-name-as-directory postdir))))))
-            (when sitemap-sans-extension
-              (setq link (file-name-sans-extension link)))
             (let* ((properties (my-blog-get-custom-property file))
 
                    (title (cdr (assoc "title" properties)))
@@ -174,65 +169,63 @@
 
 自定义sitemap生成函数：
 #+BEGIN_SRC emacs-lisp
-    (defun my-blog-sitemap (project &optional sitemap-filename)
-      "Sitemap custom method"
-      (let* ((project-plist (cdr project))
-             (postdir (file-name-as-directory my-blog-post-base))
-             (sitemap-filename (concat postdir (or sitemap-filename "index.org")))
-             (visiting (find-buffer-visiting sitemap-filename))
-             (bloginfos (my-blog-org-files-info project))
-             (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
-             sitemap-buffer)
+  (defun my-blog-sitemap (&rest params)
+    "Sitemap custom method"
+    (let* ((postdir (file-name-as-directory my-blog-post-base))
+           (sitemap-filename (concat postdir "index.org"))
+           (visiting (find-buffer-visiting sitemap-filename))
+           (bloginfos (my-blog-org-files-info))
+           (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
+           sitemap-buffer)
 
-        (my-blog-archive project bloginfos)
-        (let ((org-inhibit-startup t))
-          (setq sitemap-buffer
-                (or visiting (find-file sitemap-filename)))
-          (with-current-buffer sitemap-buffer
-            (erase-buffer)
+      (my-blog-archive bloginfos)
+      (let ((org-inhibit-startup t))
+        (setq sitemap-buffer
+              (or visiting (find-file sitemap-filename)))
+        (with-current-buffer sitemap-buffer
+          (erase-buffer)
 
-            (while (setq bloginfo (pop bloginfos))
-              (let* ((link (cdr (assoc "link" bloginfo)))
-                     (title (cdr (assoc "title" bloginfo)))
-                     (date (cdr (assoc "date" bloginfo)))
-                     (preview (cdr (assoc "preview" bloginfo)))
-                     (type (cdr (assoc "type" bloginfo))))
+          (while (setq bloginfo (pop bloginfos))
+            (let* ((link (cdr (assoc "link" bloginfo)))
+                   (title (cdr (assoc "title" bloginfo)))
+                   (date (cdr (assoc "date" bloginfo)))
+                   (preview (cdr (assoc "preview" bloginfo)))
+                   (type (cdr (assoc "type" bloginfo))))
 
-                (insert "-----\n")
-                (cond ((string-match-p regexp title)
-                       (string-match regexp title)
-                       ;; insert every post as headline
-                       (insert (concat"* " (match-string 1 title)
-                                      "[[file:" link "]["
-                                      (match-string 2 title)
-                                      "]]" (match-string 3 title) "\n")))
-                      (t (insert (concat "* [[file:" link "][" title "]]\n"))))
-                (let ((rss-permalink (concat (file-name-sans-extension link) ".html"))
-                      (rss-pubdate date))
-                  (org-set-property "RSS_PERMALINK" rss-permalink)
-                  (org-set-property "PUBDATE" rss-pubdate))
+              (insert "-----\n")
+              (cond ((string-match-p regexp title)
+                     (string-match regexp title)
+                     ;; insert every post as headline
+                     (insert (concat"* " (match-string 1 title)
+                                    "[[file:" link "]["
+                                    (match-string 2 title)
+                                    "]]" (match-string 3 title) "\n")))
+                    (t (insert (concat "* [[file:" link "][" title "]]\n"))))
+              (let ((rss-permalink (concat (file-name-sans-extension link) ".html"))
+                    (rss-pubdate date))
+                (org-set-property "RSS_PERMALINK" rss-permalink)
+                (org-set-property "PUBDATE" rss-pubdate))
 
-                (insert (format "%s | %s\n\n" date type))
-                (insert preview)
-                (insert (concat "[[file:" link "][Read More...]]\n"))))
+              (insert (format "%s | %s\n\n" date type))
+              (insert preview)
+              (insert (concat "[[file:" link "][Read More...]]\n"))))
 
-            ;; kill the first hrule to make this look OK
-            (goto-char (point-min))
-            (let ((kill-whole-line t)) (kill-line))
-            ;; add some header
-            (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
-            (insert "#+TITLE:Slegetank's Blog\n")
-            (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
-            (save-buffer)))
-        (or visiting (kill-buffer sitemap-buffer))))
+          ;; kill the first hrule to make this look OK
+          (goto-char (point-min))
+          (let ((kill-whole-line t)) (kill-line))
+          ;; add some header
+          (insert "#+SETUPFILE: ~/.emacs.d/org-template/level-0.org\n")
+          (insert "#+TITLE:Slegetank's Blog\n")
+          (insert "#+HTML_HEAD: <style type=\"text/css\">.title{display:none;}</style>\n\n")
+          (save-buffer)))
+      (or visiting (kill-buffer sitemap-buffer))))
 #+END_SRC
 
 自定义archive生成函数：
 #+BEGIN_SRC emacs-lisp
-  (defun my-blog-archive (project bloginfos)
+  (defun my-blog-archive (bloginfos)
     "Archive custom method"
-    (let* ((project-plist (cdr project))
-           (postdir (file-name-as-directory my-blog-post-base))
+    (let* ((postdir (file-name-as-directory my-blog-post-base))
            (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
            archive-buffer
            typelist '()

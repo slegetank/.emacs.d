@@ -159,6 +159,18 @@ dired会被加入recentf-list:
     (interactive)
     (dired (file-name-as-directory (file-name-directory (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'"))))))
 
+
+    (defun slegetank/goto-android-project ()
+      "Open current XCode project path with magit"
+      (interactive)
+      (let ((cmd-result (shell-command-to-string "osascript -e 'tell application \"System Events\" to get the {title} of window 1 of process \"Android Studio\"'")))
+        (if cmd-result
+            (dired (file-name-as-directory (file-name-directory (s-chop-suffix "]"
+                                                                               (s-chop-prefix "["
+                                                                                              (car
+                                                                                               (s-match "\\[.*?\\]" (s-trim cmd-result))))))))
+          (message "Found no android project."))))
+
   (defun custom-open-xcode-file ()
     "Open current XCode editing file with emacs"
     (interactive)
@@ -190,6 +202,7 @@ dired会被加入recentf-list:
     "dr" 'custom-goto-recent-directory
     "df" 'custom-goto-finder-directory
     "dx" 'slegetank/goto-xcode-project
+    "da" 'slegetank/goto-android-project
     "fx" 'custom-open-xcode-file
     "dm" 'custom-ido-bookmark-jump)
 

@@ -6,15 +6,19 @@
     (setq org-hide-leading-stars t) ; 只显示一颗星
     (setq org-ellipsis " \u25bc" ) ; 题目缩略显示
     (setq org-startup-truncated nil)
+    (setq org-html-postamble nil)
 
     (setq org-src-fontify-natively t)
 
     (setq org-M-RET-may-split-line '((default . nil))) ; s-enter/m-enter 不会切断header
 
     ;; ditaa for chart
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((ditaa . t)))
+    (let ((ditaaExe (executable-find "ditaa")))
+      (when ditaaExe
+        (setq org-ditaa-jar-path (expand-file-name ditaaExe))
+        (org-babel-do-load-languages
+         'org-babel-load-languages
+         '((ditaa . t)))))
   #+END_SRC
 ** bullets
 #+BEGIN_SRC emacs-lisp
@@ -108,6 +112,9 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
       (let ((region-content (buffer-substring start end)))
         (kill-region start end)
         (deactivate-mark)
+    
+        (unless (s-suffix-p "\n" region-content)
+          (setq region-content (s-append "\n" region-content)))
 
         (setq region-content (replace-regexp-in-string "‘" "'" region-content))
         (setq region-content (replace-regexp-in-string "’" "'" region-content))

@@ -230,6 +230,38 @@ C-c o 打开当前文件所在的Finder;
 
   (advice-add 'kill-new :around 'slegetank/fix-evil-clip-not-function)
 #+END_SRC
+*** 选中最后粘贴的文字
+#+BEGIN_SRC emacs-lisp
+  (setq slegetank/simpleclip-last-paste-region nil)
+  (advice-add 'simpleclip-paste :before (lambda ()
+                                          (let ((paste-length (length (simpleclip-get-contents))))
+                                            (when (> paste-length 0)
+                                              (setq slegetank/simpleclip-last-paste-region (cons (point) (length (simpleclip-get-contents))))))))
+
+  (defun slegetank/current-kill-advice-function (count &optional register yank-handler)
+    "Before paste, store the last paste position info."
+    (let ((paste-length (length (current-kill 0))))
+      (when (> paste-length 0)
+        (setq slegetank/simpleclip-last-paste-region (cons (point) (length (current-kill 0)))))
+      ))
+
+  (when (fboundp 'evil-paste-after)
+    (advice-add 'evil-paste-before :before 'slegetank/current-kill-advice-function)
+    (advice-add 'evil-paste-after :before 'slegetank/current-kill-advice-function))
+
+  (defun slegetank/simpleclip-select-paste ()
+    "Select the last paste string. Should call this ASAP after paste operation."
+    (interactive)
+    (when (and slegetank/simpleclip-last-paste-region
+               (consp slegetank/simpleclip-last-paste-region))
+      (let* ((p1 (car slegetank/simpleclip-last-paste-region))
+             (p2 (+ p1 (cdr slegetank/simpleclip-last-paste-region))))
+        (goto-char p1)
+        (push-mark p2)
+        (setq mark-active t))))
+
+  (slegetank/leader-define-key "gp" 'slegetank/simpleclip-select-paste "Select last paste word")
+#+END_SRC
 
 ** imenu-list
 #+BEGIN_SRC emacs-lisp

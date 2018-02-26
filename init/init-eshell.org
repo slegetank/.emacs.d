@@ -65,24 +65,10 @@ z for eshell
   (add-hook 'eshell-mode-hook (lambda ()
                                 (setq-local shell-switcher-mode t)))
 #+END_SRC
-** python-autocomplete
+** with-editor
 #+BEGIN_SRC emacs-lisp
-  ;; (defun slegetank/python-autocomplete-setup ()
-  ;;       (interactive)
-  ;;       (set (make-local-variable 'pcomplete-parse-arguments-function)
-  ;;            'pcomplete-parse-foo-arguments)
-  ;;       (set (make-local-variable 'pcomplete-default-completion-function)
-  ;;            'slegetank/pcomplete-python-default-completion))
-
-  ;; (defun slegetank/pcomplete-python-default-completion ()
-  ;;      (pcomplete-here foo-all-completions))
-
-  ;; (add-hook 'eshell-mode-hook 'slegetank/python-autocomplete-setup)
-
-
-  ;; (let ((running-process (get-buffer-process (current-buffer))))
-  ;;   (when (and running-process (s-contains? "python" (process-name running-process)))
-  ;;     (message "123")))
+  (require-package 'with-editor)
+  (add-hook 'eshell-mode-hook 'with-editor-export-editor)
 #+END_SRC
 * custom
 ** smart
@@ -335,6 +321,25 @@ ivy搜索历史
                (value (s-chop-prefix "\"" (s-chop-suffix "\"" (cadr arr)))))
           (unless (equal env "PATH")
             (setenv env value))))))
+#+END_SRC
+** python-autocomplete
+#+BEGIN_SRC emacs-lisp
+  ;; (defun slegetank/python-autocomplete-setup ()
+  ;;       (interactive)
+  ;;       (set (make-local-variable 'pcomplete-parse-arguments-function)
+  ;;            'pcomplete-parse-foo-arguments)
+  ;;       (set (make-local-variable 'pcomplete-default-completion-function)
+  ;;            'slegetank/pcomplete-python-default-completion))
+
+  ;; (defun slegetank/pcomplete-python-default-completion ()
+  ;;      (pcomplete-here foo-all-completions))
+
+  ;; (add-hook 'eshell-mode-hook 'slegetank/python-autocomplete-setup)
+
+
+  ;; (let ((running-process (get-buffer-process (current-buffer))))
+  ;;   (when (and running-process (s-contains? "python" (process-name running-process)))
+  ;;     (message "123")))
 #+END_SRC
 * alias
 Go to xcode dir:
