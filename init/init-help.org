@@ -13,7 +13,7 @@
                                    ("RN-github" "https://github.com/jondot/awesome-react-native" "RN")
                                    ("flex" "https://css-tricks.com/snippets/css/a-guide-to-flexbox/" "react")
                                    ("emmet" "https://github.com/smihica/emmet-mode" "js")
-                                   ("material-ui" "https://material-ui-next.com" "react")
+                                   ("material-ui" "http://www.material-ui.com" "react")
                                    ("oc block" "http://blog.slegetank.com/article/20160721-block.org?blogtype=iOS")
                                    ))
 
@@ -43,6 +43,9 @@
     (interactive)
     (custom-help-open-article "remote"))
 #+END_SRC
+
+#+RESULTS:
+: custom-help-open-remote-article
 
 * melpa-upstream-visit [h-p]
 快速访问包的主页
