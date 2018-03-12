@@ -1,24 +1,27 @@
 * defaults
   #+BEGIN_SRC emacs-lisp
-    (require 'org)
+        (require 'org)
 
-    (setq org-startup-indented t) ; 行首缩进
-    (setq org-hide-leading-stars t) ; 只显示一颗星
-    (setq org-ellipsis " \u25bc" ) ; 题目缩略显示
-    (setq org-startup-truncated nil)
-    (setq org-html-postamble nil)
+        (setq org-startup-indented t) ; 行首缩进
+        (setq org-hide-leading-stars t) ; 只显示一颗星
+        (setq org-ellipsis " \u25bc" ) ; 题目缩略显示
+        (setq org-startup-truncated nil)
+        (setq org-html-postamble nil)
 
-    (setq org-src-fontify-natively t)
+        (setq org-src-fontify-natively t)
 
-    (setq org-M-RET-may-split-line '((default . nil))) ; s-enter/m-enter 不会切断header
+        (setq org-M-RET-may-split-line '((default . nil))) ; s-enter/m-enter 不会切断header
 
-    ;; ditaa for chart
-    (let ((ditaaExe (executable-find "ditaa")))
-      (when ditaaExe
-        (setq org-ditaa-jar-path (expand-file-name ditaaExe))
-        (org-babel-do-load-languages
-         'org-babel-load-languages
-         '((ditaa . t)))))
+        ;; ditaa for chart
+        (let ((ditaaExe (executable-find "ditaa")))
+          (when ditaaExe
+            (setq org-ditaa-jar-path (expand-file-name ditaaExe))
+            (org-babel-do-load-languages
+             'org-babel-load-languages
+             '((ditaa . t)))
+            (defun my-org-confirm-babel-evaluate (lang body)
+              (not (string= lang "ditaa"))) ; don't ask for ditaa
+            (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)))
   #+END_SRC
 ** bullets
 #+BEGIN_SRC emacs-lisp
@@ -212,9 +215,8 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
 #+END_SRC
 ** org-tree-slide
 #+BEGIN_SRC emacs-lisp
-(require-package 'org-tree-slide)
+  (require-package 'org-tree-slide)
 #+END_SRC
-
 * keys
 #+BEGIN_SRC emacs-lisp
   (defun my-org-config ()

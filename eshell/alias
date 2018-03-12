@@ -1,18 +1,17 @@
-alias nil  $*
-alias gs "magit-status"
-alias gf "git" "fetch"
-alias gr "git" "rebase"
-alias gch "git" "cherry-pick"
-alias gc "git" "checkout"
-alias dx "slegetank/eshell/goto-xcode-directory"
-alias da "slegetank/eshell/goto-android-directory"
-alias df "slegetank/eshell/goto-finder-directory"
-alias dd "slegetank/eshell/goto-last-buffer-directory"
-alias muzo "slegetank/linkplay-muzo" $*
-alias wlipo "python" "~/ScriptHelper/wlipo.py" "-x" $1
-alias wpush "python" "~/ScriptHelper/wiimupush.py"
-alias e find-file $1
-alias ff find-file $1
-alias vi find-file $1
-alias vim find-file $1
 alias iterm "open" "/Applications/iTerm.app"
+alias vim find-file $1
+alias vi find-file $1
+alias ff find-file $1
+alias e find-file $1
+alias wpush "python" "~/ScriptHelper/wiimupush.py"
+alias wlipo "python" "~/ScriptHelper/wlipo.py" "-x" $1
+alias muzo "slegetank/linkplay-muzo" $*
+alias dd "slegetank/eshell/goto-last-buffer-directory"
+alias df "slegetank/eshell/goto-finder-directory"
+alias da "slegetank/eshell/goto-android-directory"
+alias dx "slegetank/eshell/goto-xcode-directory"
+alias gc "git" "checkout"
+alias gch "git" "cherry-pick"
+alias gr "git" "rebase"
+alias gf "git" "fetch"
+alias gs "magit-status"

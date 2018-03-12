@@ -86,6 +86,7 @@
           (compilation-mode :noselect nil)
           (grep-mode :noselect t)
           (occur-mode :noselect t)
+          (anaconda-view-mode :noselect nil)
           ("*Pp Macroexpand Output*" :noselect t)
           ("*Shell Command Output*")
           ("*Async Shell Command*")
@@ -201,8 +202,8 @@ C-c o 打开当前文件所在的Finder;
   (use-package auto-highlight-symbol
                                           ; this only installs it for programming mode derivatives; you can also make it global...
     :init
-    ;; (add-hook 'org-mode-hook 'auto-highlight-symbol-mode)
-    ;; (add-hook 'rjsx-mode-hook 'auto-highlight-symbol-mode)
+    (add-hook 'org-mode-hook 'auto-highlight-symbol-mode)
+    (add-hook 'rjsx-mode-hook 'auto-highlight-symbol-mode)
     (add-hook 'hexl-mode-hook 'disable-hi)
     (add-hook 'auto-highlight-symbol-mode-hook (lambda ()
                                                  (define-key evil-normal-state-map (kbd "C-p") 'ahs-backward)

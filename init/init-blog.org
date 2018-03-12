@@ -412,6 +412,7 @@
   (defun custom-blog-commit ()
     "add commit push"
     (interactive)
+    (my-blog-sitemap nil)
     (org-publish "blog" t)
     (let ((default-directory my-blog-publish-base))
       (shell-command "git add .")

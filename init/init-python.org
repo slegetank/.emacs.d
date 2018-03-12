@@ -1,61 +1,90 @@
-* defaults
-基于elpy: https://github.com/jorgenschaefer/elpy
-配置：https://github.com/jorgenschaefer/elpy/wiki/Configuration
-** elpy
-   #+BEGIN_SRC emacs-lisp
-     (require-package 'elpy)
-     (elpy-enable)
-
-     (defun elpy-key-bind-method ()
-       "Custom key binding"
-       (when (boundp 'imenu-list-minor-mode)
-         (evil-define-key 'normal elpy-mode-map (kbd "s-i") 'imenu-list-smart-toggle))
-       (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
-       (evil-define-key 'normal elpy-mode-map (kbd "s->") 'elpy-goto-definition-other-window)
-       ;; (evil-define-key 'normal elpy-mode-map (kbd "s-,") 'pop-tag-mark)
-       )
-
-     (add-hook 'elpy-mode-hook 'elpy-key-bind-method)
-   #+END_SRC
-* keys
+采用anaconda作为主要配置，主要速度比elpy快；之前elpy莫名其妙地出现了卡死的情况。
+* default
 #+BEGIN_SRC emacs-lisp
-    (defun add-py-breakpoint ()
-      (interactive)
-      (when (boundp 'evil-mode)
-        (evil-open-below 1)
-        (insert "import pdb; pdb.set_trace();")
-        (evil-normal-state)))
-
-    (defun my-python-config ()
-      "For python"
-      (local-set-key (kbd "s-\\") 'add-py-breakpoint)
-      )
-
-    (add-hook 'python-mode-hook 'my-python-config)
-
-  (defun custom-eval-python-buffer-in-eshell ()
-    (interactive)
-    (let ((py-file-name (file-name-nondirectory buffer-file-name)))
-      (split-window-vertically)
-      (other-window 1)
-      (eshell)
-      (eshell-interrupt-process)
-      (insert-and-inherit (format "python %s" py-file-name)))
-    (evil-insert 1))
-
-  (defun custom-back-from-eshell-to-python ()
-    (interactive)
-      (kill-buffer-and-window))
-
-  (with-eval-after-load 'evil-leader
-    (evil-leader/set-key-for-mode 'python-mode
-      "eb" 'custom-eval-python-buffer-in-eshell))
-
-  (with-eval-after-load 'evil-leader
-    (evil-leader/set-key-for-mode 'eshell-mode
-      "eq" 'custom-back-from-eshell-to-python))
-
-  ;; (with-eval-after-load 'eshell (define-key eshell-mode-map (kbd "q") 'custom-back-from-eshell-to-python))
+  (setq python-indent-offset 4)
 #+END_SRC
-* more
-还有一个库称为anaconda，它试图提供较为精简的python配置，而elpy试图提供一个python的IDE。
+* anaconda
+#+BEGIN_SRC emacs-lisp
+  (require-package 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+
+  (defun anaconda-key-bind-method ()
+    "Custom key binding"
+    (evil-define-key 'normal anaconda-mode-map (kbd "s-.") 'anaconda-mode-find-definitions)
+    (evil-define-key 'normal anaconda-mode-map (kbd "s-?") 'anaconda-mode-show-doc))
+
+  (add-hook 'anaconda-mode-hook 'anaconda-key-bind-method)
+#+END_SRC
+** company-anaconda
+#+BEGIN_SRC emacs-lisp
+  (require-package 'company-anaconda)
+  (eval-after-load "company"
+    '(add-to-list 'company-backends 'company-anaconda))
+  (add-hook 'python-mode-hook 'anaconda-mode)
+#+END_SRC
+* packages
+** flycheck-pyflakes
+语法检查
+#+BEGIN_SRC emacs-lisp
+  (require-package 'flycheck-pyflakes)
+  (require 'flycheck-pyflakes)
+#+END_SRC
+** importmagic
+修正import错误。
+前置：
+#+BEGIN_SRC python
+  pip3 install importmagic epc
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (require-package 'importmagic)
+  (add-hook 'python-mode-hook (lambda ()
+                                (importmagic-mode)
+                                (slegetank/leader-define-key "pyi" 'importmagic-fix-symbol-at-point "Fix import issues")))
+#+END_SRC
+** py-yapf
+美化python缩进；暂时不需要
+前置：
+#+BEGIN_SRC python
+  pip3 install yapf
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;; (require-package 'py-yapf)
+  ;; (require 'py-yapf)
+  ;; (add-hook 'python-mode-hook 'py-yapf-enable-on-save)
+#+END_SRC
+
+* debug
+断点快捷键来自于XCode；有ipdb用ipdb，没有用pdb。高亮断点行。
+前置：
+#+BEGIN_SRC python
+  pip3 install ipdb
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (setq slegetank/python-breakpoint nil)
+
+  (defun slegetank/python-decide-breakpoint ()
+    (unless slegetank/python-breakpoint
+      (if (= (shell-command "python3 -c \"import ipdb\"") 0)
+          (setq slegetank/python-breakpoint "import ipdb; ipdb.set_trace();")
+        (setq slegetank/python-breakpoint "import pdb; pdb.set_trace();"))))
+
+  (defun slegetank/add-py-breakpoint ()
+    "Add python breakpoint."
+    (interactive)
+    (when (boundp 'evil-mode)
+      (evil-open-below 1)
+      (insert slegetank/python-breakpoint)
+      (evil-normal-state)))
+
+  (defun slegetank/python-config ()
+    "Config for python."
+    (local-set-key (kbd "s-\\") 'slegetank/add-py-breakpoint)
+    (slegetank/python-decide-breakpoint)
+    (highlight-lines-matching-regexp (format "^[ ]*%s" slegetank/python-breakpoint)))
+
+  (add-hook 'python-mode-hook 'slegetank/python-config)
+#+END_SRC
