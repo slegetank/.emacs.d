@@ -341,6 +341,27 @@ ivy搜索历史
   ;;   (when (and running-process (s-contains? "python" (process-name running-process)))
   ;;     (message "123")))
 #+END_SRC
+** ...
+#+BEGIN_SRC emacs-lisp
+  ;; (defun advice-... (orig-fun &rest args)
+  ;;   (let ((res (apply orig-fun args)))
+  ;;     (when (and (= 1 (length res)) (string-match-p "^[.]*$" (car res)))
+  ;;       (setq res (cons "cd" res)))
+  ;;     (message "2 %S" res)
+  ;;     res))
+
+  ;; (advice-add 'eshell-parse-arguments :around #'advice-...)
+
+  ;; (defun advice-cd ()
+  ;;   (with-current-buffer (current-buffer)
+  ;;     (message "aaa %s" (buffer-substring-no-properties eshell-last-output-end (1- (point))))
+  ;;     )
+  ;;   )
+
+  ;; (add-hook 'eshell-pre-command-hook 'advice-cd)
+
+#+END_SRC
+
 * alias
 Go to xcode dir:
 #+BEGIN_SRC emacs-lisp

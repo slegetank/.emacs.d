@@ -9,6 +9,8 @@ https://github.com/magnars/multiple-cursors.el
   (require-package 'evil-mc)
   (require 'evil-mc)
 
+  (setq slegetank/evil-mc-pinyin-need-restore nil)
+
   (defun slegetank/evil-mc-enable ()
     (interactive)
     "Enable multiple-cursors mode in evil"
@@ -21,11 +23,22 @@ https://github.com/magnars/multiple-cursors.el
     "Disaable multiple-cursors mode in evil"
     (evil-mc-mode -1)
     (evil-mc-undo-all-cursors)
+    (when slegetank/evil-mc-pinyin-need-restore
+      (evil-find-char-pinyin-mode +1))
     (message "Quit multi cursors mode."))
 
   (evil-define-key 'normal evil-mc-key-map (kbd "C-g") 'slegetank/evil-mc-quit)
   (evil-define-key 'normal evil-mc-key-map (kbd "<escape>") 'slegetank/evil-mc-quit)
 #+END_SRC
+
+evil-mc与evil-find-char-pinyin有冲突，暂时屏蔽：
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'evil-mc-mode-hook (lambda ()
+                                (when (bound-and-true-p evil-find-char-pinyin-mode)
+                                  (evil-find-char-pinyin-mode -1)
+                                  (setq slegetank/evil-mc-pinyin-need-restore t))))
+#+END_SRC
+
 * ivy
 https://github.com/abo-abo/swiper
 ivy是强大的查找文件、搜索代码、执行命令的补全工具。
@@ -58,6 +71,32 @@ swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
 #+BEGIN_SRC emacs-lisp
   (define-key swiper-map (kbd "s-r") 'swiper-query-replace)
 #+END_SRC
+*** evil-mc + swiper
+swiper搜索，给结果加上cursor
+#+BEGIN_SRC emacs-lisp
+  (setq slegetank/temp-swiper-cands nil)
+
+  (defun slegetank/swiper-evil-mc ()
+    "Create a fake cursor for each `swiper' candidate."
+    (interactive)
+    (unless (require 'evil-mc nil t)
+      (error "Evil-mc isn't installed"))
+    (unless (window-minibuffer-p)
+      (error "Call me only from `swiper'"))
+    (setq slegetank/temp-swiper-cands (nreverse ivy--old-cands))
+    (unless (string= ivy-text "")
+      (ivy-exit-with-action
+       (lambda (_)
+         (evil-mc-mode 1)
+         (let (cand)
+           (while (setq cand (pop slegetank/temp-swiper-cands))
+             (swiper--action cand)
+             (when slegetank/temp-swiper-cands
+               (evil-mc-make-cursor-here))))))))
+
+  (define-key ivy-minibuffer-map (kbd "s-m") 'slegetank/swiper-evil-mc)
+#+END_SRC
+
 ** edit
 swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的替换、编辑：
 #+BEGIN_SRC emacs-lisp
@@ -140,14 +179,13 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
         " [C-c C-c]-commit, [C-c C-k]-cancel, [q]-quit")))
     (ivy-wgrep-change-to-wgrep-mode))
 
-  (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "e") 'slegetank/wgrep-mode-setup)
-  (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "x") 'winnow-exclude-lines)
-  (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "m") 'winnow-match-lines)
-  (evil-define-key 'normal ivy-occur-mode-map (kbd "q") (lambda ()
-                                                          (interactive)
-                                                          (kill-buffer)
-                                                          (delete-window (selected-window))))
-
+  (add-hook 'ivy-occur-grep-mode-hook (lambda ()
+                                        (evil-define-key 'motion ivy-occur-grep-mode-map (kbd "e") 'slegetank/wgrep-mode-setup)
+                                        (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "x") 'winnow-exclude-lines)
+                                        (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "m") 'winnow-match-lines)
+                                        (evil-define-key 'motion wgrep-mode-map (kbd "q") (lambda ()
+                                                                                            (interactive)
+                                                                                            (kill-buffer)))) t)
 #+END_SRC
 * winnow
 #+BEGIN_SRC emacs-lisp
