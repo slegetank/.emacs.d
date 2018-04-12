@@ -129,7 +129,7 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
              header-line-format
              (substitute-command-keys
               " [m]-match, [x]-exclude, [e]-edit, [q]-quit"))
-            )))))
+            (evil-normal-state))))))
 
   (add-hook 'ivy-occur-grep-mode-hook (lambda () (interactive)
                                         (run-with-timer 0.1 nil 'slegetank/ivy-occur-edit)))
@@ -141,12 +141,14 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
 ** avy
 #+BEGIN_SRC emacs-lisp
   (require-package 'avy)
+  (setq avy-case-fold-search nil)
 #+END_SRC
 
 * ace-jump
 屏幕内跳转
 #+BEGIN_SRC emacs-lisp
   (require-package 'ace-jump-mode)
+  (setq ace-jump-mode-case-fold nil)
 #+END_SRC
 * anzu
 在使用普通搜索功能时在状态栏显示匹配数目：
@@ -180,10 +182,10 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
     (ivy-wgrep-change-to-wgrep-mode))
 
   (add-hook 'ivy-occur-grep-mode-hook (lambda ()
-                                        (evil-define-key 'motion ivy-occur-grep-mode-map (kbd "e") 'slegetank/wgrep-mode-setup)
+                                        (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "e") 'slegetank/wgrep-mode-setup)
                                         (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "x") 'winnow-exclude-lines)
                                         (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "m") 'winnow-match-lines)
-                                        (evil-define-key 'motion wgrep-mode-map (kbd "q") (lambda ()
+                                        (evil-define-key 'normal wgrep-mode-map (kbd "q") (lambda ()
                                                                                             (interactive)
                                                                                             (kill-buffer)))) t)
 #+END_SRC
@@ -204,6 +206,7 @@ ivy for 2 helper functions:
 #+BEGIN_SRC emacs-lisp
   (define-key evil-normal-state-map (kbd "s-f") 'swiper)
   (define-key global-map (kbd "s-f") 'swiper)
-  (define-key evil-normal-state-map (kbd "s-m") 'slegetank/evil-mc-enable)
-  (define-key evil-normal-state-map (kbd "s-g") 'ace-jump-char-mode)
+
+  (evil-define-key 'normal 'global (kbd "s-m") 'slegetank/evil-mc-enable)
+  (evil-define-key 'normal 'global (kbd "s-g") 'ace-jump-char-mode)
 #+END_SRC

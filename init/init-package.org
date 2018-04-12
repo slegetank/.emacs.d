@@ -27,23 +27,24 @@
                                                                         pos-tip
                                                                         quickrun
                                                                         popup
-                                                                        htmlize)))
+                                                                        htmlize
+                                                                        vdiff)))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
   #+BEGIN_SRC emacs-lisp
-(require 'cl-lib)
-(defun slegtank/check-installed-packages ()
-  (cl-loop for pkg in package-selected-packages
-  when (not (package-installed-p pkg)) do (cl-return nil)
-  finally (cl-return t)))
+    (require 'cl-lib)
+    (defun slegtank/check-installed-packages ()
+      (cl-loop for pkg in package-selected-packages
+               when (not (package-installed-p pkg)) do (cl-return nil)
+               finally (cl-return t)))
 
-(unless (slegtank/check-installed-packages)
-  (message "%s" "Some packages missed, refreshing...")
-  (package-refresh-contents)
-  (dolist (pkg package-selected-packages)
-    (when (not (package-installed-p pkg))
-      (package-install pkg))))
+    (unless (slegtank/check-installed-packages)
+      (message "%s" "Some packages missed, refreshing...")
+      (package-refresh-contents)
+      (dolist (pkg package-selected-packages)
+        (when (not (package-installed-p pkg))
+          (package-install pkg))))
   #+END_SRC
 * 配置
 ** hungry-delete
@@ -61,14 +62,13 @@
   (sp-local-pair '(emacs-lisp-mode lisp-interaction-mode lisp-mode) "'" nil :actions nil)
 
   ;; 括号匹配
-  (defadvice show-paren-function (around fix-show-paren-function activate)
-    "Highlight enclosing parens."
-    (cond ((looking-at-p "\\s(") ad-do-it)
-          (t (save-excursion
-               (ignore-errors (backward-up-list))
-               ad-do-it))))
-
-
+  ;; 不要了 会卡
+  ;; (defadvice show-paren-function (around fix-show-paren-function activate)
+  ;;   "Highlight enclosing parens."
+  ;;   (cond ((looking-at-p "\\s(") ad-do-it)
+  ;;         (t (save-excursion
+  ;;              (ignore-errors (backward-up-list))
+  ;;              ad-do-it))))
 #+END_SRC
 ** popwin
 更好用的弹出窗口。
