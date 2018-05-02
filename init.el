@@ -7,14 +7,14 @@
 (when (>= emacs-major-version 24)
     (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
                              ("melpa"   . "http://elpa.emacs-china.org/melpa/")
-                             ;; ("org" . "http://orgmode.org/elpa/") ;; org mode的elpa总是不稳定
+                             ("org" . "http://orgmode.org/elpa/") ;; org mode的elpa总是不稳定
                              )))
 
 (package-initialize)
 
 ;; 手动下org mode
-(let ((default-directory  "~/org-mode/"))
-  (normal-top-level-add-subdirs-to-load-path))
+;; (let ((default-directory  "~/org-mode/"))
+;;   (normal-top-level-add-subdirs-to-load-path))
 
 ;; get from Purcell
 ;; 自动在线安装第三方包
@@ -38,7 +38,7 @@
 (require-package 'use-package)
 
 ;; 暂时去掉
-;; (require-package 'org-plus-contrib)
+(require-package 'org-plus-contrib)
 
 (eval-when-compile
   (require 'use-package))
@@ -92,3 +92,4 @@
 (evil-normal-state)
 
 ;; (find-file "~/.emacs.d/initpage.org")
+(put 'upcase-region 'disabled nil)

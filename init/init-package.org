@@ -178,6 +178,8 @@ C-c o 打开当前文件所在的Finder;
   ;; customize flycheck temp file prefix
   (setq-default flycheck-temp-prefix ".flycheck")
 
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+
   (evil-leader/set-key
     "cn" 'flycheck-next-error
     "cp" 'flycheck-previous-error

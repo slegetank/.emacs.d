@@ -204,7 +204,7 @@ emacs 26 以上 insert-string 调整为insert
   (setf recentf-keep '(keep-default-old-and-visible-recentf-p))
 #+END_SRC
 
-* better-defaults
+** better-defaults
 修正Emacs默认配置的一些不合理配置。
 #+BEGIN_SRC emacs-lisp
   (require-package 'better-defaults)

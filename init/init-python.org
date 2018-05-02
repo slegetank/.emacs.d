@@ -3,6 +3,14 @@
 #+BEGIN_SRC emacs-lisp
   (setq python-indent-offset 4)
 #+END_SRC
+* elpy
+卡
+#+BEGIN_SRC emacs-lisp
+  ;; (require-package 'elpy)
+  ;; (elpy-enable)
+
+  ;; (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
+#+END_SRC
 * anaconda
 #+BEGIN_SRC emacs-lisp
   (require-package 'anaconda-mode)

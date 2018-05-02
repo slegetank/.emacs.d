@@ -4,6 +4,9 @@
   (require-package 'evil-magit)
   (require 'evil-magit)
 
+  ;; large file slow
+  (setq magit-commit-show-diff nil)
+
   (evil-leader/set-key
     "gs" 'magit-status
     "gm" 'magit-dispatch-popup)
