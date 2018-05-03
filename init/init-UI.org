@@ -10,6 +10,7 @@
   (require-package 'organic-green-theme)
   (require-package 'zenburn-theme)
   (require-package 'metalheart-theme)
+  (require-package 'color-theme-sanityinc-tomorrow)
   ;; (load-theme 'afternoon t)
 
   (slegetank/leader-define-key "tu" 'customize-themes "Custom theme")

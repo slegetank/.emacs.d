@@ -178,9 +178,45 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
                   (eq 'file type))
         (cond ((and (fboundp 'custom-blog-drag-image) (custom-org-blog-p)) (custom-blog-drag-image fromname)) ; blog
               ((and (fboundp 'custom-mail-drag-attach) (custom-org-mail-p)) (custom-mail-drag-attach fromname)) ; mail
+              ((and (fboundp 'custom-common-org-drag-image) (custom-org-common-p)) (custom-common-org-drag-image fromname)) ; common
               (t (find-file fromname))))))
 
   (define-key org-mode-map (kbd "<drag-n-drop>") 'custom-org-drag-file-method)
+#+END_SRC
+
+普通的org 文档，以文件头部有#+TITLE区分。
+#+BEGIN_SRC emacs-lisp
+  (defun org-global-props (&optional property buffer)
+    "Get the plists of global org properties of current buffer."
+    (unless property (setq property "PROPERTY"))
+    (with-current-buffer (or buffer (current-buffer))
+      (org-element-map (org-element-parse-buffer) 'keyword (lambda (el) (when (string-match property (org-element-property :key el)) el)))))
+
+  (defun custom-org-common-p ()
+    "Judege if current file is normal org file."
+    (and (buffer-file-name)
+         (s-suffix? ".org" (buffer-file-name))
+         (org-global-props "TITLE")))
+
+  (defun custom-common-org-drag-image (fromname)
+    "deal with drag image"
+    (let ((img-regexp "\\(gif\\|png\\|jp[e]?g\\)\\>")
+          (destname fromname))
+      (when (and (string-match img-regexp fromname) (custom-org-common-p))
+        (let* ((filebasename (file-name-base (buffer-file-name)))
+               (dirname (file-name-directory (buffer-file-name)))
+               (file-exists (lambda (name)
+                              (let ((abspath (format "%s%s" dirname name)))
+                                (when (file-exists-p abspath)
+                                  abspath))))
+               (resource-dir (or (funcall file-exists "img") (funcall file-exists "res") (funcall file-exists "resource") dirname)))
+          (setq destname (concat resource-dir "/" filebasename "-"
+                                 (save-excursion (goto-char (point-min))
+                                                 (number-to-string (1+ (count-matches (format "%s-" filebasename))))) "." (file-name-extension fromname)))
+          (rename-file fromname destname t)))
+
+      (goto-char (nth 1 (event-start event)))
+      (insert (format "[[file:%s]]" (file-relative-name destname (file-name-directory (buffer-file-name)))))))
 #+END_SRC
 * packages
 ** calfw-org
