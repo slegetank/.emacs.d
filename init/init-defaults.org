@@ -99,6 +99,8 @@
   ;; narrow enable
   (put 'narrow-to-region 'disabled nil)
 
+  (setq isearch-forward t)
+
   ;; 几个从陈斌那里拿过来的配置
   (setq use-dialog-box nil)
   (setq use-file-dialog nil)

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Python Init Class
+# key: cc
+# --
+class $0(object):
+    def __init__(self):
+        pass
