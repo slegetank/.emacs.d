@@ -228,11 +228,40 @@ C-c o 打开当前文件所在的Finder;
 在simpleclip.el中会将(setq interprogram-cut-function nil) 置为nil，而这个方法在evil-mode的x中将会调用到的simple.el中的kill-new中会用到。返回string参数即可修复x无法删除string的bug。
 #+BEGIN_SRC emacs-lisp
   (defun slegetank/fix-evil-clip-not-function (oldfunc &rest args)
+  "Fix evil clip is nil."
     (apply oldfunc args)
     (car args))
 
   (advice-add 'kill-new :around 'slegetank/fix-evil-clip-not-function)
 #+END_SRC
+*** 粘贴之后光标在头上而不是末尾
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/after-paste-cursor-goto-begin (oldfunc &rest args)
+    "After paste, go to begin instead of end."
+    (apply oldfunc args)
+    ;; not minibuffer
+    (unless (window-minibuffer-p)
+      ;; more than 1 line
+      (let* ((p1 (car slegetank/simpleclip-last-paste-region))
+             (p2 (+ p1 (cdr slegetank/simpleclip-last-paste-region))))
+        (when (> (count-lines p1 p2) 1)
+          (goto-char (car slegetank/simpleclip-last-paste-region)))
+       (setq mark-active nil))))
+
+  (advice-add 'simpleclip-paste :around 'slegetank/after-paste-cursor-goto-begin)
+#+END_SRC
+
+*** 粘贴之后indent
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/after-paste-indent (oldfunc &rest args)
+    "After paste indent the region."
+    (apply oldfunc args)
+    (unless (window-minibuffer-p)
+      (indent-region  slegetank/simpleclip-last-paste-region)))
+
+  (advice-add 'simpleclip-paste :around 'slegetank/after-paste-indent)
+#+END_SRC
+
 *** 选中最后粘贴的文字
 #+BEGIN_SRC emacs-lisp
   (setq slegetank/simpleclip-last-paste-region nil)

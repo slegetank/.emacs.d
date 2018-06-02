@@ -50,6 +50,7 @@
 ;; 要加载的配置文件
 (setq slegetank/init-load-files '("custom"
                                   "evil"
+                                  "bookmark"
                                   "package"
                                   "tools"
                                   "org"

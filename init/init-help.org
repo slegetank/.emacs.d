@@ -13,7 +13,7 @@
                                    ("RN-github" "https://github.com/jondot/awesome-react-native" "RN")
                                    ("flex" "https://css-tricks.com/snippets/css/a-guide-to-flexbox/" "react")
                                    ("emmet" "https://github.com/smihica/emmet-mode" "js")
-                                   ("material-ui" "http://www.material-ui.com" "react")
+                                   ("material-ui" "https://v0.material-ui.com/#/" "react")
                                    ("oc block" "http://blog.slegetank.com/article/20160721-block.org?blogtype=iOS")
                                    ))
 

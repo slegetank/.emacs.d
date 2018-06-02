@@ -27,15 +27,19 @@ dired会被加入recentf-list:
 #+BEGIN_SRC emacs-lisp
   (defun recentd-track-opened-file ()
     "Insert the name of the directory just opened into the recent list."
-    (and (derived-mode-p 'dired-mode) default-directory
+    (and (derived-mode-p 'dired-mode)
+         (not (bound-and-true-p tramp-mode))
+         default-directory
          (recentf-add-file default-directory))
     ;; Must return nil because it is run from `write-file-functions'.
     nil)
 
+
   (defun recentd-track-closed-file ()
     "Update the recent list when a dired buffer is killed.
-  That is, remove a non kept dired from the recent list."
-    (and (derived-mode-p 'dired-mode) default-directory
+    That is, remove a non kept dired from the recent list."
+    (and (derived-mode-p 'dired-mode)
+         default-directory
          (recentf-remove-if-non-kept default-directory)))
 
   (add-hook 'dired-after-readin-hook 'recentd-track-opened-file)
@@ -66,6 +70,20 @@ dired会被加入recentf-list:
   (require-package 'stripe-buffer)
   (add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
 #+END_SRC
+** ivy-dired-history
+#+BEGIN_SRC emacs-lisp
+  ;; (require-package 'ivy-dired-history)
+  ;; (require 'savehist)
+  ;; (add-to-list 'savehist-additional-variables 'ivy-dired-history-variable)
+  ;; (savehist-mode 1)
+
+  ;; (with-eval-after-load 'dired
+  ;;   (require 'ivy-dired-history)
+  ;;   ;; if you are using ido,you'd better disable ido for dired
+  ;;   ;; (define-key (cdr ido-minor-mode-map-entry) [remap dired] nil) ;in ido-setup-hook
+  ;;   (define-key dired-mode-map "," 'dired))
+#+END_SRC
+
 * Inside
 #+BEGIN_SRC emacs-lisp
     (defun custom-dired-open-file-with-osx ()
@@ -140,27 +158,39 @@ dired会被加入recentf-list:
 
 * Outside
 #+BEGIN_SRC emacs-lisp
-  (require-package 'ivy)
-  (require 'ivy) ; swiper 7.0+ should be installed
+    (require-package 'ivy)
+    (require 'ivy) ; swiper 7.0+ should be installed
 
-  (defun custom-goto-recent-directory ()
-    "Open recent directory with dired; add z cmd list to this"
-    (interactive)
-    (unless recentf-mode (recentf-mode 1))
-    (let ((collection
-           (delete-dups
-            (delq nil (mapcar (lambda (filename) (and (file-exists-p (file-name-directory filename)) (file-name-directory filename))) recentf-list)))))
-      (ivy-read "directories:" collection :action 'dired)))
+    (defun custom-goto-recent-directory ()
+      "Open recent directory with dired; add z cmd list to this"
+      (interactive)
+      (unless recentf-mode (recentf-mode 1))
+      (let ((collection
+             (delete-dups
+              (append
+               (delq nil (mapcar (lambda (filename) ; recentf
+                                   (let ((directory (file-name-directory filename)))
+                                     (and (not (file-remote-p directory)) (file-exists-p directory) directory)))
+                                 recentf-list))
+               (mapcar (lambda (directory) ; finder recent
+                         (and (file-exists-p directory) (concat directory "/")))
+                       (split-string (shell-command-to-string (format "python %s/init/osx-recent-dir.py" user-emacs-directory)) "\n" t))
+               (when (file-exists-p "~/.z") ; append lines from z; append top 20 dirs
+                 (mapcar (lambda (directory)
+                           (and (file-exists-p directory) (concat directory "/")))
+                         (split-string (shell-command-to-string "cat ~/.z | sort -r -n -k 2 -t \"|\" | cut -f 1 -d \"|\" | head -n 20") "\n" t)))
+  ))))
+        (ivy-read "directories:" collection :action 'dired)))
 
-  (defun custom-goto-finder-directory ()
-    "Open OSX Finder path with dired"
-    (interactive)
-    (dired (file-name-as-directory (s-trim (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
+    (defun custom-goto-finder-directory ()
+      "Open OSX Finder path with dired"
+      (interactive)
+      (dired (file-name-as-directory (s-trim (shell-command-to-string "osascript -e \'tell app \"Finder\" to POSIX path of (insertion location as alias)\'")))))
 
-  (defun slegetank/goto-xcode-project ()
-    "Open current XCode project path with dired"
-    (interactive)
-    (dired (file-name-as-directory (file-name-directory (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'"))))))
+    (defun slegetank/goto-xcode-project ()
+      "Open current XCode project path with dired"
+      (interactive)
+      (dired (file-name-as-directory (file-name-directory (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of document 1'"))))))
 
 
     (defun slegetank/goto-android-project ()
@@ -174,39 +204,39 @@ dired会被加入recentf-list:
                                                                                                (s-match "\\[.*?\\]" (s-trim cmd-result))))))))
           (message "Found no android project."))))
 
-  (defun custom-open-xcode-file ()
-    "Open current XCode editing file with emacs"
-    (interactive)
-    (find-file (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of last item of source documents'"))))
+    (defun custom-open-xcode-file ()
+      "Open current XCode editing file with emacs"
+      (interactive)
+      (find-file (s-trim (shell-command-to-string "osascript -e 'tell application id \"com.apple.dt.Xcode\" to return path of last item of source documents'"))))
 
-  (require 'bookmark)
-  (defun custom-ido-bookmark-jump ()
-    "Jump to bookmark using ido"
-    (interactive)
-    (let ((dir (custom-ido-get-bookmark-dir)))
-      (when dir
-        (find-alternate-file dir))))
+    (require 'bookmark)
+    (defun custom-ido-bookmark-jump ()
+      "Jump to bookmark using ido"
+      (interactive)
+      (let ((dir (custom-ido-get-bookmark-dir)))
+        (when dir
+          (find-alternate-file dir))))
 
-  (defun custom-ido-get-bookmark-dir ()
-    "Get the directory of a bookmark."
-    (let* ((name (ido-completing-read "Use dir of bookmark: " (bookmark-all-names) nil t))
-           (bmk (bookmark-get-bookmark name)))
-      (when bmk
-        (setq bookmark-alist (delete bmk bookmark-alist))
-        (push bmk bookmark-alist)
-        (let ((filename (bookmark-get-filename bmk)))
-          (if (file-directory-p filename)
-              filename
-            (file-name-directory filename))))))
+    (defun custom-ido-get-bookmark-dir ()
+      "Get the directory of a bookmark."
+      (let* ((name (ido-completing-read "Use dir of bookmark: " (bookmark-all-names) nil t))
+             (bmk (bookmark-get-bookmark name)))
+        (when bmk
+          (setq bookmark-alist (delete bmk bookmark-alist))
+          (push bmk bookmark-alist)
+          (let ((filename (bookmark-get-filename bmk)))
+            (if (file-directory-p filename)
+                filename
+              (file-name-directory filename))))))
 
-  (evil-leader/set-key
-    "dd" 'dired-jump
-    "do" 'dired-jump-other-window
-    "dr" 'custom-goto-recent-directory
-    "df" 'custom-goto-finder-directory
-    "dx" 'slegetank/goto-xcode-project
-    "da" 'slegetank/goto-android-project
-    "fx" 'custom-open-xcode-file
-    "dm" 'custom-ido-bookmark-jump)
+    (evil-leader/set-key
+      "dd" 'dired-jump
+      "do" 'dired-jump-other-window
+      "dr" 'custom-goto-recent-directory
+      "df" 'custom-goto-finder-directory
+      "dx" 'slegetank/goto-xcode-project
+      "da" 'slegetank/goto-android-project
+      "fx" 'custom-open-xcode-file
+      "dm" 'custom-ido-bookmark-jump)
 
 #+END_SRC

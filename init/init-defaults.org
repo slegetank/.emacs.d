@@ -232,8 +232,8 @@ emacs 26 以上 insert-string 调整为insert
 #+END_SRC
 * bookmark+
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path (expand-file-name "bookmark-plus" user-emacs-directory))
-  (require 'bookmark+)
+  ;;(add-to-list 'load-path (expand-file-name "bookmark-plus" user-emacs-directory))
+  ;;(require 'bookmark+)
 #+END_SRC
 * w3m
 #+BEGIN_SRC emacs-lisp
@@ -370,6 +370,6 @@ default behavior for jump back:
                           (setq mark-ring (cdr mark-ring)))))
         (xref-pop-marker-stack))))
 
-  (global-set-key (kbd "s-,") 'slegetank/go-back)
+  ;; (global-set-key (kbd "s-,") 'slegetank/go-back)
 #+END_SRC
 

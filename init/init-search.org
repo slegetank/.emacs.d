@@ -48,6 +48,7 @@ ivy是强大的查找文件、搜索代码、执行命令的补全工具。
   (ivy-mode 1)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-h a") 'counsel-apropos)
+  (global-set-key (kbd "s-,") 'counsel-mark-ring)
 
   ;; ignore candidate
   (define-key ivy-minibuffer-map (kbd "s-<return>") 'ivy-immediate-done)
