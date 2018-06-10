@@ -20,6 +20,7 @@
                                                                         json-mode
                                                                         simpleclip
                                                                         switch-window
+                                                                        swap-buffers
                                                                         ggtags
                                                                         indent-guide
                                                                         xah-get-thing
@@ -293,6 +294,7 @@ C-c o 打开当前文件所在的Finder;
         (setq mark-active t))))
 
   (slegetank/leader-define-key "gp" 'slegetank/simpleclip-select-paste "Select last paste word")
+  (evil-define-key 'normal global-map (kbd "gp") 'slegetank/simpleclip-select-paste)
 #+END_SRC
 
 ** imenu-list
@@ -322,11 +324,19 @@ C-c o 打开当前文件所在的Finder;
   (setq switch-window-qwerty-shortcuts
         '("a" "s" "d" "f" "j" "k" "l" ";" "w" "e" "i" "o"))
   (setq switch-window-increase 17)
+  (setq switch-window-multiple-frames t)
   ;; (setq switch-window-shortcut-appearance 'asciiart)
 
   (evil-leader/set-key
     "wo" 'switch-window)
 #+END_SRC
+*** swap-buffers
+#+BEGIN_SRC emacs-lisp
+  (require 'swap-buffers)
+  (evil-leader/set-key
+    "wb" 'swap-buffers)
+#+END_SRC
+
 ** ggtags
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c-mode-common-hook

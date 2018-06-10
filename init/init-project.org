@@ -154,8 +154,8 @@ counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.pr
                    (user-name (s-trim-right (shell-command-to-string "git config --global user.name") ))
                    (user-email (s-trim-right (shell-command-to-string "git config --global user.email") )))
                (with-current-buffer custom-org-buffer
-                 (insert (format "#+TITLE: \n#+AUTHOR: %s\n#+EMAIL: %s\n#+DATE: %s\n" user-name user-email (format-time-string "<%Y-%m-%d %H:%M>" (current-time))))
-                 (goto-char 9))))))
+                 (insert (format "#+OPTIONS: \\n:\\n ^:nil\n\n#+TITLE: \n#+AUTHOR: %s\n#+EMAIL: %s\n#+DATE: %s\n" user-name user-email (format-time-string "<%Y-%m-%d %H:%M>" (current-time))))
+                 (goto-char 34))))))
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp

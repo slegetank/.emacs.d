@@ -48,7 +48,6 @@ ivy是强大的查找文件、搜索代码、执行命令的补全工具。
   (ivy-mode 1)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-h a") 'counsel-apropos)
-  (global-set-key (kbd "s-,") 'counsel-mark-ring)
 
   ;; ignore candidate
   (define-key ivy-minibuffer-map (kbd "s-<return>") 'ivy-immediate-done)
@@ -139,6 +138,46 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
   (define-key ivy-mode-map (kbd "s-o") 'ivy-occur)
 #+END_SRC
 
+** mark-ring
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/counsel-mark-ring ()
+    "Browse `mark-ring' interactively.
+  Obeys `widen-automatically', which see."
+    (interactive)
+    (let ((cands
+           (reverse (save-excursion
+             (save-restriction
+               ;; Widen, both to save `line-number-at-pos' the trouble
+               ;; and for `buffer-substring' to work.
+               (widen)
+               (let ((fmt (format "%%%dd %%s"
+                                  (length (number-to-string
+                                           (line-number-at-pos (point-max)))))))
+                 (mapcar (lambda (mark)
+                           (goto-char (marker-position mark))
+                           (let ((linum (line-number-at-pos))
+                                 (line  (buffer-substring
+                                         (line-beginning-position)
+                                         (line-end-position))))
+                             (cons (format fmt linum line) (point))))
+                         (sort (delete-dups (copy-sequence mark-ring)) #'<))))))))
+      (if cands
+          (ivy-read "Mark: " cands
+                    :require-match t
+                    :action (lambda (cand)
+                              (let ((pos (cdr-safe cand)))
+                                (when pos
+                                  (unless (<= (point-min) pos (point-max))
+                                    (if widen-automatically
+                                        (widen)
+                                      (error "\
+  Position of selected mark outside accessible part of buffer")))
+                                  (goto-char pos))))
+                    :caller 'counsel-mark-ring)
+        (message "Mark ring is empty"))))
+
+  (global-set-key (kbd "s-,") 'slegetank/counsel-mark-ring)
+#+END_SRC
 * avy
 ** avy
 #+BEGIN_SRC emacs-lisp

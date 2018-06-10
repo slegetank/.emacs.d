@@ -153,6 +153,16 @@ emacs 26 以上 insert-string 调整为insert
   (defalias 'insert-string 'insert)
 #+END_SRC
 
+用鼠标点击的时候，minibuffer自动关闭
+#+BEGIN_SRC emacs-lisp
+  (defun stop-using-minibuffer ()
+    "kill the minibuffer"
+    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+      (abort-recursive-edit)))
+
+  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+#+END_SRC
+
 ** trailing space
 #+BEGIN_SRC emacs-lisp
   ;; Show trailing whitespace

@@ -186,3 +186,12 @@ M-x customize-group -> 默认触发为\，改为SPC
                                (when (equal evil-state 'normal)
                                  (call-process-shell-command (format "keyboardSwitcher select %s" slegetank/en-input-source) nil 0)))))
 #+END_SRC
+* evil-goto-first-line push-mark
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/evil-goto-first-line-push-mark (oldfunc &rest args)
+    "After goto first line, push mark"
+    (apply oldfunc args)
+    (push-mark))
+
+  (advice-add 'evil-goto-first-line :around 'slegetank/evil-goto-first-line-push-mark)
+#+END_SRC

@@ -1,6 +1,6 @@
 从purcell处抓过来
 * slime
-需要首先按照sbcl
+需要首先安装sbcl
 #+BEGIN_SRC emacs-lisp
   (require-package 'slime)
   ;; package.el compiles the contrib subdir, but the compilation order
