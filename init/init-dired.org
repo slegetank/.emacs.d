@@ -207,7 +207,7 @@ dired会被加入recentf-list:
            (cands (slegetank/recent-directories))
            (target (and cands (ivy-read (format (concat (if dired-one-file op1 operation) " %s to: ")
                                                 (dired-mark-prompt arg rfn-list) op-symbol arg) cands
-                                        :require-match t)))
+                                                :require-match nil)))
            (into-dir (cond ((null how-to)
                             (if (and (file-name-case-insensitive-p (car fn-list))
                                      (eq op-symbol 'move)

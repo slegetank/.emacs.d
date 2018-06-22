@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Python Loop Dic
+# key: fordic
+# --
+for key, value in $0.items():
+    pass

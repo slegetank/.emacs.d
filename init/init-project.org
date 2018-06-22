@@ -134,9 +134,10 @@ counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.pr
                                      (concat "--ignore " (shell-quote-argument i)))
                                    ignored
                                    " "))))
+          ;; -U ignore .gitignore but use .ignore
           (counsel-ag (eval counsel-projectile-ag-initial-input)
                       (projectile-project-root)
-                      options
+                      (concat options " " "-U")
                       (projectile-prepend-project-name "ag")))
       (user-error "You're not in a project")))
 #+END_SRC
