@@ -239,7 +239,7 @@ dired会被加入recentf-list:
            (lambda (_from) target))
          marker-char))))
 
-  (define-key dired-mode-map (kbd "C") 'slegetank/dired-do-copy)
+  ;; (define-key dired-mode-map (kbd "C") 'slegetank/dired-do-copy)
   ;; (define-key dired-mode-map (kbd "R") 'slegetank/dired-do-rename)
 #+END_SRC
 

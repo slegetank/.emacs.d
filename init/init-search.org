@@ -233,8 +233,8 @@ swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的�
 * winnow
 #+BEGIN_SRC emacs-lisp
   (require-package 'winnow)
-  (add-hook 'compilation-mode-hook 'winnow-mode)
-  (add-hook 'ag-mode-hook 'winnow-mode)
+  ;; (add-hook 'compilation-mode-hook 'winnow-mode)
+  ;; (add-hook 'ag-mode-hook 'winnow-mode)
 #+END_SRC
 * keys
 ivy for 2 helper functions:
