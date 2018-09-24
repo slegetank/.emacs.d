@@ -86,7 +86,7 @@ dired会被加入recentf-list:
   (with-eval-after-load 'dired (diredfl-global-mode))
 #+END_SRC
 
-* diff-hl
+** diff-hl
 #+BEGIN_SRC emacs-lisp
   (require-package 'diff-hl)
   (with-eval-after-load 'dired (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
@@ -155,11 +155,11 @@ dired会被加入recentf-list:
       (dired-sort-other (car (car (nthcdr nextpos custom-dired-sort-seq-list))))
       (message "SORTBY - \"%s\"" (cdr (car (nthcdr nextpos custom-dired-sort-seq-list))))))
 
-  (add-hook 'dired-mode-hook (lambda ()
-                               (evil-define-key '(motion normal) 'dired-mode-map (kbd "e") 'wdired-change-to-wdired-mode)
-                               (evil-define-key '(motion normal) 'dired-mode-map (kbd "H") 'custom-dired-temp-hide-files)
-                               (evil-define-key '(motion normal) 'dired-mode-map (kbd "O") 'custom-dired-open-file-with-osx)
-                               (evil-define-key '(motion normal) 'dired-mode-map (kbd "s") 'custom-dired-sort-next)))
+  (evil-define-key '(normal motion)
+    dired-mode-map (kbd "e") 'wdired-change-to-wdired-mode
+    (kbd "H") 'custom-dired-temp-hide-files
+    (kbd "O") 'custom-dired-open-file-with-osx
+    (kbd "s") 'custom-dired-sort-next)
 #+END_SRC
 ** copy recent
 #+BEGIN_SRC emacs-lisp

@@ -190,25 +190,37 @@ C-c o 打开当前文件所在的Finder;
 #+END_SRC
 ** auto-highlight-symbol
 #+BEGIN_SRC emacs-lisp
-  (require 'auto-highlight-symbol)
-  (global-auto-highlight-symbol-mode)
+    (require 'auto-highlight-symbol)
+    (global-auto-highlight-symbol-mode)
 
-  (use-package auto-highlight-symbol
-                                          ; this only installs it for programming mode derivatives; you can also make it global...
-    :init
-    (add-hook 'org-mode-hook 'auto-highlight-symbol-mode)
-    (add-hook 'rjsx-mode-hook 'auto-highlight-symbol-mode)
-    (add-hook 'hexl-mode-hook 'disable-hi)
-    (add-hook 'auto-highlight-symbol-mode-hook (lambda ()
-                                                 (define-key evil-normal-state-map (kbd "C-p") 'ahs-backward)
-                                                 (define-key evil-normal-state-map (kbd "C-n") 'ahs-forward)))
-    :config
-    (setq ahs-idle-interval 0.5) ;; if you want instant highlighting, set it to 0, but I find it annoying
-    (setq ahs-default-range 'ahs-range-whole-buffer) ;; highlight every occurence in buffer
-    )
-
+    (use-package auto-highlight-symbol
+                                            ; this only installs it for programming mode derivatives; you can also make it global...
+      :init
+      (add-hook 'org-mode-hook 'auto-highlight-symbol-mode)
+      (add-hook 'rjsx-mode-hook 'auto-highlight-symbol-mode)
+      (add-hook 'hexl-mode-hook 'disable-hi)
+      (add-hook 'auto-highlight-symbol-mode-hook (lambda ()
+                                                   (define-key evil-normal-state-map (kbd "C-p") 'ahs-backward)
+                                                   (define-key evil-normal-state-map (kbd "C-n") 'ahs-forward)))
+      :config
+      (setq ahs-idle-interval 0.5) ;; if you want instant highlighting, set it to 0, but I find it annoying
+      (setq ahs-default-range 'ahs-range-whole-buffer) ;; highlight every occurence in buffer
+  )
 
 #+END_SRC
+
+解决与avy的冲突：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/clean-symbol-after-avy (oldfunc &rest args)
+    "After evil-avy-goto-char clean symbols"
+    (apply oldfunc args)
+    (push-mark)
+    (ahs-clear))
+
+  (with-eval-after-load 'avy
+    (advice-add 'evil-avy-goto-char :around 'slegetank/clean-symbol-after-avy))
+#+END_SRC
+
 ** simpleclip
 #+BEGIN_SRC emacs-lisp
   (require 'simpleclip)

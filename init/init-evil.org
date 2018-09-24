@@ -5,7 +5,7 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
 
 * evil
 #+BEGIN_SRC emacs-lisp
-  (setq evil-want-integration nil)
+  ;; (setq evil-want-integration nil)
   (require-package 'evil)
 #+END_SRC
 * which-key
@@ -95,10 +95,11 @@ M-x customize-group -> 默认触发为\，改为SPC
 #+END_SRC
 * evil-collection
 #+BEGIN_SRC emacs-lisp
-  (require-package 'evil-collection)
-  (require 'evil-collection)
-  (setq evil-want-integration t)
-  (evil-collection-init)
+  ;; (require-package 'evil-collection)
+  ;; (require 'evil-collection)
+  ;; (setq evil-want-integration t)
+  ;; (evil-collection-init)
+
   ;; (evil-collection-init 'indium)
 #+END_SRC
 * evil-nerd-commenter
@@ -191,10 +192,10 @@ M-x customize-group -> 默认触发为\，改为SPC
 #+END_SRC
 * evil-goto-first-line push-mark
 #+BEGIN_SRC emacs-lisp
-  (defun slegetank/evil-goto-first-line-push-mark (oldfunc &rest args)
-    "After goto first line, push mark"
-    (apply oldfunc args)
-    (push-mark))
+  ;; (defun slegetank/evil-goto-first-line-push-mark (oldfunc &rest args)
+  ;;   "After goto first line, push mark"
+  ;;   (apply oldfunc args)
+  ;;   (push-mark))
 
-  (advice-add 'evil-goto-first-line :around 'slegetank/evil-goto-first-line-push-mark)
+  ;; (advice-add 'evil-goto-first-line :around 'slegetank/evil-goto-first-line-push-mark)
 #+END_SRC
