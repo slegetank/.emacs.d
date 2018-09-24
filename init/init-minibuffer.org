@@ -12,6 +12,5 @@
 smartdelete不在minibuffer里起作用
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'ivy
-    (add-hook 'ivy-mode-hook
-              (define-key ivy-mode-map (kbd "<backspace>") 'ivy-backward-delete-char)))
+    (define-key ivy-minibuffer-map (kbd "<backspace>") 'ivy-backward-delete-char))
 #+END_SRC
