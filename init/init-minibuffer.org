@@ -1,0 +1,17 @@
+
+用鼠标点击的时候，minibuffer自动关闭
+#+BEGIN_SRC emacs-lisp
+  (defun stop-using-minibuffer ()
+    "kill the minibuffer"
+    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+      (abort-recursive-edit)))
+
+  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+#+END_SRC
+
+smartdelete不在minibuffer里起作用
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'ivy
+    (add-hook 'ivy-mode-hook
+              (define-key ivy-mode-map (kbd "<backspace>") 'ivy-backward-delete-char)))
+#+END_SRC

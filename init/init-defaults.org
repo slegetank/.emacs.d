@@ -186,16 +186,6 @@ emacs 26 以上 insert-string 调整为insert
   (defalias 'insert-string 'insert)
 #+END_SRC
 
-用鼠标点击的时候，minibuffer自动关闭
-#+BEGIN_SRC emacs-lisp
-  (defun stop-using-minibuffer ()
-    "kill the minibuffer"
-    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
-      (abort-recursive-edit)))
-
-  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
-#+END_SRC
-
 ** recentf
 最近文件列表里只保存确实显示过的文件，来源[[https://www.emacswiki.org/emacs/RecentFiles][wiki]] ,因为有的插件会在后台访问文件，然后recentf-list就被这些文件充满了，而这不是我需要的。
 #+BEGIN_SRC emacs-lisp

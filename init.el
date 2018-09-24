@@ -36,7 +36,8 @@
                                   "commonlisp"
                                   "ibuffer"
                                   "whitespace"
-                                  "regex"))
+                                  "regex"
+                                  "minibuffer"))
 
 ;; mu4e
 (when (executable-find "mu")
