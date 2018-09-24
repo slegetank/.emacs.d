@@ -47,7 +47,6 @@
     (define-key slime-repl-mode-map (kbd "TAB") 'indent-for-tab-command)
 
     (add-hook 'slime-repl-mode-hook 'sanityinc/slime-repl-setup))
-
 #+END_SRC
 
 * common lisp

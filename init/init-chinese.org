@@ -8,10 +8,18 @@
 https://github.com/tumashu/pyim
 #+BEGIN_SRC emacs-lisp
   (require-package 'pyim)
+  (require-package 'posframe)
+  (require 'posframe)
   (require 'pyim)
   (require 'pyim-basedict)
   (pyim-basedict-enable)
+
+  ;; (require-package 'pyim-wbdict)
+  ;; (require 'pyim-wbdict)
+  ;; (pyim-wbdict-gb2312-enable)
+
   (setq default-input-method "pyim")
+  ;; (setq pyim-default-scheme 'wubi)
 
   (setq pyim-default-scheme 'quanpin)
 
@@ -112,11 +120,10 @@ swiper搜索支持中文 !首字母匹配
 * ace-pinyin
 ace跳转支持中文：
 #+BEGIN_SRC emacs-lisp
-  (with-eval-after-load "ace-jump-mode"
-    (require-package 'ace-pinyin)
-    (require 'ace-pinyin)
-    (setq ace-pinyin-use-avy nil)
-    (ace-pinyin-global-mode +1))
+  (require-package 'ace-pinyin)
+  (require 'ace-pinyin)
+  (setq ace-pinyin-use-avy t)
+  (ace-pinyin-global-mode +1)
 #+END_SRC
 * cnfonts
 emacs中文字体配置工具。可以快速方便的的实现中文字体和英文字体等宽（也就是常说的中英文对齐）。

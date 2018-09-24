@@ -2,7 +2,6 @@
 未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
     (setq package-selected-packages (append package-selected-packages '(smex
-                                                                        hungry-delete
                                                                         smartparens
                                                                         popwin
                                                                         reveal-in-osx-finder
@@ -15,12 +14,9 @@
                                                                         yasnippet
                                                                         imenu-list
                                                                         neotree
-                                                                        switch-buffer-functions
                                                                         auto-highlight-symbol
                                                                         json-mode
                                                                         simpleclip
-                                                                        switch-window
-                                                                        swap-buffers
                                                                         ggtags
                                                                         indent-guide
                                                                         xah-get-thing
@@ -48,11 +44,6 @@
           (package-install pkg))))
   #+END_SRC
 * 配置
-** hungry-delete
-自动删除行最后的空格。
-#+BEGIN_SRC emacs-lisp
-  (global-hungry-delete-mode t) ; hungry delete
-#+END_SRC
 ** smartparens
 自动匹配括号、引号等。
 #+BEGIN_SRC emacs-lisp
@@ -282,19 +273,19 @@ C-c o 打开当前文件所在的Finder;
     (advice-add 'evil-paste-before :before 'slegetank/current-kill-advice-function)
     (advice-add 'evil-paste-after :before 'slegetank/current-kill-advice-function))
 
-  (defun slegetank/simpleclip-select-paste ()
-    "Select the last paste string. Should call this ASAP after paste operation."
-    (interactive)
-    (when (and slegetank/simpleclip-last-paste-region
-               (consp slegetank/simpleclip-last-paste-region))
-      (let* ((p1 (car slegetank/simpleclip-last-paste-region))
-             (p2 (+ p1 (cdr slegetank/simpleclip-last-paste-region))))
-        (goto-char p1)
-        (push-mark p2)
-        (setq mark-active t))))
+  ;; (defun slegetank/simpleclip-select-paste ()
+  ;;   "Select the last paste string. Should call this ASAP after paste operation."
+  ;;   (interactive)
+  ;;   (when (and slegetank/simpleclip-last-paste-region
+  ;;              (consp slegetank/simpleclip-last-paste-region))
+  ;;     (let* ((p1 (car slegetank/simpleclip-last-paste-region))
+  ;;            (p2 (+ p1 (cdr slegetank/simpleclip-last-paste-region))))
+  ;;       (goto-char p1)
+  ;;       (push-mark p2)
+  ;;       (setq mark-active t))))
 
-  (slegetank/leader-define-key "gp" 'slegetank/simpleclip-select-paste "Select last paste word")
-  (evil-define-key 'normal global-map (kbd "gp") 'slegetank/simpleclip-select-paste)
+  ;; (slegetank/leader-define-key "gp" 'slegetank/simpleclip-select-paste "Select last paste word")
+  ;; (evil-define-key 'normal global-map (kbd "gp") 'slegetank/simpleclip-select-paste)
 #+END_SRC
 
 ** imenu-list
@@ -317,26 +308,6 @@ C-c o 打开当前文件所在的Finder;
   (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") 'imenu-list-quit-window)
   (evil-define-key 'normal imenu-list-major-mode-map (kbd "g") 'imenu-list-refresh)
 #+END_SRC
-** switch-window
-#+BEGIN_SRC emacs-lisp
-  (require 'switch-window)
-  (setq switch-window-shortcut-style 'qwerty)
-  (setq switch-window-qwerty-shortcuts
-        '("a" "s" "d" "f" "j" "k" "l" ";" "w" "e" "i" "o"))
-  (setq switch-window-increase 17)
-  (setq switch-window-multiple-frames t)
-  ;; (setq switch-window-shortcut-appearance 'asciiart)
-
-  (evil-leader/set-key
-    "wo" 'switch-window)
-#+END_SRC
-*** swap-buffers
-#+BEGIN_SRC emacs-lisp
-  (require 'swap-buffers)
-  (evil-leader/set-key
-    "wb" 'swap-buffers)
-#+END_SRC
-
 ** ggtags
 #+BEGIN_SRC emacs-lisp
   (add-hook 'c-mode-common-hook
@@ -368,14 +339,14 @@ http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
 #+END_SRC
 ** quickrun
 #+BEGIN_SRC emacs-lisp
-  (require 'quickrun)
-  (defun slegetank/quickrun ()
-    "Custom quickrun command"
-    (interactive) 
-    (if (region-active-p)
-        (call-interactively 'quickrun-region)
-      (call-interactively 'quickrun)))
+  ;; (require 'quickrun)
+  ;; (defun slegetank/quickrun ()
+  ;;   "Custom quickrun command"
+  ;;   (interactive) 
+  ;;   (if (region-active-p)
+  ;;       (call-interactively 'quickrun-region)
+  ;;     (call-interactively 'quickrun)))
 
-  (global-set-key (kbd "s-r") 'slegetank/quickrun)
-  (evil-define-key 'normal quickrun--mode-map (kbd "q") 'quit-window)
+  ;; (global-set-key (kbd "s-r") 'slegetank/quickrun)
+  ;; (evil-define-key 'normal quickrun--mode-map (kbd "q") 'quit-window)
 #+END_SRC

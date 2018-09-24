@@ -69,7 +69,7 @@
   (global-hl-line-mode 1)
 
   ;; 选中删除
-  (delete-selection-mode 1)
+  (delete-selection-mode t)
 
   ;; max size
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -98,8 +98,22 @@
 
   ;; narrow enable
   (put 'narrow-to-region 'disabled nil)
+  (put 'narrow-to-page 'disabled nil)
+  (put 'narrow-to-defun 'disabled nil)
 
   (setq isearch-forward t)
+
+  (setq blink-cursor-interval 0.4)
+
+  ;; modeline显示列号
+  (setq column-number-mode t)
+
+  ;; auto-revert
+  (add-hook 'after-init-hook 'global-auto-revert-mode)
+  (setq global-auto-revert-non-file-buffers t
+        auto-revert-verbose nil)
+
+  (add-hook 'after-init-hook 'global-prettify-symbols-mode)
 
   ;; 几个从陈斌那里拿过来的配置
   (setq use-dialog-box nil)
@@ -107,6 +121,25 @@
   (setq inhibit-startup-screen t)
   (setq inhibit-startup-echo-area-message t)
   (setq indicate-empty-lines t)
+
+  (add-hook 'prog-mode-hook 'goto-address-prog-mode)
+  (setq goto-address-mail-face 'link)
+#+END_SRC
+
+从purcell那里抓过来：
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+  (add-hook 'after-save-hook 'sanityinc/set-mode-for-new-scripts)
+
+  (defun sanityinc/set-mode-for-new-scripts ()
+    "Invoke `normal-mode' if this file is a script and in `fundamental-mode'."
+    (and
+     (eq major-mode 'fundamental-mode)
+     (>= (buffer-size) 2)
+     (save-restriction
+       (widen)
+       (string= "#!" (buffer-substring (point-min) (+ 2 (point-min)))))
+     (normal-mode)))
 #+END_SRC
 
 emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页之后cursor位置不变，则可以将其设为t
@@ -163,38 +196,16 @@ emacs 26 以上 insert-string 调整为insert
   (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 #+END_SRC
 
-** trailing space
-#+BEGIN_SRC emacs-lisp
-  ;; Show trailing whitespace
-  (require 'whitespace)
-  (setq-default show-trailing-whitespace t)
-#+END_SRC
-
-有些模式下不需要显示末尾的空格
-#+BEGIN_SRC emacs-lisp
-  (defun no-trailing-whitespace ()
-    (setq show-trailing-whitespace nil))
-
-  (setq no-trailing-modes '(minibuffer-setup-hook
-                            eww-mode-hook
-                            ielm-mode-hook
-                            gdb-mode-hook
-                            help-mode-hook
-                            artist-mode-hook
-                            term-mode-hook
-                            mu4e-view-mode-hook
-                            mu4e-org-mode-hook
-                            mu4e-main-mode-hook
-                            eshell-mode-hook))
-  (dolist (element no-trailing-modes nil)
-    (add-hook element 'no-trailing-whitespace))
-#+END_SRC
 ** recentf
 最近文件列表里只保存确实显示过的文件，来源[[https://www.emacswiki.org/emacs/RecentFiles][wiki]] ,因为有的插件会在后台访问文件，然后recentf-list就被这些文件充满了，而这不是我需要的。
 #+BEGIN_SRC emacs-lisp
   (require 'recentf)
   (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
   (recentf-mode 1)
+
+  (setq-default
+   recentf-max-saved-items 1000
+   recentf-exclude '("/tmp/" "/ssh:"))
 
   (defsubst file-was-visible-p (file)
     "Return non-nil if FILE's buffer exists and has been displayed."
@@ -206,9 +217,9 @@ emacs 26 以上 insert-string 调整为insert
   (let ((r-list recentf-list))
     (defsubst keep-default-old-and-visible-recentf-p (file)
       "Decide whether to keep file in recentf-list.
-    Return non-nil if recentf would, by default, keep FILE, and
-    either FILE name was loaded from recentf file on disk or FILE
-    has been displayed in this session."
+      Return non-nil if recentf would, by default, keep FILE, and
+      either FILE name was loaded from recentf file on disk or FILE
+      has been displayed in this session."
       (if (recentf-keep-default-predicate file)
           (or (member file r-list)
               (file-was-visible-p file)))))
@@ -222,6 +233,30 @@ emacs 26 以上 insert-string 调整为insert
   (require-package 'better-defaults)
   (require 'better-defaults)
 #+END_SRC
+
+** locales
+编码格式问题，从purcell处摘过来的
+#+BEGIN_SRC emacs-lisp
+  (defun sanityinc/utf8-locale-p (v)
+    "Return whether locale string V relates to a UTF-8 locale."
+    (and v (string-match "UTF-8" v)))
+
+  (defun sanityinc/locale-is-utf8-p ()
+    "Return t iff the \"locale\" command or environment variables prefer UTF-8."
+    (or (sanityinc/utf8-locale-p (and (executable-find "locale") (shell-command-to-string "locale")))
+        (sanityinc/utf8-locale-p (getenv "LC_ALL"))
+        (sanityinc/utf8-locale-p (getenv "LC_CTYPE"))
+        (sanityinc/utf8-locale-p (getenv "LANG"))))
+
+  (when (or window-system (sanityinc/locale-is-utf8-p))
+    (set-language-environment 'utf-8)
+    (setq locale-coding-system 'utf-8)
+    (set-default-coding-systems 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-selection-coding-system (if (eq system-type 'windows-nt) 'utf-16-le 'utf-8))
+    (prefer-coding-system 'utf-8))
+#+END_SRC
+
 * custom
 更好的方法：
 #+BEGIN_SRC emacs-lisp
@@ -231,6 +266,24 @@ emacs 26 以上 insert-string 调整为insert
         (xah-get-thing-at-point 'word)
       (thing-at-point 'word)))
 #+END_SRC
+* packages
+** mode-line-bell
+#+BEGIN_SRC emacs-lisp
+  (require-package 'mode-line-bell)
+  (add-hook 'after-init-hook 'mode-line-bell-mode)
+#+END_SRC
+** default-text-scale
+#+BEGIN_SRC emacs-lisp
+  (require-package 'default-text-scale)
+  (require 'default-text-scale)
+
+  (add-hook 'after-init-hook 'default-text-scale-mode)
+
+  (define-key default-text-scale-mode-map (kbd "s-=") 'default-text-scale-increase)
+  (define-key default-text-scale-mode-map (kbd "s--") 'default-text-scale-decrease)
+  (define-key default-text-scale-mode-map (kbd "s-0") 'default-text-scale-reset)
+#+END_SRC
+
 * TRAMP
 #+BEGIN_SRC emacs-lisp
   (require 'tramp)

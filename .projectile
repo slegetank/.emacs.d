@@ -1,0 +1,13 @@
+-/elpa/*
+-/pyim/*
+-/projectile.cache
+-/init/*.el
+-/projectile-bookmarks.eld
+-/history
+-/ido.last
+-/recentf
+-/anaconda/*
+-/anaconda-mode/*
+-/company-statistics-cache.el
+-/smex-items
+-/\#*

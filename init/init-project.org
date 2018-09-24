@@ -8,64 +8,69 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
   (counsel-projectile-mode)
   (setq projectile-require-project-root nil)
   (setq projectile-enable-caching t)
+  ;; (setq-default
+  ;;    projectile-mode-line
+  ;;    '(:eval
+  ;;      (if (file-remote-p default-directory)
+  ;;          " Proj"
+  ;;        (format " Proj[%s]" (projectile-project-name)))))
 #+END_SRC
-
 ** neotree
 工程浏览的侧边栏
 #+BEGIN_SRC emacs-lisp
-    (require-package 'neotree)
-    (require 'neotree)
-    (use-package neotree
-      :ensure t
-      :config
-      (evil-leader/set-key
-        "dn"  'custom-neotree-toggle-project-dir)
+  (require-package 'neotree)
+  (require 'neotree)
+  (use-package neotree
+    :ensure t
+    :config
+    (evil-leader/set-key
+      "dn"  'custom-neotree-toggle-project-dir)
 
-      (setq neo-smart-open t)
-      (setq neo-window-fixed-size nil)
-      (setq neo-force-change-root t)
-      (setq projectile-switch-project-action 'neotree-projectile-action)
+    (setq neo-smart-open t)
+    (setq neo-window-fixed-size nil)
+    (setq neo-force-change-root t)
+    (setq projectile-switch-project-action 'neotree-projectile-action)
 
-    (setq neo-hidden-regexp-list '("^\\." "\\.cs\\.meta$" "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "*_flymake.py$"))
+  (setq neo-hidden-regexp-list '("^\\." "\\.cs\\.meta$" "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "*_flymake.py$"))
 
-    (add-hook 'neotree-mode-hook
-              (lambda ()
-                (define-key evil-normal-state-local-map (kbd "<tab>") (neotree-make-executor :dir-fn 'neo-open-dir))
-                (define-key evil-normal-state-local-map (kbd "u") 'neotree-select-up-node)
-                (define-key evil-normal-state-local-map (kbd "v") 'neotree-quick-look)
-                (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
-                (define-key evil-normal-state-local-map (kbd "a") 'neotree-hidden-file-toggle)
-                (define-key evil-normal-state-local-map (kbd "]") 'neotree-stretch-toggle)
-                (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
-                (define-key evil-normal-state-local-map (kbd "r") 'neotree-rename-node)
-                (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
-                (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node)
-                (define-key evil-normal-state-local-map (kbd "o") (lambda () (interactive) (shell-command (format "open %s" (neo-buffer--get-filename-current-line)))))
-                (define-key evil-normal-state-local-map (kbd "s-j") 'neotree-select-next-sibling-node)
-                (define-key evil-normal-state-local-map (kbd "s-k") 'neotree-select-previous-sibling-node)
+  (add-hook 'neotree-mode-hook
+            (lambda ()
+              (define-key evil-normal-state-local-map (kbd "<tab>") (neotree-make-executor :dir-fn 'neo-open-dir))
+              (define-key evil-normal-state-local-map (kbd "u") 'neotree-select-up-node)
+              (define-key evil-normal-state-local-map (kbd "v") 'neotree-quick-look)
+              (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+              (define-key evil-normal-state-local-map (kbd "a") 'neotree-hidden-file-toggle)
+              (define-key evil-normal-state-local-map (kbd "]") 'neotree-stretch-toggle)
+              (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
+              (define-key evil-normal-state-local-map (kbd "r") 'neotree-rename-node)
+              (define-key evil-normal-state-local-map (kbd "c") 'neotree-create-node)
+              (define-key evil-normal-state-local-map (kbd "d") 'neotree-delete-node)
+              (define-key evil-normal-state-local-map (kbd "o") (lambda () (interactive) (shell-command (format "open %s" (neo-buffer--get-filename-current-line)))))
+              (define-key evil-normal-state-local-map (kbd "s-j") 'neotree-select-next-sibling-node)
+              (define-key evil-normal-state-local-map (kbd "s-k") 'neotree-select-previous-sibling-node)
 
-                (define-key evil-normal-state-local-map (kbd "<s-return>") 'neotree-enter-vertical-split)
+              (define-key evil-normal-state-local-map (kbd "<s-return>") 'neotree-enter-vertical-split)
 
-                (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter))))
+              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter))))
 
-    (use-package find-file-in-project :ensure t)
+  (use-package find-file-in-project :ensure t)
 
-    (defun custom-neotree-toggle-project-dir ()
-      "Open NeoTree using the git root. & show imenu"
-      (interactive)
-      ;; (imenu-list-smart-toggle)
-      (if (neo-global--window-exists-p)
-          (progn (neotree-hide)
-                 ;; (imenu-list-quit-window)
-                 )
-        (let ((project-dir (or (ffip-project-root) (file-name-directory (or (buffer-file-name) ""))))
-              (file-name (buffer-file-name)))
-          ;; (imenu-list-show)
-          (if project-dir
-              (progn
-                (neotree-dir project-dir)
-                (neotree-find file-name))
-            (message "Buffer is invalid.")))))
+  (defun custom-neotree-toggle-project-dir ()
+    "Open NeoTree using the git root. & show imenu"
+    (interactive)
+    ;; (imenu-list-smart-toggle)
+    (if (neo-global--window-exists-p)
+        (progn (neotree-hide)
+               ;; (imenu-list-quit-window)
+               )
+      (let ((project-dir (or (ffip-project-root) (file-name-directory (or (buffer-file-name) ""))))
+            (file-name (buffer-file-name)))
+        ;; (imenu-list-show)
+        (if project-dir
+            (progn
+              (neotree-dir project-dir)
+              (neotree-find file-name))
+          (message "Buffer is invalid.")))))
 #+END_SRC
 
 *** autorefresh

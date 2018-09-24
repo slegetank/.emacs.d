@@ -6,6 +6,12 @@ company - complete anything!
 
   (add-hook 'after-init-hook 'global-company-mode)
 
+  (setq tab-always-indent 'complete)
+  (add-to-list 'completion-styles 'initials t)
+
+  (setq-default company-dabbrev-other-buffers 'all
+                company-tooltip-align-annotations t)
+
   ;; https://github.com/company-mode/company-mode/issues/15
   (when (fboundp 'evil-declare-change-repeat)
     (mapc #'evil-declare-change-repeat

@@ -3,7 +3,9 @@ Make Emacs's keymap more convenient for me.
 
 manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
 
+* evil
 #+BEGIN_SRC emacs-lisp
+  (setq evil-want-integration nil)
   (require-package 'evil)
 #+END_SRC
 * which-key
@@ -72,16 +74,10 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "bk" 'kill-buffer "Kill buffer"
                                "bm" nil "Bookmark"
                                "bo" 'ivy-switch-buffer-other-window "Switch buffer in other window"
+                               "bB" 'ivy-switch-buffer-other-window "Switch buffer in other window"
                                "bmm" 'bookmark-set "Bookmark set"
                                "bml" 'bookmark-bmenu-list "Bookmark list"
                                "bmj" 'counsel-bookmark "Bookmark jump"
-                               "w" nil "Windows"
-                               "wh" (lambda () (interactive) (other-window -1)) "Previous window"
-                               "wl" (lambda () (interactive) (other-window 1)) "Previous window"
-                               "wk" 'delete-other-windows "Kill window"
-                               "ws" 'split-window-horizontally "Split window horizontally"
-                               "wv" 'split-window-vertically "Split window vertically"
-                               "wf" 'other-frame "Other frame"
                                "e" nil "elisp"
                                "er" 'eval-region "Eval region"
                                "eb" 'eval-buffer "Eval buffer"
@@ -97,7 +93,14 @@ M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
   (evil-define-key '(normal insert visual replace operator motion) 'global (kbd "C-z") 'undo-tree-undo)
 #+END_SRC
-
+* evil-collection
+#+BEGIN_SRC emacs-lisp
+  (require-package 'evil-collection)
+  (require 'evil-collection)
+  (setq evil-want-integration t)
+  (evil-collection-init)
+  ;; (evil-collection-init 'indium)
+#+END_SRC
 * evil-nerd-commenter
 注释
 #+BEGIN_SRC emacs-lisp

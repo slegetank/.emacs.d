@@ -1,0 +1,60 @@
+#+BEGIN_SRC emacs-lisp
+;;; -*- lexical-binding: t -*-
+
+  (slegetank/leader-define-key "w" nil "Windows"
+                               "wk" 'delete-other-windows "Kill window"
+                               "wf" 'other-frame "Other frame")
+#+END_SRC
+
+switch-window，多窗口切换解决方案：
+#+BEGIN_SRC emacs-lisp
+  (require-package 'switch-window)
+  (require 'switch-window)
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-qwerty-shortcuts
+        '("a" "s" "d" "f" "j" "k" "l" ";" "w" "e" "i" "o"))
+  (setq switch-window-increase 17)
+  ;; (setq switch-window-multiple-frames t)
+  ;; (setq switch-window-shortcut-appearance 'asciiart)
+
+  (evil-leader/set-key
+    "wo" 'switch-window)
+#+END_SRC
+
+分屏的时候，自动在新的window里执行other buffer
+#+BEGIN_SRC emacs-lisp
+  (defun split-window-func-with-other-buffer (split-function)
+    (lambda (&optional arg)
+      "Split this window and switch to the new window unless ARG is provided."
+      (interactive "P")
+      (funcall split-function)
+      (let ((target-window (next-window)))
+        (set-window-buffer target-window (other-buffer))
+        (unless arg
+          (select-window target-window)))))
+
+  (slegetank/leader-define-key "wv"  (split-window-func-with-other-buffer 'split-window-vertically) "Split horizontally"
+                               "ws" (split-window-func-with-other-buffer 'split-window-horizontally) "Split vertically")
+#+END_SRC
+
+swap buffer to other window
+#+BEGIN_SRC emacs-lisp
+  (require-package 'swap-buffers)
+  (require 'swap-buffers)
+  (slegetank/leader-define-key "wb" 'swap-buffers "Swap buffers to another window")
+#+END_SRC
+
+当前窗口一直可见：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/toggle-current-window-dedication ()
+    "Toggle whether the current window is dedicated to its current buffer."
+    (interactive)
+    (let* ((window (selected-window))
+           (was-dedicated (window-dedicated-p window)))
+      (set-window-dedicated-p window (not was-dedicated))
+      (message "Window %sdedicated to %s"
+               (if was-dedicated "no longer " "")
+               (buffer-name))))
+
+  (slegetank/leader-define-key (kbd "wd") 'slegetank/toggle-current-window-dedication "Toggle window dedication")
+#+END_SRC

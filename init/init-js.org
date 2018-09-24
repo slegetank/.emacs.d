@@ -27,13 +27,27 @@
     (font-lock-flush))
 
   (add-hook 'web-mode-hook 'xah-syntax-color-hex)
-  (add-hook 'rjsx-mode-hook 'xah-syntax-color-hex)
+  (add-hook 'js-mode-hook 'xah-syntax-color-hex)
 #+END_SRC
 * packages
 #+BEGIN_SRC emacs-lisp
   (require-package 'js2-mode)
   ;; (require-package 'simple-httpd)
   (setq js2-strict-trailing-comma-warning nil)
+#+END_SRC
+* indium
+npm install -g indium
+
+#+BEGIN_SRC emacs-lisp
+  (require-package 'indium)
+  (require 'indium)
+
+  (defun setup-indium ()
+    (local-set-key (kbd "s-\\") 'indium-toggle-breakpoint)
+    (indium-interaction-mode)
+    (add-to-list 'evil-emacs-state-modes 'indium-debugger-mode))
+
+  (add-hook 'js2-mode-hook 'setup-indium)
 #+END_SRC
 * tide
 #+BEGIN_SRC emacs-lisp
@@ -53,7 +67,7 @@
     ;; use prettier-js instead
     ;; (add-hook 'before-save-hook 'tide-format-before-save)
 
-    (flycheck-add-mode 'javascript-eslint 'rjsx-mode)
+    (flycheck-add-mode 'javascript-eslint 'js-mode)
     (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append)
 
     ;; keys
@@ -66,8 +80,7 @@
     ;; (evil-define-key 'normal tide-mode-map (kbd "M-s-/") 'tide-jsdoc-template)
     ;; (evil-define-key 'normal tide-mode-map (kbd "M-s-÷") 'tide-jsdoc-template)
 
-    (
-     add-hook 'rjsx-mode-hook
+    (add-hook 'js-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-backends)
                      '(
@@ -77,7 +90,7 @@
                        company-files
                        company-yasnippet)))))
 
-  (add-hook 'rjsx-mode-hook #'setup-tide-mode)
+  (add-hook 'js-mode-hook #'setup-tide-mode)
 #+END_SRC
 
 tsserver返回的消息有时太长，忽略太长的minibuffer信息：
@@ -112,6 +125,29 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
 
   ;; jsx缩进4
   (setq sgml-basic-offset 4)
+
+  (defun my-js-config ()
+    (local-set-key (kbd "<S-tab>") 'js2-mode-toggle-hide-functions)
+    (evil-define-key 'normal rjsx-mode-map (kbd "<tab>") 'js2-mode-toggle-element))
+
+  (add-hook 'rjsx-mode-hook 'my-js-config)
+#+END_SRC
+* js-jsx-mode
+# 暂时放弃原生的，非继承js2，不是很方便
+# 高亮也不好
+#+BEGIN_SRC emacs-lisp
+  ;; (add-to-list 'auto-mode-alist '("\\.js$" . js-jsx-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.jsx$" . js-jsx-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.ts$" . js-jsx-mode))
+
+  ;; ;; jsx缩进4
+  ;; (setq sgml-basic-offset 4)
+
+  ;; (defun my-js-config ()
+  ;;   (local-set-key (kbd "<S-tab>") 'js2-mode-toggle-hide-functions)
+  ;;   (evil-define-key 'normal js-mode-map (kbd "<tab>") 'js2-mode-toggle-element))
+
+  ;; (add-hook 'js-mode-hook 'my-js-config)
 #+END_SRC
 
 * web-mode
@@ -138,14 +174,14 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
 #+BEGIN_SRC emacs-lisp
   (require-package 'emmet-mode)
   (add-hook 'web-mode-hook 'emmet-mode)
-  (add-hook 'rjsx-mode-hook 'emmet-mode)
+  (add-hook 'js-mode-hook 'emmet-mode)
 #+END_SRC
 * prettier-js
 #+BEGIN_SRC emacs-lisp
   (require-package 'prettier-js)
   (add-hook 'js2-mode-hook 'prettier-js-mode)
   ;; (add-hook 'web-mode-hook 'prettier-js-mode)
-  (add-hook 'rjsx-mode-hook 'prettier-js-mode)
+  (add-hook 'js-mode-hook 'prettier-js-mode)
   (setq prettier-js-args '(
                            "--trailing-comma" "all"
                            "--bracket-spacing" "false"
@@ -157,7 +193,7 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
     (if (buffer-file-name)
         (if (string-match (car my-pair) buffer-file-name)
             (funcall (cdr my-pair)))))
-  (add-hook 'rjsx-mode-hook #'(lambda ()
+  (add-hook 'js-mode-hook #'(lambda ()
                                (enable-minor-mode
                                 '("\\.js?\\'" . prettier-js-mode))))
 #+END_SRC

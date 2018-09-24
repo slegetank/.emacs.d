@@ -18,7 +18,8 @@ better defaults
 
 忽略文件:
 #+BEGIN_SRC emacs-lisp
-  (setq-default dired-omit-files-p t)
+  (setq dired-omit-files-p t)
+  (setq dired-omit-verbose nil)
   (setq dired-omit-files
         (concat dired-omit-files "\\.pyc$\\|.DS_Store"))
 #+END_SRC
@@ -56,14 +57,10 @@ dired会被加入recentf-list:
   ;; only use one buffer
   (diredp-toggle-find-file-reuse-dir 1)
 #+END_SRC
-** diryed-icon
+** dired-filetype-face
 #+BEGIN_SRC emacs-lisp
-  ;; (add-hook 'dired-mode-hook 'dired-icon-mode)
-#+END_SRC
-** diredful
-#+BEGIN_SRC emacs-lisp
-  (require-package 'diredful)
-  (diredful-mode 1)
+  (require-package 'dired-filetype-face)
+  (require 'dired-filetype-face)
 #+END_SRC
 ** stripe-buffer
 #+BEGIN_SRC emacs-lisp
@@ -83,30 +80,36 @@ dired会被加入recentf-list:
   ;;   ;; (define-key (cdr ido-minor-mode-map-entry) [remap dired] nil) ;in ido-setup-hook
   ;;   (define-key dired-mode-map "," 'dired))
 #+END_SRC
+** direfl
+#+BEGIN_SRC emacs-lisp
+  (require-package 'diredfl)
+  (with-eval-after-load 'dired (diredfl-global-mode))
+#+END_SRC
+
+* diff-hl
+#+BEGIN_SRC emacs-lisp
+  (require-package 'diff-hl)
+  (with-eval-after-load 'dired (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
+#+END_SRC
 
 * Inside
 #+BEGIN_SRC emacs-lisp
-    (defun custom-dired-open-file-with-osx ()
-      "In Dired, try to open files by osx"
-      (interactive)
-      (shell-command (format "open \"%s\"" (dired-get-file-for-visit))))
+  (defun custom-dired-open-file-with-osx ()
+    "In Dired, try to open files by osx"
+    (interactive)
+    (shell-command (format "open \"%s\"" (dired-get-file-for-visit))))
 
-    (defun custom-dired-temp-hide-files ()
-      "Hide marked files temporary."
-      (interactive)
-      (make-local-variable 'dired-omit-files)
-      (dolist (item (dired-get-marked-files))
-        (setq dired-omit-files
-              (concat dired-omit-files (format "\\|%s" (file-name-nondirectory item)))))
-      (dired-unmark-all-marks)
-      (revert-buffer))
+  (defun custom-dired-temp-hide-files ()
+    "Hide marked files temporary."
+    (interactive)
+    (make-local-variable 'dired-omit-files)
+    (dolist (item (dired-get-marked-files))
+      (setq dired-omit-files
+            (concat dired-omit-files (format "\\|%s" (file-name-nondirectory item)))))
+    (dired-unmark-all-marks)
+    (revert-buffer))
 
-    (define-key dired-mode-map (kbd "H") 'custom-dired-temp-hide-files)
-    (define-key dired-mode-map (kbd "O") 'custom-dired-open-file-with-osx)
-    (define-key dired-mode-map (kbd "V") nil)
-    (define-key dired-mode-map (kbd "e") 'wdired-change-to-wdired-mode)
-
-    (add-hook 'view-mode-hook '(lambda () (evil-define-key 'normal view-mode-map (kbd "q") 'View-quit)))
+  ;; (add-hook 'view-mode-hook '(lambda () (evil-define-key 'normal view-mode-map (kbd "q") 'View-quit)))
 
 #+END_SRC
 ** sort
@@ -152,8 +155,11 @@ dired会被加入recentf-list:
       (dired-sort-other (car (car (nthcdr nextpos custom-dired-sort-seq-list))))
       (message "SORTBY - \"%s\"" (cdr (car (nthcdr nextpos custom-dired-sort-seq-list))))))
 
-  (define-key dired-mode-map (kbd "s") 'custom-dired-sort-next)
-
+  (add-hook 'dired-mode-hook (lambda ()
+                               (evil-define-key '(motion normal) 'dired-mode-map (kbd "e") 'wdired-change-to-wdired-mode)
+                               (evil-define-key '(motion normal) 'dired-mode-map (kbd "H") 'custom-dired-temp-hide-files)
+                               (evil-define-key '(motion normal) 'dired-mode-map (kbd "O") 'custom-dired-open-file-with-osx)
+                               (evil-define-key '(motion normal) 'dired-mode-map (kbd "s") 'custom-dired-sort-next)))
 #+END_SRC
 ** copy recent
 #+BEGIN_SRC emacs-lisp

@@ -1,0 +1,166 @@
+https://github.com/abo-abo/swiper
+ivy是强大的查找文件、搜索代码、执行命令的补全工具。
+* ivy
+#+BEGIN_SRC emacs-lisp
+  (require-package 'ivy)
+  (ivy-mode 1)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "C-h a") 'counsel-apropos)
+
+  ;; ignore candidate
+  (define-key ivy-minibuffer-map (kbd "s-<return>") 'ivy-immediate-done)
+  (define-key ivy-minibuffer-map (kbd "RET") #'ivy-alt-done)
+
+  (setq-default ivy-use-virtual-buffers t
+                ivy-virtual-abbreviate 'fullpath
+                ivy-count-format ""
+                projectile-completion-system 'ivy
+                ivy-magic-tilde nil
+                ivy-dynamic-exhibit-delay-ms 150
+                ivy-initial-inputs-alist
+                '((man . "^")
+                  (woman . "^")))
+#+END_SRC
+* swiper
+swiper提供了更优美的单文件搜索功能，支持正则：
+#+BEGIN_SRC emacs-lisp
+  (require-package 'swiper)
+  (require'swiper)
+
+  (setq counsel-find-file-at-point t)
+  (setq enable-recursive-minibuffers t)
+  (setq ivy-display-style 'fancy)
+  (setq ivy-initial-inputs-alist nil)
+
+  (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
+  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line-or-history)
+#+END_SRC
+
+swiper还提供了询问替换的功能，y替换，n不变，!全部替换:
+#+BEGIN_SRC emacs-lisp
+  (define-key swiper-map (kbd "s-r") 'swiper-query-replace)
+#+END_SRC
+** evil-mc + swiper
+swiper搜索，给结果加上cursor
+#+BEGIN_SRC emacs-lisp
+  (setq slegetank/temp-swiper-cands nil)
+
+  (defun slegetank/swiper-evil-mc ()
+    "Create a fake cursor for each `swiper' candidate."
+    (interactive)
+    (unless (require 'evil-mc nil t)
+      (error "Evil-mc isn't installed"))
+    (unless (window-minibuffer-p)
+      (error "Call me only from `swiper'"))
+    (setq slegetank/temp-swiper-cands (nreverse ivy--old-cands))
+    (unless (string= ivy-text "")
+      (ivy-exit-with-action
+       (lambda (_)
+         (evil-mc-mode 1)
+         (let (cand)
+           (while (setq cand (pop slegetank/temp-swiper-cands))
+             (swiper--action cand)
+             (when slegetank/temp-swiper-cands
+               (evil-mc-make-cursor-here))))))))
+
+  (define-key ivy-minibuffer-map (kbd "s-m") 'slegetank/swiper-evil-mc)
+#+END_SRC
+
+* edit
+swiper+wgrep or counsel+wgrep 可以实现对单文件以及工程内文件的替换、编辑：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/ivy-occur-edit ()
+    (interactive)
+    "Easier way to edit occur buffer"
+    (dolist (buffer (buffer-list))
+      (let ((name (buffer-name buffer)))
+        (when (and (get-buffer-window name 'visible)
+                   (string-match "^\\*ivy-occur " name))
+          (with-current-buffer buffer
+            ;; (ivy-wgrep-change-to-wgrep-mode)
+
+            (evil-define-key 'normal wgrep-mode-map (kbd "q") (lambda ()
+                                                                (interactive)
+                                                                (wgrep-exit)
+                                                                (kill-buffer)
+                                                                (delete-window (selected-window))))
+            (define-key wgrep-mode-map (kbd "C-c C-c") (lambda ()
+                                                         (interactive)
+                                                         (wgrep-finish-edit)
+                                                         (kill-buffer)
+                                                         (delete-window (selected-window))))
+            (define-key wgrep-mode-map (kbd "C-c C-k") (lambda ()
+                                                         (interactive)
+                                                         (wgrep-abort-changes)
+                                                         (kill-buffer)
+                                                         (delete-window (selected-window))))
+            (setq-local
+             header-line-format
+             (substitute-command-keys
+              " [m]-match, [x]-exclude, [e]-edit, [q]-quit"))
+            (evil-normal-state))))))
+
+  (add-hook 'ivy-occur-grep-mode-hook (lambda () (interactive)
+                                        (run-with-timer 0.1 nil 'slegetank/ivy-occur-edit)))
+
+  (define-key ivy-mode-map (kbd "s-o") 'ivy-occur)
+#+END_SRC
+
+* mark-ring
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/counsel-mark-ring ()
+    "Browse `mark-ring' interactively.
+  Obeys `widen-automatically', which see."
+    (interactive)
+    (let ((cands
+           (reverse (save-excursion
+             (save-restriction
+               ;; Widen, both to save `line-number-at-pos' the trouble
+               ;; and for `buffer-substring' to work.
+               (widen)
+               (let ((fmt (format "%%%dd %%s"
+                                  (length (number-to-string
+                                           (line-number-at-pos (point-max)))))))
+                 (mapcar (lambda (mark)
+                           (goto-char (marker-position mark))
+                           (let ((linum (line-number-at-pos))
+                                 (line  (buffer-substring
+                                         (line-beginning-position)
+                                         (line-end-position))))
+                             (cons (format fmt linum line) (point))))
+                         (sort (delete-dups (copy-sequence mark-ring)) #'<))))))))
+      (if cands
+          (ivy-read "Mark: " cands
+                    :require-match t
+                    :action (lambda (cand)
+                              (let ((pos (cdr-safe cand)))
+                                (when pos
+                                  (unless (<= (point-min) pos (point-max))
+                                    (if widen-automatically
+                                        (widen)
+                                      (error "\
+  Position of selected mark outside accessible part of buffer")))
+                                  (goto-char pos))))
+                    :caller 'counsel-mark-ring)
+        (message "Mark ring is empty"))))
+
+  (global-set-key (kbd "s-,") 'slegetank/counsel-mark-ring)
+#+END_SRC
+* flx
+Better indistinct search:
+1. 词头
+2. 连续的字母
+
+#+BEGIN_SRC emacs-lisp
+  ;; (require-package 'flx)
+
+  ;; (setq ivy-re-builders-alist
+  ;;       '((t . ivy--regex-fuzzy)))
+#+END_SRC
+
+* ivy-historian
+搜索结果缓存至本地，更好的搜索排序
+#+BEGIN_SRC emacs-lisp
+  (require-package 'ivy-historian)
+  (add-hook 'after-init-hook (lambda () (ivy-historian-mode t)))
+#+END_SRC

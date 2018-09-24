@@ -1,4 +1,12 @@
-* magit
+* default
+#+BEGIN_SRC emacs-lisp
+  (require-package 'git-blamed)
+  (require-package 'gitignore-mode)
+  (require-package 'gitconfig-mode)
+#+END_SRC
+
+* packages
+** magit
 #+BEGIN_SRC emacs-lisp
   (require-package 'magit)
   (require-package 'evil-magit)
@@ -7,14 +15,26 @@
   ;; large file slow
   (setq magit-commit-show-diff nil)
 
+  (setq-default magit-diff-refine-hunk t)
+
   (evil-leader/set-key
     "gs" 'magit-status
     "gm" 'magit-dispatch-popup)
+
+  ;; url可点击
+  (add-hook 'git-commit-mode-hook 'goto-address-mode)
 #+END_SRC
-* git-gutter
+** git-gutter
 #+BEGIN_SRC emacs-lisp
   (require-package 'git-gutter)
   (global-git-gutter-mode +1)
+#+END_SRC
+
+** git-messenger
+#+BEGIN_SRC emacs-lisp
+  (require-package 'git-messenger)
+  (setq git-messenger:show-detail t)
+  (slegetank/leader-define-key "gl" 'git-messenger:popup-message "Show last git commit of this line.")
 #+END_SRC
 
 * smerge
