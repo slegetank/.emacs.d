@@ -1,4 +1,4 @@
-(setq load-path (cons (expand-file-name "init" user-emacs-directory) load-path))
+(setq load-path (cons (expand-file-name "utility" user-emacs-directory) load-path))
 (require 'init-utility)
 
 ;; 暂时去掉
