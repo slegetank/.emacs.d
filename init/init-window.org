@@ -33,15 +33,15 @@ switch-window，多窗口切换解决方案：
         (unless arg
           (select-window target-window)))))
 
-  (slegetank/leader-define-key "wv"  (split-window-func-with-other-buffer 'split-window-vertically) "Split horizontally"
-                               "ws" (split-window-func-with-other-buffer 'split-window-horizontally) "Split vertically")
+  (slegetank/leader-define-key "wv"  (split-window-func-with-other-buffer 'split-window-vertically) "Split vertically"
+                               "wh" (split-window-func-with-other-buffer 'split-window-horizontally) "Split horizontally")
 #+END_SRC
 
 swap buffer to other window
 #+BEGIN_SRC emacs-lisp
   (require-package 'swap-buffers)
   (require 'swap-buffers)
-  (slegetank/leader-define-key "wb" 'swap-buffers "Swap buffers to another window")
+  (slegetank/leader-define-key "ws" 'swap-buffers "Swap buffers to another window")
 #+END_SRC
 
 当前窗口一直可见：

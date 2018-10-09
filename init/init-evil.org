@@ -97,10 +97,9 @@ M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
   ;; (require-package 'evil-collection)
   ;; (require 'evil-collection)
-  ;; (setq evil-want-integration t)
-  ;; (evil-collection-init)
+  ;; ;; (evil-collection-init)
 
-  ;; (evil-collection-init 'indium)
+  ;; (evil-collection-init 'notmuch)
 #+END_SRC
 * evil-nerd-commenter
 注释

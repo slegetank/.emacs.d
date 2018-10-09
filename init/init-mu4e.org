@@ -125,7 +125,7 @@ header list时间戳：
 自定义不同thread的不同背景色，更好的显示：
 #+BEGIN_SRC emacs-lisp
   (defface custom-mu4e~single-background-face
-    '((t :background "#969896"
+    '((t :background "#A58458"
          ))
     "face for line which thread is single number")
 
@@ -224,12 +224,12 @@ headers view列表域及其宽度，nil表示无限制：
         (mu4e-headers-mark-for-unread))))
 
   (add-hook 'mu4e-headers-mode-hook (lambda ()
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "F") 'mu4e-compose-forward)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "!") 'custom-mu4e-headers-toggle-flag)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "*") 'custom-mu4e-headers-toggle-read)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "E") 'mu4e-compose-edit)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "C-n") 'mu4e-headers-next-unread)
-                                      (evil-define-key 'motion mu4e-headers-mode-map (kbd "C-p") 'mu4e-headers-prev-unread)
+                                      (evil-define-key '(motion normal) mu4e-headers-mode-map (kbd "F") 'mu4e-compose-forward)
+                                      (evil-define-key '(motion normal) mu4e-headers-mode-map (kbd "!") 'custom-mu4e-headers-toggle-flag)
+                                      (evil-define-key '(motion normal) mu4e-headers-mode-map (kbd "*") 'custom-mu4e-headers-toggle-read)
+                                      (evil-define-key '(motion normal) mu4e-headers-mode-map (kbd "E") 'mu4e-compose-edit)
+                                      (evil-define-key '(motion normal) mu4e-headers-mode-map (kbd "C-n") 'mu4e-headers-next-unread)
+                                      (evil-define-key '(motion normal) mu4e-headers-mode-map (kbd "C-p") 'mu4e-headers-prev-unread)
                                       ))
 #+END_SRC
 

@@ -3,7 +3,7 @@
 * Default
 #+BEGIN_SRC emacs-lisp
   (when (>= emacs-major-version 26)
-    (pixel-scroll-mode)
+    ;; (pixel-scroll-mode)
     (when (equal system-type 'darwin)
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . dark))))
