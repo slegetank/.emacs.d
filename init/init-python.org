@@ -99,7 +99,8 @@
     "Config for python."
     (local-set-key (kbd "s-\\") 'slegetank/add-py-breakpoint)
     (slegetank/python-decide-breakpoint)
-    (highlight-lines-matching-regexp (format "^[ ]*%s" slegetank/python-breakpoint)))
+    (highlight-lines-matching-regexp (format "^[ ]*%s" slegetank/python-breakpoint))
+    (local-set-key (kbd "<backspace>") 'python-indent-dedent-line-backspace))
 
   (add-hook 'python-mode-hook 'slegetank/python-config)
 #+END_SRC
