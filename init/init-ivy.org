@@ -31,7 +31,7 @@ swiper提供了更优美的单文件搜索功能，支持正则：
   (setq ivy-initial-inputs-alist nil)
 
   (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line-or-history)
+  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
 #+END_SRC
 
 swiper还提供了询问替换的功能，y替换，n不变，!全部替换:

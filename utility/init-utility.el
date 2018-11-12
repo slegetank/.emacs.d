@@ -41,4 +41,22 @@
   ""
   (* 1000.0 (float-time (time-subtract b a))))
 
+(defun slegetank/dump-var-to-file (var filepath)
+  "Dump var to file."
+  (save-excursion
+    (let ((buf (find-file-noselect filepath)))
+      (set-buffer buf)
+      (erase-buffer)
+      (prin1 var buf)
+      (save-buffer)
+      (kill-buffer))))
+
+(defun slegetank/read-var-from-file (filePath)
+  "Read var from file."
+  (if (file-exists-p filePath)
+      (read (with-temp-buffer
+              (insert-file-contents filePath)
+              (buffer-string)))
+    '()))
+
 (provide 'init-utility)

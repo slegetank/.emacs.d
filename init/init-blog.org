@@ -114,6 +114,7 @@
 #+BEGIN_SRC emacs-lisp
   (defun my-blog-get-custom-property (file)
     "获得每篇博客的自定义属性"
+    (message "hello %s" file)
     (let* ((org-inhibit-startup t)
            (tempbuffer (find-file file))
            (preview-str "")
@@ -151,19 +152,27 @@
     (let* ((files (directory-files (concat my-blog-post-base "/blog/") t ".org$"))
            (postdir (file-name-as-directory my-blog-post-base))
            file
-           (infolist '()))
+           (infolist '())
+           (cache-properties (slegetank/read-var-from-file (concat my-blog-post-base "/cache-properties"))))
       (while (setq file (pop files))
-        (message file)
         (unless (or (s-ends-with? "index.org" (file-truename file)) (s-ends-with? "archive.org" (file-truename file)) (s-ends-with? "tag.org" (file-truename file)))
           (let ((link (file-relative-name file (file-name-as-directory
-                                                (expand-file-name (file-name-as-directory postdir))))))
-            (let* ((properties (my-blog-get-custom-property file))
-
+                                                (expand-file-name (file-name-as-directory postdir)))))
+                (cache-property (car (alist-get (file-name-nondirectory file) cache-properties nil nil 'equal))))
+            (let* ((properties (or cache-property (my-blog-get-custom-property file)))
                    (title (cdr (assoc "title" properties)))
                    (date (cdr (assoc "date" properties)))
                    (preview (cdr (assoc "preview" properties)))
-                   (type (cdr (assoc "type" properties))))
-              (setq infolist (cons `(("link" . ,(or link "")) ("title" . ,(or title "")) ("date" . ,(or date "")) ("preview" . ,(or preview "")) ("type" . ,(or type ""))) infolist))))))
+                   (type (cdr (assoc "type" properties)))
+                   (cache-md5 (cdr (assoc "md5" properties)))
+                   (md5 (substring (shell-command-to-string (format "md5 -q %s" file)) 0 -1))
+                   (content `(("link" . ,(or link "")) ("title" . ,(or title "")) ("date" . ,(or date "")) ("preview" . ,(or preview "")) ("type" . ,(or type "")) ("md5" . ,md5))))
+              (if (not cache-property)
+                  (add-to-list 'cache-properties `(,(file-name-nondirectory file) . ,(list content)))
+                (unless (equal cache-md5 md5)
+                  (setf cache-property (list content))))
+              (setq infolist (cons content infolist))))))
+      (slegetank/dump-var-to-file cache-properties (concat my-blog-post-base "/cache-properties"))
       infolist))
 #+END_SRC
 

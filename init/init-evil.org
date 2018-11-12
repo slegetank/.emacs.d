@@ -75,6 +75,7 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "bm" nil "Bookmark"
                                "bo" 'ivy-switch-buffer-other-window "Switch buffer in other window"
                                "bB" 'ivy-switch-buffer-other-window "Switch buffer in other window"
+                               "bc" 'slegetank/clear-message-buffer "Clear message buffer"
                                "bmm" 'bookmark-set "Bookmark set"
                                "bml" 'bookmark-bmenu-list "Bookmark list"
                                "bmj" 'counsel-bookmark "Bookmark jump"

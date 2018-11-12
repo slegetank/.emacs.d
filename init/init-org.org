@@ -27,6 +27,9 @@
         (defun my-org-confirm-babel-evaluate (lang body)
           (not (string= lang "ditaa"))) ; don't ask for ditaa
         (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)))
+
+    ;; for confluence
+    (require 'ox-confluence)
   #+END_SRC
 ** bullets
 #+BEGIN_SRC emacs-lisp
@@ -256,6 +259,13 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
 ** org-tree-slide
 #+BEGIN_SRC emacs-lisp
   (require-package 'org-tree-slide)
+#+END_SRC
+** atomic-chrome
+#+BEGIN_SRC emacs-lisp
+  (require-package 'atomic-chrome)
+  (require 'atomic-chrome)
+  (setq atomic-chrome-buffer-open-style 'frame)
+  (atomic-chrome-start-server)
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp

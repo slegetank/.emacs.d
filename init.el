@@ -65,3 +65,4 @@
 ;; (find-file "~/.emacs.d/initpage.org")
 (put 'upcase-region 'disabled nil)
 
+(put 'erase-buffer 'disabled nil)

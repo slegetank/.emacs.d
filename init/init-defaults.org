@@ -72,7 +72,7 @@
   (delete-selection-mode t)
 
   ;; max size
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  ;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
   ;; 更改光标的样式
   (setq-default cursor-type 'bar)
@@ -283,10 +283,109 @@ emacs 26 以上 insert-string 调整为insert
 
   (setq tramp-default-method "sshx")
 #+END_SRC
+
+修复linux使用adb的bug：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/fix-tramp-adb-get-ls-command (orig-fun &rest args)
+    "Fix `tramp-adb-get-ls-command' for send ls command"
+    (let ((command (apply orig-fun args)))
+      (if (equal command "ls --color=never")
+          "ls -1 --color=never"
+        command)))
+
+  (advice-add 'tramp-adb-get-ls-command :around #'slegetank/fix-tramp-adb-get-ls-command)
+
+  (defun slegetank/fix-tramp-adb-send-command (orig-fun &rest args)
+    "Fix `tramp-adb-send-command' for parse ls -l"
+    (let* ((vec (car args))
+           (command (cadr args))
+           result)
+      (when (s-contains? "-l" command)
+        (setq command (s-replace "-1" "-e" command)))
+      (setq result (apply orig-fun `(,vec ,command)))
+      (with-current-buffer (tramp-get-connection-buffer vec)
+        (save-excursion
+          ;; remove \n in command if exist
+          (goto-char (point-min))
+          (let* ((first-line-end (search-forward "\n" nil :noerror))
+                 (first-line (buffer-substring-no-properties 1 (- first-line-end 1))))
+            (when (and (> (length first-line) 2) (s-starts-with? first-line command))
+              (replace-match "")))
+
+          ;; remove command if exist
+          (goto-char (point-min))
+          (when (search-forward (format "%s\n" command) nil :noerror)
+            (replace-match ""))
+
+          ;; format ls result to Android
+          (goto-char (point-min))
+          (when (re-search-forward slegetank/tramp-adb-ls-toolbox-regexp nil t)
+            (let* ((mod-string (match-string 1))
+                   (is-dir (eq ?d (aref mod-string 0)))
+                   (links (match-string 2))
+                   (uid (match-string 3))
+                   (gid (match-string 4))
+                   (size (string-to-number (match-string 5)))
+                   (date (format-time-string "%Y-%m-%d %H:%M" (date-to-time (match-string 6))))
+                   (name (match-string 7)))
+              (replace-match (format "%s %s %s %s %s %s %s" mod-string links uid gid size date name))))
+
+          ;; advice -a -1 result
+          (when (and (s-contains? "-a" command) (not (s-starts-with? "\n" (buffer-string))))
+            (goto-char (point-min))
+            (insert "\n"))
+          result))))
+
+  (advice-add 'tramp-adb-send-command :around #'slegetank/fix-tramp-adb-send-command)
+
+  (defun slegetank/fix-tramp-do-parse-file-attributes-with-ls (orig-fun &rest args)
+    "Fix `tramp-do-parse-file-attributes-with-ls' for parse Linux ls -a"
+    (let ((vec (car args)))
+      (with-current-buffer (tramp-get-buffer vec)
+        (goto-char (point-min))
+        (while (re-search-forward slegetank/tramp-adb-ls-toolbox-regexp nil t)
+          (let* ((mod-string (match-string 1))
+                 (is-dir (eq ?d (aref mod-string 0)))
+                 (links (match-string 2))
+                 (uid (match-string 3))
+                 (gid (match-string 4))
+                 (size (string-to-number (match-string 5)))
+                 (date (format-time-string "%Y-%m-%d %H:%M" (date-to-time (match-string 6))))
+                 (name (match-string 7)))
+            (replace-match (format "%s %s %s %s %s %s %s" mod-string links uid gid size date name))))))
+    (apply orig-fun args))
+
+  (advice-add 'tramp-do-parse-file-attributes-with-ls :around #'slegetank/fix-tramp-do-parse-file-attributes-with-ls)
+
+  (defconst slegetank/tramp-adb-ls-toolbox-regexp
+    (concat
+     "^[[:space:]]*\\([-[:alpha:]]+\\)" 	; \1 permissions
+     "[[:space:]]+\\([[:digit:]]+\\)"	        ; \2 links (Android 7/toybox)
+     "[[:space:]]*\\([^[:space:]]+\\)"	; \3 username
+     "[[:space:]]+\\([^[:space:]]+\\)"	; \4 group
+     "[[:space:]]+\\([[:digit:]]+\\)"	        ; \5 size
+     "[[:space:]]+\\([[:alpha:]]+[[:space:]][[:alpha:]]+[[:space:]]+[[:digit:]]+[[:space:]][:[:digit:]]+[[:space:]][[:digit:]]+\\)" ; \6 date
+     "[[:space:]]\\(.*\\)$")		; \7 filename
+    "Regexp for ls output.")
+#+END_SRC
 * bookmark+
 #+BEGIN_SRC emacs-lisp
   ;;(add-to-list 'load-path (expand-file-name "bookmark-plus" user-emacs-directory))
   ;;(require 'bookmark+)
+#+END_SRC
+* message buffer
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/clear-message-buffer ()
+    "Clear message buffer."
+    (interactive)
+    (dolist (buffer (buffer-list))
+      (let ((name (buffer-name buffer)))
+        (when (and (get-buffer-window name 'visible)
+                   (string-match "*Messages*" name))
+          (with-current-buffer buffer
+            (read-only-mode -1)
+            (erase-buffer)
+            (read-only-mode +1))))))
 #+END_SRC
 * w3m
 #+BEGIN_SRC emacs-lisp

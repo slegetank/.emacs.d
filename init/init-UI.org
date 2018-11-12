@@ -67,9 +67,9 @@ mac下更好的鼠标滚动：
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config)
 
-  (require-package 'doom-modeline)
-  (require 'doom-modeline)
-  (doom-modeline-init)
+  ;; (require-package 'doom-modeline)
+  ;; (require 'doom-modeline)
+  ;; (doom-modeline-init)
 #+END_SRC
 
 * smart-mode-line
