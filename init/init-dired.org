@@ -106,6 +106,7 @@ dired会被加入recentf-list:
     (dolist (item (dired-get-marked-files))
       (setq dired-omit-files
             (concat dired-omit-files (format "\\|%s" (file-name-nondirectory item)))))
+    (setq-default dired-omit-files-p t)
     (dired-unmark-all-marks)
     (revert-buffer))
 

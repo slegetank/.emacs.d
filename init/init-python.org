@@ -6,30 +6,30 @@
 * elpy
 卡
 #+BEGIN_SRC emacs-lisp
-  ;; (require-package 'elpy)
-  ;; (elpy-enable)
+  (require-package 'elpy)
+  (elpy-enable)
 
-  ;; (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
+  (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
 #+END_SRC
 * anaconda
 #+BEGIN_SRC emacs-lisp
-  (require-package 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+  ;; (require-package 'anaconda-mode)
+  ;; (add-hook 'python-mode-hook 'anaconda-mode)
+  ;; (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
 
-  (defun anaconda-key-bind-method ()
-    "Custom key binding"
-    (evil-define-key 'normal anaconda-mode-map (kbd "s-.") 'anaconda-mode-find-definitions)
-    (evil-define-key 'normal anaconda-mode-map (kbd "s-?") 'anaconda-mode-show-doc))
+  ;; (defun anaconda-key-bind-method ()
+  ;;   "Custom key binding"
+  ;;   (evil-define-key 'normal anaconda-mode-map (kbd "s-.") 'anaconda-mode-find-definitions)
+  ;;   (evil-define-key 'normal anaconda-mode-map (kbd "s-?") 'anaconda-mode-show-doc))
 
-  (add-hook 'anaconda-mode-hook 'anaconda-key-bind-method)
+  ;; (add-hook 'anaconda-mode-hook 'anaconda-key-bind-method)
 #+END_SRC
 ** company-anaconda
 #+BEGIN_SRC emacs-lisp
-  (require-package 'company-anaconda)
-  (eval-after-load "company"
-    '(add-to-list 'company-backends 'company-anaconda))
-  (add-hook 'python-mode-hook 'anaconda-mode)
+  ;; (require-package 'company-anaconda)
+  ;; (eval-after-load "company"
+  ;;   '(add-to-list 'company-backends 'company-anaconda))
+  ;; (add-hook 'python-mode-hook 'anaconda-mode)
 #+END_SRC
 * packages
 ** flycheck-pyflakes

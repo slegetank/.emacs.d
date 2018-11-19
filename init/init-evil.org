@@ -8,7 +8,8 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
   ;; (setq evil-want-integration nil)
   (require-package 'evil)
 #+END_SRC
-* which-key
+* package
+** which-key
 evil-leader配上which-key 效果非常棒
 #+BEGIN_SRC emacs-lisp
   (require-package 'which-key)
@@ -23,7 +24,7 @@ evil-leader配上which-key 效果非常棒
   ;;   )
 
 #+END_SRC
-* evil-leader
+** evil-leader
 快捷键
 M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
@@ -94,7 +95,7 @@ M-x customize-group -> 默认触发为\，改为SPC
 #+BEGIN_SRC emacs-lisp
   (evil-define-key '(normal insert visual replace operator motion) 'global (kbd "C-z") 'undo-tree-undo)
 #+END_SRC
-* evil-collection
+** evil-collection
 #+BEGIN_SRC emacs-lisp
   ;; (require-package 'evil-collection)
   ;; (require 'evil-collection)
@@ -102,7 +103,7 @@ M-x customize-group -> 默认触发为\，改为SPC
 
   ;; (evil-collection-init 'notmuch)
 #+END_SRC
-* evil-nerd-commenter
+** evil-nerd-commenter
 注释
 #+BEGIN_SRC emacs-lisp
   (require-package 'evil-nerd-commenter)
@@ -111,27 +112,27 @@ M-x customize-group -> 默认触发为\，改为SPC
   (global-set-key (kbd "s-/") 'evilnc-comment-or-uncomment-lines)
 #+END_SRC
 
-* evil-surround
+** evil-surround
 #+BEGIN_SRC emacs-lisp
   (require-package 'evil-surround)
 
   (global-evil-surround-mode 1)
 #+END_SRC
 
-* evil-matchit
+** evil-matchit
 #+BEGIN_SRC emacs-lisp
   (require-package 'evil-matchit)
 
   (global-evil-matchit-mode 1)
 #+END_SRC
 
-* evil-visualstar
+** evil-visualstar
 #+BEGIN_SRC emacs-lisp
   (require-package 'evil-visualstar)
   (global-evil-visualstar-mode)
 #+END_SRC
 
-* evil-cleverparens
+** evil-cleverparens
 #+BEGIN_SRC emacs-lisp
   (require-package 'evil-cleverparens)
 
@@ -142,7 +143,7 @@ M-x customize-group -> 默认触发为\，改为SPC
   (define-key evil-visual-state-map [escape] 'evil-visual-char)
 #+END_SRC
 
-* expand-region
+** expand-region
 多次按v自动选择：
 #+BEGIN_SRC emacs-lisp
   (require-package 'expand-region)
@@ -158,7 +159,8 @@ M-x customize-group -> 默认触发为\，改为SPC
   (define-key evil-visual-state-map "v" 'evil-visual-char-or-expand-region)
 #+END_SRC
 
-* select last paste text
+* other
+** select last paste text
 在simpleclip处有更统一的处理；如果只用evil则可以打开。
 #+BEGIN_SRC emacs-lisp
   ;; (defun slegetank/evil-select-pasted ()
@@ -170,7 +172,7 @@ M-x customize-group -> 默认触发为\，改为SPC
 
   ;; (slegetank/leader-define-key "gp" 'slegetank/evil-select-pasted "Select last paste word")
 #+END_SRC
-* [macos] auto switch input source
+** [macos] auto switch input source
 当进入evil-normal-mode时，自动切换回英文输入法；由于某些未知原因，中文输入法的切换并不能马上生效，必须deactive再focus才可以，所以这里不做此功能。可以考虑emacs内置的输入法来解决这个问题。
 首先下载配置：https://github.com/Lutzifer/keyboardSwitcher
 #+BEGIN_SRC emacs-lisp
@@ -190,7 +192,7 @@ M-x customize-group -> 默认触发为\，改为SPC
                                (when (equal evil-state 'normal)
                                  (call-process-shell-command (format "keyboardSwitcher select %s" slegetank/en-input-source) nil 0)))))
 #+END_SRC
-* evil-goto-first-line push-mark
+** evil-goto-first-line push-mark
 #+BEGIN_SRC emacs-lisp
   ;; (defun slegetank/evil-goto-first-line-push-mark (oldfunc &rest args)
   ;;   "After goto first line, push mark"
