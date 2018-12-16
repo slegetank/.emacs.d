@@ -122,7 +122,7 @@
 ** reveal-in-osx-finder
 C-c o 打开当前文件所在的Finder;
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "fo" 'reveal-in-osx-finder)
+  (slegetank/leader-define-key "fo" 'reveal-in-osx-finder "Reveal in Finder")
 #+END_SRC
 
 ** rainbow-delimiters
@@ -137,8 +137,7 @@ C-c o 打开当前文件所在的Finder;
 ** sr-speedbar
 #+BEGIN_SRC emacs-lisp
   (require 'sr-speedbar)
-  (evil-leader/set-key
-    "fs" 'custom-open-speedbar)
+  (slegetank/leader-define-key "fs" 'custom-open-speedbar "Speedbar")
 
   (defun custom-open-speedbar ()
     "Open & select & expand"
@@ -172,10 +171,10 @@ C-c o 打开当前文件所在的Finder;
 
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
 
-  (evil-leader/set-key
-    "cn" 'flycheck-next-error
-    "cp" 'flycheck-previous-error
-    "cl" 'flycheck-list-errors)
+  (slegetank/leader-define-key "c" nil "Check"
+    "cn" 'flycheck-next-error "Next error"
+    "cp" 'flycheck-previous-error "Previous error"
+    "cl" 'flycheck-list-errors "List errors")
 #+END_SRC
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
@@ -214,7 +213,7 @@ C-c o 打开当前文件所在的Finder;
   (defun slegetank/clean-symbol-after-avy (oldfunc &rest args)
     "After evil-avy-goto-char clean symbols"
     (apply oldfunc args)
-    (push-mark)
+    ;; (push-mark)
     (ahs-clear))
 
   (with-eval-after-load 'avy

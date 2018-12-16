@@ -642,10 +642,11 @@ http://www.djcbsoftware.nl/code/mu/cheatsheet.html
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
-      (evil-leader/set-key
-        "ma" 'mu4e
-        "mc" 'custom-compose-html-plain-config-switch
-        "mu" 'custom-mu4e-update-all
-        "mi" 'custom-mu4e-get-messageid
-        "ms" 'slegetank/mu4e-save-and-open-attach-dir)
+  (slegetank/leader-define-key
+   "m" nil "Mail"
+   "ma" 'mu4e "mu4e"
+   "mc" 'custom-compose-html-plain-config-switch "Compose"
+   "mu" 'custom-mu4e-update-all "Update"
+   "mi" 'custom-mu4e-get-messageid "Msg ID"
+   "ms" 'slegetank/mu4e-save-and-open-attach-dir "Save attach")
 #+END_SRC

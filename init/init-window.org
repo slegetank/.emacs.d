@@ -17,8 +17,7 @@ switch-window，多窗口切换解决方案：
   ;; (setq switch-window-multiple-frames t)
   ;; (setq switch-window-shortcut-appearance 'asciiart)
 
-  (evil-leader/set-key
-    "wo" 'switch-window)
+  (slegetank/leader-define-key "wo" 'switch-window "Other window")
 #+END_SRC
 
 分屏的时候，自动在新的window里执行other buffer

@@ -23,8 +23,7 @@ projectile是ag在EMACS中的前端配置包，counsel是ivy对它的进一步�
   (use-package neotree
     :ensure t
     :config
-    (evil-leader/set-key
-      "dn"  'custom-neotree-toggle-project-dir)
+    (slegetank/leader-define-key "dn" 'custom-neotree-toggle-project-dir "Neotree")
 
     (setq neo-smart-open t)
     (setq neo-window-fixed-size nil)
@@ -124,8 +123,7 @@ counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.pr
   (defun slegetank/projectile-ag (&optional options)
     "Copy from counsel, and use .projectile"
     (interactive)
-    (if (projectile-project-p)
-        (let* ((options
+    (let* ((options
                 (if current-prefix-arg
                     (read-string "options: ")
                   options))
@@ -141,10 +139,9 @@ counsel定义的工程搜索在git工程中默认使用.gitignore，而不是.pr
                                    " "))))
           ;; -U ignore .gitignore but use .ignore
           (counsel-ag (eval counsel-projectile-ag-initial-input)
-                      (projectile-project-root)
+                      (or (projectile-project-root) default-directory)
                       (concat options " " "-U")
-                      (projectile-prepend-project-name "ag")))
-      (user-error "You're not in a project")))
+                      (projectile-prepend-project-name "ag"))))
 #+END_SRC
 * notes
 #+BEGIN_SRC emacs-lisp

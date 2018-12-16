@@ -17,9 +17,9 @@
 
   (setq-default magit-diff-refine-hunk t)
 
-  (evil-leader/set-key
-    "gs" 'magit-status
-    "gm" 'magit-dispatch-popup)
+  (slegetank/leader-define-key "g" nil "Git"
+                               "gs" 'magit-status "Git status"
+                               "gm" 'magit-dispatch-popup "Menu for Magit")
 
   ;; url可点击
   (add-hook 'git-commit-mode-hook 'goto-address-mode)

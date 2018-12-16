@@ -15,7 +15,7 @@
 (setq slegetank/init-load-files '("custom"
                                   "evil"
                                   "window"
-                                  "bookmark"
+                                  "mark"
                                   "package"
                                   "tools"
                                   "org"

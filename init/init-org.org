@@ -69,10 +69,10 @@
   (setq org-agenda-files '("~/Work/cloud/cloud/workorg/project.org"))
   (setq org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA")
 
-  (evil-leader/set-key
-    "oa" 'org-agenda
-    "olc" 'org-store-link
-    "oli" 'org-insert-link)
+  (slegetank/leader-define-key "o" nil "Org Mode"
+                               "oa" 'org-agenda "Agenda"
+                               "olc" 'org-store-link "Create link"
+                               "oli" 'org-insert-link "Insert link")
 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "IN-PROGRESS(i)" "QA(q@/!)" "WAITING(w@/!)" "APPSTORE(a!)" "LONG-TASK(l)" "|" "DONE(d)" "CANCELED(c)")))
@@ -123,7 +123,7 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
       (let ((region-content (buffer-substring start end)))
         (kill-region start end)
         (deactivate-mark)
-    
+
         (unless (s-suffix-p "\n" region-content)
           (setq region-content (s-append "\n" region-content)))
 
@@ -229,8 +229,7 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
   (require 'calfw-org)
   (setq cfw:org-overwrite-default-keybinding t)
 
-  (evil-leader/set-key
-    "opc" 'cfw:open-org-calendar)
+  (slegetank/leader-define-key "opc" 'cfw:open-org-calendar "Calendar")
 #+END_SRC
 
 重新定义evil-mode下的键位：
@@ -253,8 +252,7 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
 ** pomodoro
 #+BEGIN_SRC emacs-lisp
   (require-package 'org-pomodoro)
-  (evil-leader/set-key
-    "opp" 'org-pomodoro)
+  (slegetank/leader-define-key "opp" 'org-pomodoro "Pomodoro")
 #+END_SRC
 ** org-tree-slide
 #+BEGIN_SRC emacs-lisp

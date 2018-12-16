@@ -7,9 +7,26 @@
 卡
 #+BEGIN_SRC emacs-lisp
   (require-package 'elpy)
-  (elpy-enable)
+  (setq eldoc-idle-delay 1)
 
-  (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
+  (defun my-elpy-mode ()
+    (make-variable-buffer-local 'elpy-modules)
+    (setq elpy-modules
+          '(elpy-module-sane-defaults
+            elpy-module-company
+            elpy-module-eldoc
+            elpy-module-flymake
+            ;; This eat too much CPU cycle
+            ;; elpy-module-highlight-indentation
+            elpy-module-pyvenv
+            elpy-module-yasnippet))
+    (setq elpy-eldoc-show-current-function nil)
+    (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
+    (elpy-mode))
+
+  (elpy-enable)
+  (add-hook 'python-mode-hook 'my-elpy-mode)
+
 #+END_SRC
 * anaconda
 #+BEGIN_SRC emacs-lisp
