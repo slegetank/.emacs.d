@@ -6,21 +6,25 @@ ivy是强大的查找文件、搜索代码、执行命令的补全工具。
   (ivy-mode 1)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-h a") 'counsel-apropos)
-  
-  (setq ivy-count-format "(%d/%d) ")
 
   ;; ignore candidate
   (define-key ivy-minibuffer-map (kbd "s-<return>") 'ivy-immediate-done)
   (define-key ivy-minibuffer-map (kbd "RET") #'ivy-alt-done)
 
   (setq-default ivy-use-virtual-buffers t
+                ivy-display-style 'fancy
+                ivy-count-format "(%d/%d) "
                 ivy-virtual-abbreviate 'fullpath
-                ivy-count-format ""
                 projectile-completion-system 'ivy
-                ivy-initial-inputs-alist
-                '((man . "^")
-                  (woman . "^")))
+                ivy-initial-inputs-alist nil)
 #+END_SRC
+** ivy-rich
+#+BEGIN_SRC emacs-lisp
+  (require-package 'ivy-rich)
+  (require 'ivy-rich)
+  (ivy-rich-mode 1)
+#+END_SRC
+
 * swiper
 swiper提供了更优美的单文件搜索功能，支持正则：
 #+BEGIN_SRC emacs-lisp
@@ -29,8 +33,6 @@ swiper提供了更优美的单文件搜索功能，支持正则：
 
   (setq counsel-find-file-at-point t)
   (setq enable-recursive-minibuffers t)
-  (setq ivy-display-style 'fancy)
-  (setq ivy-initial-inputs-alist nil)
 
   (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
   (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
