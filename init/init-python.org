@@ -86,7 +86,8 @@
   (require-package 'sphinx-doc)
   (add-hook 'python-mode-hook (lambda ()
                                 (require 'sphinx-doc)
-                                (sphinx-doc-mode t)))
+                                (sphinx-doc-mode t)
+                                (slegetank/leader-define-key "pyd" 'sphinx-doc "Doc for method")))
 #+END_SRC
 * debug
 断点快捷键来自于XCode；有ipdb用ipdb，没有用pdb。高亮断点行。

@@ -20,9 +20,9 @@ ivy是强大的查找文件、搜索代码、执行命令的补全工具。
 #+END_SRC
 ** ivy-rich
 #+BEGIN_SRC emacs-lisp
-  (require-package 'ivy-rich)
-  (require 'ivy-rich)
-  (ivy-rich-mode 1)
+  ;; (require-package 'ivy-rich)
+  ;; (require 'ivy-rich)
+  ;; (ivy-rich-mode 1)
 #+END_SRC
 
 * swiper
