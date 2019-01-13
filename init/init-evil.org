@@ -70,6 +70,7 @@ M-x customize-group -> 默认触发为\，改为SPC
 
   (slegetank/leader-define-key "f" nil "Files"
                                "ff" 'counsel-find-file "Find file"
+                               "fl" 'find-file-literally "Find large file"
                                "b" nil "Buffers"
                                "bb" 'ivy-switch-buffer "Switch buffer"
                                "bk" 'kill-buffer "Kill buffer"
