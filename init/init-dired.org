@@ -9,10 +9,10 @@ better defaults
 
 在单个buffer里打开文件：
 #+BEGIN_SRC emacs-lisp
-    (put 'dired-find-alternate-file 'disabled nil)
-    (with-eval-after-load 'dired
-      (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
-      (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file ".."))))  ; was dired-up-directory)
+  (put 'dired-find-alternate-file 'disabled nil)
+  (with-eval-after-load 'dired
+    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+    (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file ".."))))  ; was dired-up-directory)
 
 #+END_SRC
 
@@ -100,13 +100,16 @@ dired会被加入recentf-list:
     (shell-command (format "open \"%s\"" (dired-get-file-for-visit))))
 
   (defun custom-dired-temp-hide-files ()
-    "Hide marked files temporary."
+    "Hide/show marked files temporary."
     (interactive)
-    (make-local-variable 'dired-omit-files)
-    (dolist (item (dired-get-marked-files))
-      (setq dired-omit-files
-            (concat dired-omit-files (format "\\|%s" (file-name-nondirectory item)))))
-    (setq-default dired-omit-files-p t)
+    (if dired-omit-files-p
+        (setq dired-omit-files-p nil)
+      (progn
+        (make-local-variable 'dired-omit-files)
+        (dolist (item (dired-get-marked-files))
+          (setq dired-omit-files
+                (concat dired-omit-files (format "\\|%s" (file-name-nondirectory item)))))
+        (setq dired-omit-files-p t)))
     (dired-unmark-all-marks)
     (revert-buffer))
 
@@ -263,7 +266,7 @@ unzip默认行为会多一层文件夹，修改：
     (require 'ivy) ; swiper 7.0+ should be installed
 
     (defun custom-goto-recent-directory ()
-      "Open recent directory with dired; add z cmd list to this"
+      "Open recent directory with dired; add z cmd & MacOS recent dir list to this"
       (interactive)
       (unless recentf-mode (recentf-mode 1))
       (let ((collection (slegetank/recent-directories)))

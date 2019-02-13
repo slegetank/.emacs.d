@@ -6,7 +6,7 @@ mark跳回，高亮最后两个mark
     '((((type tty) (class mono)))
       (t (:background "magenta"))) "")
   (require 'visible-mark)
-  (setq visible-mark-max 2)
+  (setq visible-mark-max 1)
   (setq visible-mark-faces `(visible-mark-face1 visible-mark-face2))
   (setq slegetank/local-mark-ring-timer nil)
   (setq show-paren-priority -1)

@@ -123,8 +123,10 @@ M-x customize-group -> 默认触发为\，改为SPC
 ** evil-matchit
 #+BEGIN_SRC emacs-lisp
   (require-package 'evil-matchit)
-
   (global-evil-matchit-mode 1)
+  (add-hook 'dired-mode-hook (lambda ()
+                               "dired不需要这个功能"
+                               (turn-off-evil-matchit-mode)))
 #+END_SRC
 
 ** evil-visualstar

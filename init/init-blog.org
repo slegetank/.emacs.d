@@ -106,7 +106,7 @@
                                "blc" 'custom-blog-commit "Org-publish & git commit"
                                "bli" 'custom-blog-init "Blog init"
                                "blf" 'custom-blog-finish-draft "Finish draft"
-                               "bld" 'custom-blog-deploy-to-remote "Push to github.io & update slegetank.com")
+                               "bld" 'custom-blog-deploy-to-remote "Push to github.io")
 #+END_SRC
 
 ** Functions
@@ -114,7 +114,6 @@
 #+BEGIN_SRC emacs-lisp
   (defun my-blog-get-custom-property (file)
     "获得每篇博客的自定义属性"
-    (message "hello %s" file)
     (let* ((org-inhibit-startup t)
            (tempbuffer (find-file file))
            (preview-str "")
@@ -391,13 +390,14 @@
 自定义部署函数：
 #+BEGIN_SRC emacs-lisp
   (defun custom-blog-deploy-to-remote ()
-  "Update github.io & slegetank.com's blog"
+    "Update github.io & slegetank.com's blog"
     (interactive)
     (let ((default-directory my-blog-publish-base))
       (message "push to static blog...")
       (shell-command "git push"))
-    (message "update blog.slegetank database...")
-    (shell-command "ssh root@slegetank.com \"source updateblog.sh\""))
+    ;; (message "update blog.slegetank database...")
+    ;; (shell-command "ssh root@slegetank.com \"source updateblog.sh\"")
+    )
 
 #+END_SRC
 
