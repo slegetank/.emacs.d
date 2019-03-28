@@ -6,9 +6,9 @@ company - complete anything!
 
   (add-hook 'after-init-hook 'global-company-mode)
 
-  (setq tab-always-indent 'complete)
   (add-to-list 'completion-styles 'initials t)
 
+  (company-tng-configure-default)
   (setq-default company-dabbrev-other-buffers 'all
                 company-tooltip-align-annotations t)
 
@@ -30,7 +30,7 @@ company - complete anything!
         company-dabbrev-ignore-case nil
         ;; press s-number to choose candidate
         company-show-numbers t
-        company-idle-delay 0.2
+        company-idle-delay 0
         company-clang-insert-arguments nil
         company-require-match nil
         company-etags-ignore-case t)
@@ -65,17 +65,46 @@ company - complete anything!
   (company-quickhelp-mode 1)
   (setq company-quickhelp-delay 1)
 #+END_SRC
-* keys
+** company-tabnine
+机器学习补全
 #+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-j") #'company-select-next)
-    (define-key company-active-map (kbd "C-k") #'company-select-previous)
-    (define-key company-active-map (kbd "C-n") #'company-select-next)
-    (define-key company-active-map (kbd "C-p") #'company-select-previous)
+  ;; (require-package 'company-tabnine)
+  ;; (require 'company-tabnine)
+  ;; (add-to-list 'company-backends #'company-tabnine)
+#+END_SRC
+* keys
+tab => complete
+#+BEGIN_SRC emacs-lisp
+  (define-key company-mode-map [remap indent-for-tab-command]
+    'company-indent-for-tab-command)
 
-    ;; 我更喜欢command键
-    (dotimes (i 10)
-      (define-key company-active-map (read-kbd-macro (format "s-%d" i)) 'company-complete-number)))
+  (setq tab-always-indent 'complete)
+
+  (defvar completion-at-point-functions-saved nil)
+
+  (defun company-indent-for-tab-command (&optional arg)
+    (interactive "P")
+    (let ((completion-at-point-functions-saved completion-at-point-functions)
+          (completion-at-point-functions '(company-complete-common-wrapper)))
+      (indent-for-tab-command arg)))
+
+  (defun company-complete-common-wrapper ()
+    (let ((completion-at-point-functions completion-at-point-functions-saved))
+      (company-complete-common)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+    (with-eval-after-load 'company
+      (define-key company-active-map (kbd "M-n") nil)
+      (define-key company-active-map (kbd "M-p") nil)
+      (define-key company-active-map (kbd "C-j") #'company-select-next)
+      (define-key company-active-map (kbd "C-k") #'company-select-previous)
+      (define-key company-active-map (kbd "C-n") #'company-select-next)
+      (define-key company-active-map (kbd "C-p") #'company-select-previous)
+
+      (define-key global-map (kbd "C-,") 'company-tabnine)
+
+      ;; 我更喜欢command键
+      (dotimes (i 10)
+        (define-key company-active-map (read-kbd-macro (format "s-%d" i)) 'company-complete-number)))
 #+END_SRC

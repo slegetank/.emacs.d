@@ -2,7 +2,8 @@
 ;;; -*- lexical-binding: t -*-
 
   (slegetank/leader-define-key "w" nil "Windows"
-                               "wk" 'delete-other-windows "Kill window"
+                               "wk" 'delete-other-windows "Kill other window"
+                               "wK" 'delete-window "Kill window"
                                "wf" 'other-frame "Other frame")
 #+END_SRC
 

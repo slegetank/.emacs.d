@@ -30,17 +30,18 @@ mac下更好的鼠标滚动：
 * theme
 #+BEGIN_SRC emacs-lisp
   (setq custom-safe-themes t)
-  (require-package 'afternoon-theme)
-  (require-package 'monokai-theme)
-  (require-package 'ujelly-theme)
-  (require-package 'sublime-themes)
-  (require-package 'organic-green-theme)
-  (require-package 'zenburn-theme)
-  (require-package 'metalheart-theme)
-  (require-package 'color-theme-sanityinc-tomorrow)
+  ;; (require-package 'afternoon-theme)
+  ;; (require-package 'monokai-theme)
+  ;; (require-package 'ujelly-theme)
+  ;; (require-package 'sublime-themes)
+  ;; (require-package 'organic-green-theme)
+  ;; (require-package 'zenburn-theme)
+  ;; (require-package 'metalheart-theme)
+  ;; (require-package 'color-theme-sanityinc-tomorrow)
   (require-package 'doom-themes)
   ;; (load-theme 'afternoon t)
-  (require-package 'twilight-anti-bright-theme)
+  ;; (require-package 'twilight-anti-bright-theme)
+  (require-package 'spacemacs-theme)
 
   (slegetank/leader-define-key "tu" 'customize-themes "Custom theme")
 #+END_SRC

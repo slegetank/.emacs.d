@@ -1,4 +1,3 @@
-采用anaconda作为主要配置，主要速度比elpy快；之前elpy莫名其妙地出现了卡死的情况。
 * default
 #+BEGIN_SRC emacs-lisp
   (setq python-indent-offset 4)

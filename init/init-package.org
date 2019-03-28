@@ -25,7 +25,8 @@
                                                                         quickrun
                                                                         popup
                                                                         htmlize
-                                                                        vdiff)))
+                                                                        vdiff
+                                                                      )))
   #+END_SRC
 
   检测所有列表里的库，如果未安装，则自动安装。
