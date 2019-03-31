@@ -30,7 +30,7 @@ mac下更好的鼠标滚动：
 * theme
 #+BEGIN_SRC emacs-lisp
   (setq custom-safe-themes t)
-  ;; (require-package 'afternoon-theme)
+  (require-package 'afternoon-theme)
   ;; (require-package 'monokai-theme)
   ;; (require-package 'ujelly-theme)
   ;; (require-package 'sublime-themes)

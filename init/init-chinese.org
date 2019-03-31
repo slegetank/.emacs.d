@@ -19,21 +19,9 @@ https://github.com/tumashu/pyim
   ;; (pyim-wbdict-gb2312-enable)
 
   (setq default-input-method "pyim")
+  
   ;; (setq pyim-default-scheme 'wubi)
-
-  (setq pyim-default-scheme 'quanpin)
-
-  ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
-  ;; pyim-probe-dynamic-english不大符合我的要求
-  (setq-default pyim-english-input-switch-functions
-                '(
-                  pyim-probe-isearch-mode
-                  pyim-probe-program-mode
-                  pyim-probe-org-structure-template))
-
-  ;; (setq-default pyim-punctuation-half-width-functions
-  ;;               '(pyim-probe-punctuation-line-beginning
-  ;;                 pyim-probe-punctuation-after-punctuation))
+  ;; (setq pyim-default-scheme 'quanpin)
 
   ;; 使用 pupup-el 来绘制选词框
   (if (>= emacs-major-version 26)
@@ -41,7 +29,7 @@ https://github.com/tumashu/pyim
     (setq pyim-page-tooltip 'popup))
 
   ;; 选词框显示10个候选词
-  (setq pyim-page-length 9)
+  (setq pyim-page-length 5)
 
   ;; 让 Emacs 启动时自动加载 pyim 词库
   ;; (add-hook 'emacs-startup-hook
@@ -68,6 +56,19 @@ https://github.com/tumashu/pyim
              (:name "sougou-develop" :file ,(expand-file-name "pyim/sougou-develop.pyim" user-emacs-directory))
              (:name "sougou-jindaishi" :file ,(expand-file-name "pyim/sougou-jindaishi.pyim" user-emacs-directory))))
    #+END_SRC
+   
+** liberime
+https://gitlab.com/liberime/liberime
+
+#+BEGIN_SRC emacs-lisp
+  (when (file-exists-p (expand-file-name "~/ScriptHelper/liberime.so"))
+    (setq load-path (cons (expand-file-name "~/ScriptHelper") load-path))
+    (require 'liberime)
+    (setq pyim-rime-limit 10)
+    (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" "~/.emacs.d/rime/")
+    (liberime-select-schema "luna_pinyin_simp")
+    (setq pyim-default-scheme 'rime-quanpin))
+#+END_SRC
 
 * evil-find-char-pinyin
 evil f t 支持中文首字母
@@ -77,6 +78,7 @@ evil f t 支持中文首字母
     (require 'evil-find-char-pinyin)
     (evil-find-char-pinyin-mode +1))
 #+END_SRC
+
 * swiper
 swiper搜索支持中文 !首字母匹配
 #+BEGIN_SRC emacs-lisp
