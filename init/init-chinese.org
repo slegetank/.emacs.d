@@ -64,7 +64,6 @@ https://gitlab.com/liberime/liberime
   (when (file-exists-p (expand-file-name "~/ScriptHelper/liberime.so"))
     (setq load-path (cons (expand-file-name "~/ScriptHelper") load-path))
     (require 'liberime)
-    (setq pyim-rime-limit 10)
     (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" "~/.emacs.d/rime/")
     (liberime-select-schema "luna_pinyin_simp")
     (setq pyim-default-scheme 'rime-quanpin))
