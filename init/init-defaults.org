@@ -273,6 +273,13 @@ emacs 26 以上 insert-string 调整为insert
   (define-key default-text-scale-mode-map (kbd "s--") 'default-text-scale-decrease)
   (define-key default-text-scale-mode-map (kbd "s-0") 'default-text-scale-reset)
 #+END_SRC
+** beacon
+#+BEGIN_SRC emacs-lisp
+  (require-package 'beacon)
+  (beacon-mode +1)
+  (setq beacon-blink-when-point-moves-vertically 35)
+  (setq beacon-blink-when-window-scrolls nil)
+#+END_SRC
 
 * TRAMP
 #+BEGIN_SRC emacs-lisp

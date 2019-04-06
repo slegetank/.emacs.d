@@ -18,7 +18,7 @@
 ;; get from https://github.com/purcell/emacs.d/blob/master/init.el
 (setq gc-cons-threshold (* 128 1024 1024))
 (add-hook 'emacs-startup-hook
-            (lambda () (setq gc-cons-threshold (* 20 1024 1024))))
+            (lambda () (setq gc-cons-threshold (* 50 1024 1024))))
 
 ;; 手动下org mode
 ;; (let ((default-directory  "~/org-mode/"))

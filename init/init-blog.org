@@ -33,6 +33,7 @@
   (require 'ox-publish)
   (require 'ox-extra)
   (ox-extras-activate '(ignore-headlines))
+
   (setq org-publish-project-alist
         `(
           ("blog-home"
@@ -48,7 +49,7 @@
            :html-preamble my-blog-home-header
            :html-postamble ,my-blog-footer
            :auto-sitemap nil
-           :sitemap-function my-blog-sitemap
+           :sitemap-function slegetank/blog-sitemap
            :recursive t
            :section-numbers nil
            :with-toc nil
@@ -63,30 +64,6 @@
            :with-sub-superscript nil
            :exclude "blog/*.*\\|README.org\\|draft/*.*"
            )
-          ("blog-content"
-           :base-directory ,(concat my-blog-post-base "/blog")
-           :base-extension "org"
-           :publishing-directory ,(concat my-blog-publish-base "/blog")
-           :publishing-function (org-html-publish-to-html)
-           ;; :preparation-function my-blog-articles-preprocessor
-           ;; :completion-function my-blog-articles-postprocessor
-           :with-author t
-           :with-creator nil
-           :html-preamble my-blog-header
-           :html-postamble ,my-blog-footer
-           :auto-sitemap nil
-           :recursive t
-           :section-numbers nil
-           :with-toc nil
-           :with-drawers t
-           :html-head-include-default-style nil
-           :html-head-include-scripts nil
-           ;; :html-link-home "/"
-           :html-head nil ;; cleans up anything that would have been in there.
-           :html-head-include-default-style nil
-           :html-head-include-scripts nil
-           :html-viewport nil
-           :with-sub-superscript nil)
           ("blog-static"
            :base-directory ,(concat my-blog-post-base "/static")
            :base-extension "gif\\|png\\|jpg\\|css"
@@ -99,6 +76,12 @@
 #+END_SRC
 
 * Export
+** variables
+不必重新publish的文件列表
+#+BEGIN_SRC emacs-lisp
+  (setq slegetank/exclude-blog-files '())
+#+END_SRC
+
 ** Keys
 #+BEGIN_SRC emacs-lisp
   (slegetank/leader-define-key
@@ -146,19 +129,22 @@
 
 读取目录下博客org文件的信息：
 #+BEGIN_SRC emacs-lisp
-  (defun my-blog-org-files-info ()
+  (defun slegetank/blog-org-files-info ()
     "Generate info list for org files"
     (let* ((files (directory-files (concat my-blog-post-base "/blog/") t ".org$"))
            (postdir (file-name-as-directory my-blog-post-base))
            file
-           (infolist '())
+           (infolist '()) ;; 每个文件的属性信息
+           (cached-file-names '()) ;; 之前缓存过的文件信息，且未发生改变，因此不用重新生成
            (cache-properties (slegetank/read-var-from-file (concat my-blog-post-base "/cache-properties"))))
       (while (setq file (pop files))
         (unless (or (s-ends-with? "index.org" (file-truename file)) (s-ends-with? "archive.org" (file-truename file)) (s-ends-with? "tag.org" (file-truename file)))
           (let ((link (file-relative-name file (file-name-as-directory
                                                 (expand-file-name (file-name-as-directory postdir)))))
                 (cache-property (car (alist-get (file-name-nondirectory file) cache-properties nil nil 'equal))))
-            (let* ((properties (or cache-property (my-blog-get-custom-property file)))
+            (let* (
+                   ;; 缓存文件里不存在，则读取真实文件的信息
+                   (properties (or cache-property (my-blog-get-custom-property file)))
                    (title (cdr (assoc "title" properties)))
                    (date (cdr (assoc "date" properties)))
                    (preview (cdr (assoc "preview" properties)))
@@ -166,26 +152,28 @@
                    (cache-md5 (cdr (assoc "md5" properties)))
                    (md5 (substring (shell-command-to-string (format "md5 -q %s" file)) 0 -1))
                    (content `(("link" . ,(or link "")) ("title" . ,(or title "")) ("date" . ,(or date "")) ("preview" . ,(or preview "")) ("type" . ,(or type "")) ("md5" . ,md5))))
-              (if (not cache-property)
+              ;; 缓存信息不存在，或者信息与最新的文件不同，将新文件的信息加入到缓存列表里
+              (if (or (not cache-property) (not (equal cache-md5 md5)))
                   (add-to-list 'cache-properties `(,(file-name-nondirectory file) . ,(list content)))
-                (unless (equal cache-md5 md5)
-                  (setf cache-property (list content))))
+                (add-to-list 'cached-file-names (file-name-nondirectory file)))
               (setq infolist (cons content infolist))))))
       (slegetank/dump-var-to-file cache-properties (concat my-blog-post-base "/cache-properties"))
-      infolist))
+      (cons infolist cached-file-names)))
 #+END_SRC
 
 自定义sitemap生成函数：
 #+BEGIN_SRC emacs-lisp
-  (defun my-blog-sitemap (&rest params)
-    "Sitemap custom method"
+  (defun slegetank/blog-sitemap (&rest params)
+    "Sitemap custom method；返回不需要重新publish的文件列表"
     (let* ((postdir (file-name-as-directory my-blog-post-base))
            (sitemap-filename (concat postdir "index.org"))
            (visiting (find-buffer-visiting sitemap-filename))
-           (bloginfos (my-blog-org-files-info))
+           (files-info (slegetank/blog-org-files-info))
+           (bloginfos (car files-info))
            (regexp "\\(.*\\)\\[\\([^][]+\\)\\]\\(.*\\)")
            sitemap-buffer)
-
+      ;; 不必重新publish的文件列表
+      (setq slegetank/exclude-blog-files (cdr files-info))
       (my-blog-archive bloginfos)
       (let ((org-inhibit-startup t))
         (setq sitemap-buffer
@@ -394,7 +382,8 @@
     (interactive)
     (let ((default-directory my-blog-publish-base))
       (message "push to static blog...")
-      (shell-command "git push"))
+      (shell-command "git push")
+      (message "Update blog success."))
     ;; (message "update blog.slegetank database...")
     ;; (shell-command "ssh root@slegetank.com \"source updateblog.sh\"")
     )
@@ -421,13 +410,38 @@
   (defun custom-blog-commit ()
     "add commit push"
     (interactive)
-    (my-blog-sitemap nil)
+    (slegetank/blog-sitemap nil)
+    (add-to-list 'org-publish-project-alist `("blog-content"
+                                              :base-directory ,(concat my-blog-post-base "/blog")
+                                              :base-extension "org"
+                                              :publishing-directory ,(concat my-blog-publish-base "/blog")
+                                              :publishing-function (org-html-publish-to-html)
+                                              :with-author t
+                                              :with-creator nil
+                                              :html-preamble my-blog-header
+                                              :html-postamble ,my-blog-footer
+                                              :auto-sitemap nil
+                                              :recursive t
+                                              :section-numbers nil
+                                              :with-toc nil
+                                              :with-drawers t
+                                              :html-head-include-default-style nil
+                                              :html-head-include-scripts nil
+                                              ;; :html-link-home "/"
+                                              :html-head nil ;; cleans up anything that would have been in there.
+                                              :html-head-include-default-style nil
+                                              :html-head-include-scripts nil
+                                              :html-viewport nil
+                                              :with-sub-superscript nil
+                                              :exclude ,(s-join "\\|" slegetank/exclude-blog-files)
+                                              ))
     (org-publish "blog" t)
     (let ((default-directory my-blog-publish-base))
       (shell-command "git add .")
       (shell-command (format "git commit -m \"Blog updated: %s\"" (format-time-string "%Y-%m-%d %H:%M:%S" (current-time))))
       ;; (shell-command "git push")
-      ))
+      )
+    )
 #+END_SRC
 ** Keys
 #+BEGIN_SRC emacs-lisp

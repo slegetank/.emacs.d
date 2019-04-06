@@ -11,15 +11,14 @@ https://github.com/tumashu/pyim
   (require-package 'posframe)
   (require 'posframe)
   (require 'pyim)
-  (require 'pyim-basedict)
-  (pyim-basedict-enable)
+  ;; (require 'pyim-basedict)
+  ;; (pyim-basedict-enable)
 
   ;; (require-package 'pyim-wbdict)
   ;; (require 'pyim-wbdict)
   ;; (pyim-wbdict-gb2312-enable)
 
   (setq default-input-method "pyim")
-  
   ;; (setq pyim-default-scheme 'wubi)
   ;; (setq pyim-default-scheme 'quanpin)
 
