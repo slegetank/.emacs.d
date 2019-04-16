@@ -286,7 +286,7 @@ emacs 26 以上 insert-string 调整为insert
   (require 'tramp)
   (tramp-set-completion-function "sshx"
                                  '((tramp-parse-sconfig "/etc/ssh_config")
-                                   (tramp-parse-sconfig "~/.ssh/config")))
+                                 (tramp-parse-sconfig "~/.ssh/config")))
 
   (setq tramp-default-method "sshx")
 #+END_SRC

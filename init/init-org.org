@@ -117,32 +117,34 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
         (indent-region (point-min) (point-max))
         (org-edit-src-exit)))
 
-    (defun wrap-region-into-code-block (start end)
-      "Custom method, wrap selected region into #+BEGIN_SRC emacs-lisp ... #+END_SRC"
+    (defvar slegetank/org-code-block-language "emacs-lisp")
+
+    (defun slegetank/wrap-region-into-code-block (start end)
+      "Custom method, wrap selected region into #+BEGIN_SRC `slegetank/org-code-block-language' ... #+END_SRC"
       (interactive "r")
-      (let ((region-content (buffer-substring start end)))
-        (kill-region start end)
-        (deactivate-mark)
 
-        (unless (s-suffix-p "\n" region-content)
-          (setq region-content (s-append "\n" region-content)))
+      (let ((mode (ivy-read (format "Mode (default %s): " slegetank/org-code-block-language) nil)))
+        ;; 如果没输入，则取默认值；输入了，则更新默认值
+        (if (string-equal mode "")
+            (setq mode slegetank/org-code-block-language)
+          (setq slegetank/org-code-block-language mode))
+        (let ((region-content (buffer-substring start end)))
+          (kill-region start end)
+          (deactivate-mark)
 
-        (setq region-content (replace-regexp-in-string "‘" "'" region-content))
-        (setq region-content (replace-regexp-in-string "’" "'" region-content))
-        (setq region-content (replace-regexp-in-string "“" "\"" region-content))
-        (setq region-content (replace-regexp-in-string "”" "\"" region-content))
-        (setq region-content (replace-regexp-in-string "⇒" "->" region-content))
-        (insert-string (format "#+BEGIN_SRC emacs-lisp\n%s#+END_SRC\n" region-content))
-        (forward-line -2)
-        (org-edit-special)
-        (indent-region (point-min) (point-max))
-        (org-edit-src-exit)
-        (forward-line 2)))
+          (unless (s-suffix-p "\n" region-content)
+            (setq region-content (s-append "\n" region-content)))
+
+          (insert-string (format "#+BEGIN_SRC %s\n%s#+END_SRC\n" mode region-content))
+          (forward-line -2)
+          (org-edit-special)
+          (indent-region (point-min) (point-max))
+          (org-edit-src-exit)
+          (forward-line 2))))
 
     (evil-leader/set-key-for-mode 'org-mode
-      "ee" 'org-edit-special
       "==" 'custom-indent-org-block-automatically
-      "ec" 'wrap-region-into-code-block)
+      "oc" 'slegetank/wrap-region-into-code-block)
 
     ;; If src come from org mode, use these functions
     (defun custom-org-edit-src-exit ()
