@@ -30,16 +30,22 @@ https://github.com/tumashu/pyim
   ;; 选词框显示10个候选词
   (setq pyim-page-length 5)
 
-  ;; 让 Emacs 启动时自动加载 pyim 词库
-  ;; (add-hook 'emacs-startup-hook
-  ;;           #'(lambda () (pyim-restart-1 t)))
+  (setq-default pyim-english-input-switch-functions
+                '(pyim-probe-program-mode
+                  pyim-probe-org-structure-template))
 
+  (setq-default pyim-punctuation-half-width-functions
+                '(pyim-probe-punctuation-line-beginning
+                  pyim-probe-punctuation-after-punctuation))
+
+  (global-set-key (kbd "C-s-;") 'pyim-convert-string-at-point)
   (global-set-key (kbd "C-;") 'toggle-input-method)
   (define-key pyim-mode-map (kbd "<tab>") 'pyim-page-next-page)
   (define-key pyim-mode-map (kbd "C-j") 'pyim-page-next-page)
   (define-key pyim-mode-map (kbd "C-k") 'pyim-page-previous-page)
   (define-key pyim-mode-map (kbd "<escape>") 'pyim-quit-clear)
 #+END_SRC
+
 ** 添加词库
 1. 到https://pinyin.sogou.com/dict/ 找到自己想要使用的词库文件
 2. https://github.com/E-Neo/scel2pyim 下载转换工具并编译
@@ -60,10 +66,10 @@ https://github.com/tumashu/pyim
 https://gitlab.com/liberime/liberime
 
 #+BEGIN_SRC emacs-lisp
-  (when (file-exists-p (expand-file-name "~/ScriptHelper/liberime.so"))
-    (setq load-path (cons (expand-file-name "~/ScriptHelper") load-path))
+  (when (file-exists-p (file-truename "~/ScriptHelper/liberime.so"))
+    (setq load-path (cons (file-truename "~/ScriptHelper") load-path))
     (require 'liberime)
-    (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" "~/.emacs.d/rime/")
+    (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
     (liberime-select-schema "luna_pinyin_simp")
     (setq pyim-default-scheme 'rime-quanpin))
 #+END_SRC

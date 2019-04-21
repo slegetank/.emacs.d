@@ -184,7 +184,7 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
   (add-hook 'js-mode-hook 'prettier-js-mode)
   (setq prettier-js-args '(
                            "--trailing-comma" "all"
-                           "--bracket-spacing" "false"
+                           "--bracket-spacing" "true"
                            "--tab-width" "4"
                            "--print-width" "120"
                            ))

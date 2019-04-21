@@ -46,3 +46,5 @@ projectile-bookmarks.eld
 /notes
 /history
 /.historian
+/pyim/rime/*
+!/pyim/rime/default.custom.yaml

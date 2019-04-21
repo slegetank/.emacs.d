@@ -18,7 +18,6 @@
                                                                         json-mode
                                                                         simpleclip
                                                                         ggtags
-                                                                        indent-guide
                                                                         xah-get-thing
                                                                         protobuf-mode
                                                                         pos-tip
@@ -26,6 +25,7 @@
                                                                         popup
                                                                         htmlize
                                                                         vdiff
+                                                                        yaml-mode
                                                                       )))
   #+END_SRC
 
@@ -327,12 +327,6 @@ C-c o 打开当前文件所在的Finder;
               (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
                 (ggtags-mode 1))))
 #+END_SRC
-** indent-guide
-#+BEGIN_SRC emacs-lisp
-  (require 'indent-guide)
-  (indent-guide-global-mode)
-  ;; (setq indent-guide-delay 0.1)
-#+END_SRC
 ** xah-get-thing
 http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
 #+BEGIN_SRC emacs-lisp
@@ -362,3 +356,13 @@ http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
   ;; (global-set-key (kbd "s-r") 'slegetank/quickrun)
   ;; (evil-define-key 'normal quickrun--mode-map (kbd "q") 'quit-window)
 #+END_SRC
+** yaml-mode
+#+BEGIN_SRC emacs-lisp
+  (require 'yaml-mode)
+  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+
+  (add-hook 'yaml-mode-hook
+            '(lambda ()
+               (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+#+END_SRC
+
