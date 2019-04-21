@@ -433,7 +433,7 @@
                                               :html-head-include-scripts nil
                                               :html-viewport nil
                                               :with-sub-superscript nil
-                                              :exclude ,(s-join "\\|" slegetank/exclude-blog-files)
+                                              :exclude ,(and slegetank/exclude-blog-files (s-join "\\|" slegetank/exclude-blog-files))
                                               ))
     (org-publish "blog" t)
     (let ((default-directory my-blog-publish-base))
