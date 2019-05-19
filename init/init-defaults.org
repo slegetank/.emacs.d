@@ -1,16 +1,3 @@
-* packages
-** exec-path-from-shell
-使MacOS上的Emacs能正确的使用shell的环境变量。
-#+BEGIN_SRC emacs-lisp
-  (require-package 'exec-path-from-shell)
-  (when (equal system-type 'darwin)
-    (exec-path-from-shell-initialize))
-#+END_SRC
-** s
-#+BEGIN_SRC emacs-lisp
-  (require-package 's)
-  (require 's)
-#+END_SRC
 * defaults
 [针对mac] brew安装的库会默认以/usr/local/emacs为基准，而相对应的el文件则保存在这里：
 #+BEGIN_SRC emacs-lisp
@@ -40,11 +27,16 @@
   ;; (setq history-length 20)
 #+END_SRC
 
+如果需要一直显示行号，打开：
 #+BEGIN_SRC emacs-lisp
-  ;; 隐藏行号 会导致org mode编辑代码卡顿
-  (global-linum-mode 0)
+  ;; (global-display-line-numbers-mode 1)
+  ;; (setq display-line-numbers-grow-only t)
+  ;; (setq display-line-numbers-type 'visual)
+#+END_SRC
 
-  ;; 暂时显示行号
+#+BEGIN_SRC emacs-lisp
+  (global-linum-mode 0)
+  ;; ;; 暂时显示行号
   (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
   (defun goto-line-with-feedback ()
@@ -256,31 +248,6 @@ emacs 26 以上 insert-string 调整为insert
         (xah-get-thing-at-point 'word)
       (thing-at-point 'word)))
 #+END_SRC
-* packages
-** mode-line-bell
-#+BEGIN_SRC emacs-lisp
-  (require-package 'mode-line-bell)
-  (add-hook 'after-init-hook 'mode-line-bell-mode)
-#+END_SRC
-** default-text-scale
-#+BEGIN_SRC emacs-lisp
-  (require-package 'default-text-scale)
-  (require 'default-text-scale)
-
-  (add-hook 'after-init-hook 'default-text-scale-mode)
-
-  (define-key default-text-scale-mode-map (kbd "s-=") 'default-text-scale-increase)
-  (define-key default-text-scale-mode-map (kbd "s--") 'default-text-scale-decrease)
-  (define-key default-text-scale-mode-map (kbd "s-0") 'default-text-scale-reset)
-#+END_SRC
-** beacon
-#+BEGIN_SRC emacs-lisp
-  (require-package 'beacon)
-  (beacon-mode +1)
-  (setq beacon-blink-when-point-moves-vertically 35)
-  (setq beacon-blink-when-window-scrolls nil)
-#+END_SRC
-
 * TRAMP
 #+BEGIN_SRC emacs-lisp
   (require 'tramp)
@@ -394,85 +361,6 @@ emacs 26 以上 insert-string 调整为insert
             (erase-buffer)
             (read-only-mode +1))))))
 #+END_SRC
-* w3m
-#+BEGIN_SRC emacs-lisp
-  ;; (setq browse-url-browser-function 'w3m-browse-url)
-  ;; (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
-  ;; ;; optional keyboard short-cut
-  ;; (global-set-key "\C-xm" 'browse-url-at-point)
-  ;; (setq w3m-use-cookies t)
-
-  ;; (require 'w3m-search)
-  ;; (add-to-list 'w3m-search-engine-alist
-  ;;              '("emacs-wiki" "http://www.emacswiki.org/cgi-bin/wiki.pl?search=%s"))
-#+END_SRC
-
-快捷键定义来自[[http://sachachua.com/blog/2008/08/why-browse-the-web-in-emacs/][sacha的博客]], 进行了更符合vi习惯的修改：
-#+BEGIN_SRC emacs-lisp
-  ;; (defun sacha/w3m-setup-keymap ()
-  ;;   "Use my heavily customized map."
-  ;;   (interactive)
-  ;;   ;; Undefine this key and use the advice instead so that my ido doesn't get
-  ;;   ;; overridden
-  ;;   (define-key w3m-mode-map (kbd "C-x b") nil)
-  ;;   (define-key w3m-mode-map "C" 'w3m-print-this-url)
-  ;;   (define-key w3m-mode-map "A" 'w3m-bookmark-add-current-url)
-  ;;   (define-key w3m-mode-map "w" 'w3m-download-with-wget)
-  ;;   (define-key w3m-mode-map "d" 'w3m-download-with-wget)
-  ;;   (define-key w3m-mode-map "D" 'w3m-download-this-url)
-  ;;   ;; Do not override my ever so handy ERC binding
-  ;;   (define-key w3m-mode-map (kbd "C-c C-SPC") nil)
-  ;;   (define-key w3m-mode-map "m" 'sacha/w3m-mirror-current-page)
-  ;;   (define-key w3m-mode-map "M" 'sacha/w3m-mirror-link)
-
-  ;;   (define-key w3m-mode-map "s" 'w3m-search)
-  ;;   (define-key w3m-mode-map "h" 'w3m-history)
-  ;;   (define-key w3m-mode-map "t" 'w3m-scroll-down-or-previous-url)
-  ;;   (define-key w3m-mode-map "n" 'w3m-scroll-up-or-next-url)
-  ;;   ;; I don't often w3m to edit pages, so I'm borrowing o and e (right
-  ;;   ;; below , / . for tab navigation) for page navigation instead.
-  ;;   (define-key w3m-mode-map "o" 'w3m-view-previous-page)
-  ;;   (define-key w3m-mode-map "e" 'w3m-view-next-page)
-  ;;   ;; i is a more useful mnemonic for toggling images
-  ;;   (define-key w3m-mode-map "i" 'w3m-toggle-inline-image)
-  ;;   (define-key w3m-mode-map "I" 'w3m-toggle-inline-images)
-  ;;   ;; and X for closing the buffer
-  ;;   (define-key w3m-mode-map "X" 'w3m-delete-buffer)
-  ;;   (define-key w3m-mode-map "x" 'w3m-delete-buffer)
-  ;;   (define-key w3m-mode-map "z" 'w3m-delete-buffer)
-  ;;   ;; and b for bookmarks
-  ;;   (define-key w3m-mode-map "b" 'w3m-bookmark-view)
-  ;;   ;; I don't use the Qwerty keymap, so hjkl is useless for me
-  ;;   ;; I'll use HTNS, though
-  ;;   (define-key w3m-mode-map "h" 'backward-char)
-  ;;   (define-key w3m-mode-map "k" 'previous-line)
-  ;;   (define-key w3m-mode-map "j" 'next-line)
-  ;;   (define-key w3m-mode-map "l" 'forward-char)
-  ;;   ;; Browse in new sessions by default
-  ;;   (define-key w3m-mode-map (kbd "RET") 'w3m-view-this-url)
-  ;;   (define-key w3m-mode-map [(shift return)] 'w3m-view-this-url-new-session)
-  ;;   (define-key w3m-mode-map "g" 'w3m-goto-url)
-  ;;   (define-key w3m-mode-map "G" 'w3m-goto-url-new-session)
-  ;;   ;; f for forward? I want to be able to follow links without removing
-  ;;   ;; most of my fingers from home row. My fingers are too short to hit
-  ;;   ;; Enter.
-  ;;   (define-key w3m-mode-map "f" 'w3m-view-this-url-new-session)
-  ;;   (define-key w3m-mode-map "F" 'w3m-view-this-url)
-  ;;   ;; Use cursor keys to scroll
-  ;;   (define-key w3m-mode-map [(left)] 'backward-char)
-  ;;   (define-key w3m-mode-map [(right)] 'forward-char)
-  ;;   (define-key w3m-mode-map [(shift left)] 'w3m-shift-right)
-  ;;   (define-key w3m-mode-map [(shift right)] 'w3m-shift-left)
-  ;;   ;; Which means I can now use , and . to switch pages
-  ;;   (define-key w3m-mode-map "." 'w3m-next-buffer)
-  ;;   (define-key w3m-mode-map "," 'w3m-previous-buffer)
-  ;;   ;; IBM stuff
-  ;;   (define-key w3m-mode-map "i" nil)
-  ;;   (define-key w3m-mode-map "ib" 'sacha/ibm-blog)
-  ;;   (define-key w3m-mode-map "id" 'sacha/dogear-url)
-  ;;   (define-key w3m-mode-map "f" 'sacha/w3m-open-in-firefox)
-  ;;   )
-#+END_SRC
 * current edit directory
 #+BEGIN_SRC emacs-lisp
   (defun custom-writeCurrentDirToCahceFile ()
@@ -482,6 +370,36 @@ emacs 26 以上 insert-string 调整为insert
 * scheme
 #+BEGIN_SRC emacs-lisp
   (setq scheme-program-name   "/usr/local/bin/mit-scheme")
+#+END_SRC
+* packages
+** mode-line-bell
+#+BEGIN_SRC emacs-lisp
+  (require-package 'mode-line-bell)
+  (add-hook 'after-init-hook 'mode-line-bell-mode)
+#+END_SRC
+** default-text-scale
+#+BEGIN_SRC emacs-lisp
+  (require-package 'default-text-scale)
+  (require 'default-text-scale)
+
+  (add-hook 'after-init-hook 'default-text-scale-mode)
+
+  (define-key default-text-scale-mode-map (kbd "s-=") 'default-text-scale-increase)
+  (define-key default-text-scale-mode-map (kbd "s--") 'default-text-scale-decrease)
+  (define-key default-text-scale-mode-map (kbd "s-0") 'default-text-scale-reset)
+#+END_SRC
+
+** exec-path-from-shell
+使MacOS上的Emacs能正确的使用shell的环境变量。
+#+BEGIN_SRC emacs-lisp
+  (require-package 'exec-path-from-shell)
+  (when (equal system-type 'darwin)
+    (exec-path-from-shell-initialize))
+#+END_SRC
+** s
+#+BEGIN_SRC emacs-lisp
+  (require-package 's)
+  (require 's)
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp

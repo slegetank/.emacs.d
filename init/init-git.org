@@ -25,9 +25,10 @@
   (add-hook 'git-commit-mode-hook 'goto-address-mode)
 #+END_SRC
 ** git-gutter
+卡
 #+BEGIN_SRC emacs-lisp
-  (require-package 'git-gutter)
-  (global-git-gutter-mode +1)
+  ;; (require-package 'git-gutter)
+  ;; (global-git-gutter-mode +1)
 #+END_SRC
 
 ** git-messenger

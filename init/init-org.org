@@ -181,7 +181,7 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
            (fromname (cadr payload)))
       (when (and (eq 'drag-n-drop (car event))
                   (eq 'file type))
-        (cond ((and (fboundp 'custom-blog-drag-image) (custom-org-blog-p)) (custom-blog-drag-image fromname)) ; blog
+        (cond ((and (fboundp 'slegetank/blog-drag-image) (slegetank/org-blog-p)) (slegetank/blog-drag-image fromname)) ; blog
               ((and (fboundp 'custom-mail-drag-attach) (custom-org-mail-p)) (custom-mail-drag-attach fromname)) ; mail
               ((and (fboundp 'custom-common-org-drag-image) (custom-org-common-p)) (custom-common-org-drag-image fromname)) ; common
               (t (find-file fromname))))))

@@ -31,8 +31,7 @@ https://github.com/tumashu/pyim
   (setq pyim-page-length 5)
 
   (setq-default pyim-english-input-switch-functions
-                '(pyim-probe-program-mode
-                  pyim-probe-org-structure-template))
+                '(pyim-probe-org-structure-template))
 
   (setq-default pyim-punctuation-half-width-functions
                 '(pyim-probe-punctuation-line-beginning
@@ -44,6 +43,13 @@ https://github.com/tumashu/pyim
   (define-key pyim-mode-map (kbd "C-j") 'pyim-page-next-page)
   (define-key pyim-mode-map (kbd "C-k") 'pyim-page-previous-page)
   (define-key pyim-mode-map (kbd "<escape>") 'pyim-quit-clear)
+
+  ;; 特殊词上屏
+  (defun slegetank/special-words-converter (string)
+    (if (equal string "物物")
+        "IoT"
+      string))
+  (setq pyim-magic-converter #'slegetank/special-words-converter)
 #+END_SRC
 
 ** 添加词库

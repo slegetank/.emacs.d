@@ -42,6 +42,8 @@ mac下更好的鼠标滚动：
   ;; (load-theme 'afternoon t)
   ;; (require-package 'twilight-anti-bright-theme)
   (require-package 'spacemacs-theme)
+  (require-package 'blackboard-theme)
+  (require-package 'snazzy-theme)
 
   (slegetank/leader-define-key "tu" 'customize-themes "Custom theme")
 #+END_SRC
