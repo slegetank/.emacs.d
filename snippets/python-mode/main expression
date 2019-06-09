@@ -3,5 +3,10 @@
 # key: __main__
 # --
 if __name__ == '__main__':
-    $0
+    opts, args = getopt.getopt(sys.argv[1:], 's', '')
+
+    for option, value in opts:
+        if option == '-s':
+            $0
+
 

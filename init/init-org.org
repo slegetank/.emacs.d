@@ -260,12 +260,10 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
 #+BEGIN_SRC emacs-lisp
   (require-package 'org-tree-slide)
 #+END_SRC
-** atomic-chrome
-#+BEGIN_SRC emacs-lisp
-  (require-package 'atomic-chrome)
-  (require 'atomic-chrome)
-  (setq atomic-chrome-buffer-open-style 'frame)
-  (atomic-chrome-start-server)
+** polymode
+#+BEGIN_SRC elisp
+  (require-package 'polymode)
+  (require-package 'poly-org)
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp
