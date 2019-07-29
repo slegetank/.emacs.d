@@ -15,7 +15,7 @@
   ;; large file slow
   (setq magit-commit-show-diff nil)
 
-  (setq-default magit-diff-refine-hunk t)
+  (setq-default magit-diff-refine-hunk nil)
 
   (slegetank/leader-define-key "g" nil "Git"
                                "gs" 'magit-status "Git status"

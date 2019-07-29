@@ -66,3 +66,4 @@
 (put 'upcase-region 'disabled nil)
 
 (put 'erase-buffer 'disabled nil)
+(put 'set-goal-column 'disabled nil)

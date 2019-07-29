@@ -12,7 +12,7 @@
     (make-variable-buffer-local 'elpy-modules)
     (setq elpy-modules
           '(elpy-module-sane-defaults
-            elpy-module-company
+            ;; elpy-module-company
             elpy-module-eldoc
             elpy-module-flymake
             ;; This eat too much CPU cycle
@@ -21,7 +21,12 @@
             elpy-module-yasnippet))
     (setq elpy-eldoc-show-current-function nil)
     (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
-    (elpy-mode))
+    (elpy-mode)
+
+    (company-mode)
+    (set (make-local-variable 'company-backends)
+         (list
+          '(elpy-company-backend company-tabnine))))
 
   (elpy-enable)
   (add-hook 'python-mode-hook 'my-elpy-mode)

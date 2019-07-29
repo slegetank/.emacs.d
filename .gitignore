@@ -48,3 +48,4 @@ projectile-bookmarks.eld
 /.historian
 /pyim/rime/*
 !/pyim/rime/default.custom.yaml
+/transient/*

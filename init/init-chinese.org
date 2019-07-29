@@ -39,7 +39,8 @@ https://github.com/tumashu/pyim
 
   (global-set-key (kbd "C-s-;") 'pyim-convert-string-at-point)
   (global-set-key (kbd "C-;") 'toggle-input-method)
-  (define-key pyim-mode-map (kbd "<tab>") 'pyim-page-next-page)
+  (define-key pyim-mode-map (kbd ".") 'pyim-page-next-page)
+  (define-key pyim-mode-map (kbd ",") 'pyim-page-previous-page)
   (define-key pyim-mode-map (kbd "C-j") 'pyim-page-next-page)
   (define-key pyim-mode-map (kbd "C-k") 'pyim-page-previous-page)
   (define-key pyim-mode-map (kbd "<escape>") 'pyim-quit-clear)

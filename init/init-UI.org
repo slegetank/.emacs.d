@@ -3,7 +3,7 @@
 * Default
 #+BEGIN_SRC emacs-lisp
   (when (>= emacs-major-version 26)
-    ;; (pixel-scroll-mode)
+    (pixel-scroll-mode)
     (when (equal system-type 'darwin)
       (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
       (add-to-list 'default-frame-alist '(ns-appearance . dark))))
@@ -30,7 +30,7 @@ mac下更好的鼠标滚动：
 * theme
 #+BEGIN_SRC emacs-lisp
   (setq custom-safe-themes t)
-  (require-package 'afternoon-theme)
+  ;; (require-package 'afternoon-theme)
   ;; (require-package 'monokai-theme)
   ;; (require-package 'ujelly-theme)
   ;; (require-package 'sublime-themes)
@@ -38,48 +38,68 @@ mac下更好的鼠标滚动：
   ;; (require-package 'zenburn-theme)
   ;; (require-package 'metalheart-theme)
   ;; (require-package 'color-theme-sanityinc-tomorrow)
-  (require-package 'doom-themes)
+   (require-package 'doom-themes)
   ;; (load-theme 'afternoon t)
   ;; (require-package 'twilight-anti-bright-theme)
-  (require-package 'spacemacs-theme)
-  (require-package 'blackboard-theme)
-  (require-package 'snazzy-theme)
+  ;; (require-package 'spacemacs-theme)
+  ;; (require-package 'blackboard-theme)
+  ;; (require-package 'snazzy-theme)
+  ;; (require-package 'zerodark-theme)
+  ;; (load-theme 'zerodark t)
+  ;; (zerodark-setup-modeline-format)
 
   (slegetank/leader-define-key "tu" 'customize-themes "Custom theme")
 #+END_SRC
 
 ** doom
 #+BEGIN_SRC emacs-lisp
-  ;; (require-package 'all-the-icons)
-  ;; (require 'all-the-icons)
-  ;; (require 'doom-themes)
+  (require-package 'all-the-icons)
+  (require 'all-the-icons)
+  (require 'doom-themes)
 
-  ;; ;; Global settings (defaults)
-  ;; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-  ;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
 
-  ;; ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
-  ;; ;; may have their own settings.
-  ;; (load-theme 'doom-one t)
+  ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+  ;; may have their own settings.
+  (load-theme 'doom-one t)
 
-  ;; ;; Enable flashing mode-line on errors
-  ;; (doom-themes-visual-bell-config)
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
 
-  ;; ;; Enable custom neotree theme
-  ;; (doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
+  ;; Enable custom neotree theme
+  (doom-themes-neotree-config)  ; all-the-icons fonts must be installed!
 
-  ;; ;; Corrects (and improves) org-mode's native fontification.
-  ;; (doom-themes-org-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config)
 
-  ;; ;; (require-package 'doom-modeline)
-  ;; ;; (require 'doom-modeline)
-  ;; ;; (doom-modeline-init)
+  (setq doom-font (font-spec :family "Fantasque Sans Mono" :size 25))
+
+  ;; (require-package 'doom-modeline)
+  ;; (require 'doom-modeline)
+  ;; (doom-modeline-init)
 #+END_SRC
 
-* smart-mode-line
+* dashboard
 #+BEGIN_SRC emacs-lisp
-  ;; (require-package 'smart-mode-line)
-  ;; (require 'smart-mode-line)
-  ;; (setq sml/no-confirm-load-theme t)
-  ;; (sml/setup)
+  (require-package 'dashboard)
+  (require 'dashboard)
+  (dashboard-setup-startup-hook)
+
+  ;; Set the title
+  (setq dashboard-banner-logo-title "Good day commander! Happy Hacking!")
+  (setq dashboard-footer "Life is short, use python!")
+
+  (setq dashboard-show-shortcuts nil)
+
+  (setq dashboard-items '((recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 5)
+                          (registers . 5)))
+
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+
+  (setq dashboard-set-navigator t)
 #+END_SRC

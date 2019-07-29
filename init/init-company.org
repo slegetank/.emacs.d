@@ -22,15 +22,13 @@ company - complete anything!
             company-complete-number
             )))
 
+
   (setq company-dabbrev-downcase nil
         ;; make previous/next selection in the popup cycles
         company-selection-wrap-around t
-        ;; Some languages use camel case naming convention,
-        ;; so company should be case sensitive.
-        company-dabbrev-ignore-case nil
-        ;; press s-number to choose candidate
+        ;; company-dabbrev-ignore-case nil
         company-show-numbers t
-        company-idle-delay 0.1
+        company-idle-delay 0
         company-clang-insert-arguments nil
         company-require-match nil
         company-etags-ignore-case t)
@@ -68,29 +66,29 @@ company - complete anything!
 ** company-tabnine
 机器学习补全
 #+BEGIN_SRC emacs-lisp
-  ;; (require-package 'company-tabnine)
-  ;; (require 'company-tabnine)
-  ;; (add-to-list 'company-backends #'company-tabnine)
+  (require-package 'company-tabnine)
+  (require 'company-tabnine)
+  (add-to-list 'company-backends #'company-tabnine)
 #+END_SRC
 * keys
 tab => complete
 #+BEGIN_SRC emacs-lisp
-  (define-key company-mode-map [remap indent-for-tab-command]
-    'company-indent-for-tab-command)
+  ;; (define-key company-mode-map [remap indent-for-tab-command]
+  ;;   'company-indent-for-tab-command)
 
-  (setq tab-always-indent 'complete)
+  ;; (setq tab-always-indent 'complete)
 
-  (defvar completion-at-point-functions-saved nil)
+  ;; (defvar completion-at-point-functions-saved nil)
 
-  (defun company-indent-for-tab-command (&optional arg)
-    (interactive "P")
-    (let ((completion-at-point-functions-saved completion-at-point-functions)
-          (completion-at-point-functions '(company-complete-common-wrapper)))
-      (indent-for-tab-command arg)))
+  ;; (defun company-indent-for-tab-command (&optional arg)
+  ;;   (interactive "P")
+  ;;   (let ((completion-at-point-functions-saved completion-at-point-functions)
+  ;;         (completion-at-point-functions '(company-complete-common-wrapper)))
+  ;;     (indent-for-tab-command arg)))
 
-  (defun company-complete-common-wrapper ()
-    (let ((completion-at-point-functions completion-at-point-functions-saved))
-      (company-complete-common)))
+  ;; (defun company-complete-common-wrapper ()
+  ;;   (let ((completion-at-point-functions completion-at-point-functions-saved))
+  ;;     (company-complete-common)))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp

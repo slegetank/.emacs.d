@@ -114,7 +114,7 @@
                 (end (progn (re-search-forward "^#\\+END_COMMENT")
                             (match-beginning 0))))
 
-            (setq preview-str (buffer-substring beg end))))
+            (setq preview-str (buffer-substring-no-properties beg end))))
         ;; property
         (let ((org-properties (org-element-map (org-element-parse-buffer 'element) 'keyword
                                 (lambda (keyword) (cons (org-element-property :key keyword)

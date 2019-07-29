@@ -34,6 +34,9 @@
   (require-package 'js2-mode)
   ;; (require-package 'simple-httpd)
   (setq js2-strict-trailing-comma-warning nil)
+  (setq js2-idle-timer-delay 2)
+  (setq blink-matching-paren nil)
+  (setq inhibit-compacting-font-caches t)
 #+END_SRC
 * indium
 npm install -g indium
@@ -61,8 +64,6 @@ npm install -g indium
     (setq flycheck-check-syntax-automatically '(save mode-enabled))
     (eldoc-mode +1)
 
-    (setq company-tooltip-align-annotations t)
-
     ;; formats the buffer before saving
     ;; use prettier-js instead
     ;; (add-hook 'before-save-hook 'tide-format-before-save)
@@ -79,16 +80,15 @@ npm install -g indium
     ;; 用js-doc的
     ;; (evil-define-key 'normal tide-mode-map (kbd "M-s-/") 'tide-jsdoc-template)
     ;; (evil-define-key 'normal tide-mode-map (kbd "M-s-÷") 'tide-jsdoc-template)
-
-    (add-hook 'js-mode-hook
-              (lambda ()
-                (set (make-local-variable 'company-backends)
-                     '(
-                       company-tide
-                       company-dabbrev-code
-                       company-keywords
-                       company-files
-                       company-yasnippet)))))
+    (set (make-local-variable 'company-backends)
+         (list '(
+                 company-tide
+                 company-tabnine
+                 company-dabbrev-code
+                 company-keywords
+                 company-files
+                 company-yasnippet
+                 ))))
 
   (add-hook 'js-mode-hook #'setup-tide-mode)
 #+END_SRC
