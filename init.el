@@ -37,7 +37,8 @@
                                   "ibuffer"
                                   "whitespace"
                                   "regex"
-                                  "minibuffer"))
+                                  "minibuffer"
+                                  ))
 
 ;; mu4e
 (when (executable-find "mu")

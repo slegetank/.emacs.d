@@ -34,7 +34,7 @@
   (require-package 'js2-mode)
   ;; (require-package 'simple-httpd)
   (setq js2-strict-trailing-comma-warning nil)
-  (setq js2-idle-timer-delay 2)
+  ;; (setq js2-idle-timer-delay 2)
   (setq blink-matching-paren nil)
   (setq inhibit-compacting-font-caches t)
 #+END_SRC

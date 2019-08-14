@@ -39,6 +39,7 @@ mac下更好的鼠标滚动：
   ;; (require-package 'metalheart-theme)
   ;; (require-package 'color-theme-sanityinc-tomorrow)
    (require-package 'doom-themes)
+   (require-package 'srcery-theme)
   ;; (load-theme 'afternoon t)
   ;; (require-package 'twilight-anti-bright-theme)
   ;; (require-package 'spacemacs-theme)

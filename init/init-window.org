@@ -23,18 +23,30 @@ switch-window，多窗口切换解决方案：
 
 分屏的时候，自动在新的window里执行other buffer
 #+BEGIN_SRC emacs-lisp
-  (defun split-window-func-with-other-buffer (split-function)
-    (lambda (&optional arg)
-      "Split this window and switch to the new window unless ARG is provided."
-      (interactive "P")
-      (funcall split-function)
-      (let ((target-window (next-window)))
-        (set-window-buffer target-window (other-buffer))
-        (unless arg
-          (select-window target-window)))))
+  ;; (defun split-window-func-with-other-buffer (split-function)
+  ;;   (lambda (&optional arg)
+  ;;     "Split this window and switch to the new window unless ARG is provided."
+  ;;     (interactive "P")
+  ;;     (funcall split-function)
+  ;;     (let ((target-window (next-window)))
+  ;;       (set-window-buffer target-window (other-buffer))
+  ;;       (unless arg
+  ;;         (select-window target-window)))))
 
-  (slegetank/leader-define-key "wv"  (split-window-func-with-other-buffer 'split-window-vertically) "Split vertically"
-                               "wh" (split-window-func-with-other-buffer 'split-window-horizontally) "Split horizontally")
+  ;; (slegetank/leader-define-key "wv"  (split-window-func-with-other-buffer 'split-window-vertically) "Split vertically"
+  ;;                              "wh" (split-window-func-with-other-buffer 'split-window-horizontally) "Split horizontally")
+
+  ;; 还是换回来，other buffer的方式不好使，特别是同一个工程内切一个窗口，然后再搜索的情况
+  (defadvice split-window-vertically (after move-point-to-new-window activate)
+    "Moves the point to the newly created window after splitting."
+    (other-window 1))
+
+  (defadvice split-window-horizontally (after move-point-to-new-window activate)
+    "Moves the point to the newly created window after splitting."
+    (other-window 1))
+
+  (slegetank/leader-define-key "wv" 'split-window-vertically "Split vertically"
+                               "wh" 'split-window-horizontally "Split horizontally")
 #+END_SRC
 
 swap buffer to other window

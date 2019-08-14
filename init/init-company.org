@@ -68,7 +68,7 @@ company - complete anything!
 #+BEGIN_SRC emacs-lisp
   (require-package 'company-tabnine)
   (require 'company-tabnine)
-  (add-to-list 'company-backends #'company-tabnine)
+  ;; (add-to-list 'company-backends #'company-tabnine)
 #+END_SRC
 * keys
 tab => complete

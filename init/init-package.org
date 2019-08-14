@@ -27,6 +27,8 @@
                                                                         vdiff
                                                                         yaml-mode
                                                                         powershell
+                                                                        dumb-jump
+                                                                        fancy-narrow
                                                                       )))
   #+END_SRC
 
@@ -367,3 +369,34 @@ http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
                (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 #+END_SRC
 
+** dumb-jump
+#+BEGIN_SRC emacs-lisp
+  (dumb-jump-mode)
+#+END_SRC
+** fancy-narrow
+#+BEGIN_SRC emacs-lisp
+  (require 'fancy-narrow)
+
+  (define-minor-mode slegetank/fancy-narrow-mode
+    "Add a minor mode to do fancy narrow"
+    :lighter " FN"
+    :keymap (let ((map (make-sparse-keymap)))
+              (define-key map (kbd "s-f") 'evil-search-forward)
+              map)
+    (when slegetank/fancy-narrow-mode
+      (evil-define-key 'normal slegetank/fancy-narrow-mode-map (kbd "s-f") 'evil-search-forward))
+    (keyboard-quit))
+
+  (defun slegetank/fancy-narrow-to-region ()
+    (interactive)
+    (call-interactively 'fancy-narrow-to-region)
+    (slegetank/fancy-narrow-mode 1))
+
+  (defun slegetank/fancy-widen ()
+    (interactive)
+    (call-interactively 'fancy-widen)
+    (slegetank/fancy-narrow-mode -1))
+
+  (slegetank/leader-define-key "nn" 'slegetank/fancy-narrow-to-region "Narrow"
+                               "nw" 'slegetank/fancy-widen "Widen")
+#+END_SRC

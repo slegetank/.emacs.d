@@ -52,8 +52,8 @@
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-    (evil-leader/set-key
-      "oc" 'org-capture)
+    ;; (evil-leader/set-key
+    ;;   "oc" 'org-capture)
     (setq org-export-coding-system 'utf-8)
 
     (setq org-capture-templates
@@ -109,65 +109,64 @@
 * Edit code
 org mode code blocks supported languages: http://orgmode.org/manual/Languages.html#Languages
   #+BEGIN_SRC emacs-lisp
-    ;; For editing source code
-    (defun custom-indent-org-block-automatically ()
-      (interactive)
-      (when (org-in-src-block-p)
-        (org-edit-special)
-        (indent-region (point-min) (point-max))
-        (org-edit-src-exit)))
+        ;; For editing source code
+        (defun custom-indent-org-block-automatically ()
+          (interactive)
+          (when (org-in-src-block-p)
+            (org-edit-special)
+            (indent-region (point-min) (point-max))
+            (org-edit-src-exit)))
 
-    (defvar slegetank/org-code-block-language "emacs-lisp")
+        (defvar slegetank/org-code-block-language "emacs-lisp")
 
-    (defun slegetank/wrap-region-into-code-block (start end)
-      "Custom method, wrap selected region into #+BEGIN_SRC `slegetank/org-code-block-language' ... #+END_SRC"
-      (interactive "r")
+        (defun slegetank/wrap-region-into-code-block (start end)
+          "Custom method, wrap selected region into #+BEGIN_SRC `slegetank/org-code-block-language' ... #+END_SRC"
+          (interactive "r")
 
-      (let ((mode (ivy-read (format "Mode (default %s): " slegetank/org-code-block-language) nil)))
-        ;; 如果没输入，则取默认值；输入了，则更新默认值
-        (if (string-equal mode "")
-            (setq mode slegetank/org-code-block-language)
-          (setq slegetank/org-code-block-language mode))
-        (let ((region-content (buffer-substring start end)))
-          (kill-region start end)
-          (deactivate-mark)
+          (let ((mode (ivy-read (format "Mode (default %s): " slegetank/org-code-block-language) nil)))
+            ;; 如果没输入，则取默认值；输入了，则更新默认值
+            (if (string-equal mode "")
+                (setq mode slegetank/org-code-block-language)
+              (setq slegetank/org-code-block-language mode))
+            (let ((region-content (buffer-substring start end)))
+              (kill-region start end)
+              (deactivate-mark)
 
-          (unless (s-suffix-p "\n" region-content)
-            (setq region-content (s-append "\n" region-content)))
+              (unless (s-suffix-p "\n" region-content)
+                (setq region-content (s-append "\n" region-content)))
 
-          (insert-string (format "#+BEGIN_SRC %s\n%s#+END_SRC\n" mode region-content))
-          (forward-line -2)
-          (org-edit-special)
-          (indent-region (point-min) (point-max))
-          (org-edit-src-exit)
-          (forward-line 2))))
+              (insert-string (format "#+BEGIN_SRC %s\n%s#+END_SRC\n" mode region-content))
+              (forward-line -2)
+              (org-edit-special)
+              (indent-region (point-min) (point-max))
+              (org-edit-src-exit))))
 
-    (evil-leader/set-key-for-mode 'org-mode
-      "==" 'custom-indent-org-block-automatically
-      "oc" 'slegetank/wrap-region-into-code-block)
+        (evil-leader/set-key-for-mode 'org-mode
+          "==" 'custom-indent-org-block-automatically
+          "oc" 'slegetank/wrap-region-into-code-block)
 
-    ;; If src come from org mode, use these functions
-    (defun custom-org-edit-src-exit ()
-      (interactive)
-      (when (bound-and-true-p org-src-mode)
-        (org-edit-src-exit)))
+        ;; If src come from org mode, use these functions
+        (defun custom-org-edit-src-exit ()
+          (interactive)
+          (when (bound-and-true-p org-src-mode)
+            (org-edit-src-exit)))
 
-    (defun custom-org-edit-src-save ()
-      (interactive)
-      (when (bound-and-true-p org-src-mode)
-        (org-edit-src-save)))
+        (defun custom-org-edit-src-save ()
+          (interactive)
+          (when (bound-and-true-p org-src-mode)
+            (org-edit-src-save)))
 
-    (defun custom-save-buffer ()
-      (interactive)
-      (if (bound-and-true-p org-src-mode)
-          (org-edit-src-save)
-        (save-buffer)))
+        (defun custom-save-buffer ()
+          (interactive)
+          (if (bound-and-true-p org-src-mode)
+              (org-edit-src-save)
+            (save-buffer)))
 
-    (global-set-key (kbd "s-s") 'custom-save-buffer)
+        (global-set-key (kbd "s-s") 'custom-save-buffer)
 
-    (evil-leader/set-key
-      "eq" 'custom-org-edit-src-exit
-      "es" 'custom-org-edit-src-save)
+        (evil-leader/set-key
+          "eq" 'custom-org-edit-src-exit
+          "es" 'custom-org-edit-src-save)
   #+END_SRC
 * Drag file
 分发处理右键拖拽

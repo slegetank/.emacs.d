@@ -26,7 +26,7 @@
     (company-mode)
     (set (make-local-variable 'company-backends)
          (list
-          '(elpy-company-backend company-tabnine))))
+          '(company-tabnine elpy-company-backend))))
 
   (elpy-enable)
   (add-hook 'python-mode-hook 'my-elpy-mode)
