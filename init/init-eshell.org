@@ -440,12 +440,12 @@ Go to last buffer's dir:
 
   (add-hook 'eshell-mode-hook 'slegetank/eshell-setup)
 
-  (slegetank/leader-define-key "tt" (lambda () (interactive)
-                                          (if (bound-and-true-p eshell-mode)
-                                              (slegetank/quit-eshell-window)
-                                            (slegetank/eshell-fast-open nil))) "terminal"
-                                            "ts" 'slegetank/eshell-ivy-switch
-                                            )
+  ;; (slegetank/leader-define-key "tt" (lambda () (interactive)
+  ;;                                         (if (bound-and-true-p eshell-mode)
+  ;;                                             (slegetank/quit-eshell-window)
+  ;;                                           (slegetank/eshell-fast-open nil))) "terminal"
+  ;;                                           "ts" 'slegetank/eshell-ivy-switch
+  ;;                                           )
 #+END_SRC
 * 文章
 1. 自定义方法

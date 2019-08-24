@@ -57,6 +57,35 @@ exit之后自动关闭buffer:
   (require-package 'evil-ediff)
   (evil-ediff-init)
 #+END_SRC
+
+* 有道词典
+#+BEGIN_SRC emacs-lisp
+  (require-package  'youdao-dictionary)
+  (setq url-automatic-caching t)
+
+  (with-eval-after-load "popwin"
+    (push "*Youdao Dictionary*" popwin:special-display-config))
+
+  (if (boundp 'slegetank/cloud-dir)
+      (setq youdao-dictionary-search-history-file (expand-file-name ".youdao" slegetank/cloud-dir))
+    (setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao"))
+#+END_SRC
+
+自定义查询函数：
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/youdao-search (word)
+    (interactive (list (let* ((guessword (slegetank/guess-input))
+                              (readword (read-string (format "Word(%s): " guessword) nil 'youdao-dictionary-history)))
+                         (if (> (length readword) 0)
+                             readword
+                           guessword))))
+    (if (> (length word) 0)
+        (youdao-dictionary-search word)
+      (message "Input empyt. About.")))
+
+  (slegetank/leader-define-key "tt" 'slegetank/youdao-search "Yudao")
+#+END_SRC
+
 * keys
 #+BEGIN_SRC emacs-lisp
   (slegetank/leader-define-key "t" nil "Tools")

@@ -84,6 +84,8 @@ M-x customize-group -> 默认触发为\，改为SPC
                                "e" nil "elisp"
                                "er" 'eval-region "Eval region"
                                "eb" 'eval-buffer "Eval buffer"
+                               "nn" 'narrow-to-region "Narrow"
+                               "nw" 'widen "Widen"
                                "." 'slegetank/repeat-last-command "Repeat")
 
   ;; q for kill-buffer, not for exit emacss

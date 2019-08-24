@@ -29,6 +29,11 @@ https://github.com/magnars/multiple-cursors.el
 
   (evil-define-key 'normal evil-mc-key-map (kbd "C-g") 'slegetank/evil-mc-quit)
   (evil-define-key 'normal evil-mc-key-map (kbd "<escape>") 'slegetank/evil-mc-quit)
+
+  ;; smart-hungry-delete
+  (with-eval-after-load 'smart-hungry-delete
+    (add-to-list 'evil-mc-known-commands '(smart-hungry-delete-backward-char . ((:default . evil-mc-execute-default-call-with-count))))
+    (add-to-list 'evil-mc-known-commands '(smart-hungry-delete-forward-char . ((:default . evil-mc-execute-default-call-with-count)))))
 #+END_SRC
 
 evil-mc与evil-find-char-pinyin有冲突，暂时屏蔽：
@@ -118,6 +123,9 @@ ivy for 2 helper functions:
 #+BEGIN_SRC emacs-lisp
   (define-key evil-normal-state-map (kbd "s-f") 'swiper)
   (define-key global-map (kbd "s-f") 'swiper)
+
+  (define-key evil-normal-state-map (kbd "s-r") 'anzu-query-replace-regexp)
+  (define-key global-map (kbd "s-r") 'anzu-query-replace-regexp)
 
   (evil-define-key 'normal 'global (kbd "s-m") 'slegetank/evil-mc-enable)
   (evil-define-key 'normal 'global (kbd "s-g") 'avy-goto-char)

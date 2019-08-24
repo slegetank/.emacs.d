@@ -28,7 +28,6 @@
                                                                         yaml-mode
                                                                         powershell
                                                                         dumb-jump
-                                                                        fancy-narrow
                                                                       )))
   #+END_SRC
 
@@ -260,13 +259,13 @@ C-c o 打开当前文件所在的Finder;
 
 *** 粘贴之后indent
 #+BEGIN_SRC emacs-lisp
-  (defun slegetank/after-paste-indent (oldfunc &rest args)
-    "After paste indent the region."
-    (apply oldfunc args)
-    (unless (window-minibuffer-p)
-      (indent-region  slegetank/simpleclip-last-paste-region)))
+  ;; (defun slegetank/after-paste-indent (oldfunc &rest args)
+  ;;   "After paste indent the region."
+  ;;   (apply oldfunc args)
+  ;;   (unless (window-minibuffer-p)
+  ;;     (indent-region  slegetank/simpleclip-last-paste-region)))
 
-  (advice-add 'simpleclip-paste :around 'slegetank/after-paste-indent)
+  ;; (advice-add 'simpleclip-paste :around 'slegetank/after-paste-indent)
 #+END_SRC
 
 *** 选中最后粘贴的文字
@@ -370,33 +369,16 @@ http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
 #+END_SRC
 
 ** dumb-jump
+任意跳转定义
 #+BEGIN_SRC emacs-lisp
   (dumb-jump-mode)
+  (slegetank/leader-define-key "gg" 'dumb-jump-go "Go to definition"
+                               "gb" 'dumb-jump-back "Go back"
+                               "go" 'dumb-jump-go-other-window "Go back")
 #+END_SRC
-** fancy-narrow
+** popup
 #+BEGIN_SRC emacs-lisp
-  (require 'fancy-narrow)
-
-  (define-minor-mode slegetank/fancy-narrow-mode
-    "Add a minor mode to do fancy narrow"
-    :lighter " FN"
-    :keymap (let ((map (make-sparse-keymap)))
-              (define-key map (kbd "s-f") 'evil-search-forward)
-              map)
-    (when slegetank/fancy-narrow-mode
-      (evil-define-key 'normal slegetank/fancy-narrow-mode-map (kbd "s-f") 'evil-search-forward))
-    (keyboard-quit))
-
-  (defun slegetank/fancy-narrow-to-region ()
-    (interactive)
-    (call-interactively 'fancy-narrow-to-region)
-    (slegetank/fancy-narrow-mode 1))
-
-  (defun slegetank/fancy-widen ()
-    (interactive)
-    (call-interactively 'fancy-widen)
-    (slegetank/fancy-narrow-mode -1))
-
-  (slegetank/leader-define-key "nn" 'slegetank/fancy-narrow-to-region "Narrow"
-                               "nw" 'slegetank/fancy-widen "Widen")
+  (define-key popup-menu-keymap "\C-j" 'popup-next)
+  (define-key popup-menu-keymap "\C-k" 'popup-previous)
 #+END_SRC
+

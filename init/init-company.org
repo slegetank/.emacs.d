@@ -70,6 +70,13 @@ company - complete anything!
   (require 'company-tabnine)
   ;; (add-to-list 'company-backends #'company-tabnine)
 #+END_SRC
+** company-posframe
+使用child frame作为company前端
+#+BEGIN_SRC emacs-lisp
+  (require-package 'company-posframe)
+  (require 'company-posframe)
+  (company-posframe-mode 1)
+#+END_SRC
 * keys
 tab => complete
 #+BEGIN_SRC emacs-lisp
