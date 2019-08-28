@@ -38,6 +38,7 @@
                                   "whitespace"
                                   "regex"
                                   "minibuffer"
+                                  "promela"
                                   ))
 
 ;; mu4e
@@ -59,8 +60,8 @@
 (setq custom-safe-themes t)
 
 ;; open eshell
-(eshell)
-(rename-buffer "*eshell: ~ <1>*")
+;; (eshell)
+;; (rename-buffer "*eshell: ~ <1>*")
 (evil-normal-state)
 
 ;; (find-file "~/.emacs.d/initpage.org")

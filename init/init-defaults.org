@@ -88,11 +88,6 @@
   ;; yes/no -> y/n
   (fset 'yes-or-no-p 'y-or-n-p)
 
-  ;; narrow enable
-  (put 'narrow-to-region 'disabled nil)
-  (put 'narrow-to-page 'disabled nil)
-  (put 'narrow-to-defun 'disabled nil)
-
   (setq isearch-forward t)
 
   (setq blink-cursor-interval 0.4)
@@ -361,6 +356,34 @@ emacs 26 以上 insert-string 调整为insert
             (erase-buffer)
             (read-only-mode +1))))))
 #+END_SRC
+* narrow
+Narrow是emacs很强大的一个功能。
+#+BEGIN_SRC emacs-lisp
+  (put 'narrow-to-region 'disabled nil)
+  (put 'narrow-to-page 'disabled nil)
+  (put 'narrow-to-defun 'disabled nil)
+#+END_SRC
+
+Narrow修饰：
+#+BEGIN_SRC emacs-lisp
+  (defvar-local slegetank/narrow--restore-state nil)
+
+  (defun slegetank/narrow ()
+    (interactive)
+    (setq slegetank/narrow--restore-state 
+          (list (selected-window) (window-start)))
+    (call-interactively 'narrow-to-region)
+    (deactivate-mark))
+
+  (defun slegetank/widen ()
+    (interactive)
+    (call-interactively 'widen)
+    (when (and slegetank/narrow--restore-state
+               (not (buffer-narrowed-p)))
+      (apply #'set-window-start slegetank/narrow--restore-state)
+      (setq slegetank/narrow--restore-state nil)))
+#+END_SRC
+
 * current edit directory
 #+BEGIN_SRC emacs-lisp
   (defun custom-writeCurrentDirToCahceFile ()

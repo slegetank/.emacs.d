@@ -1,0 +1,9 @@
+
+#+BEGIN_SRC emacs-lisp
+  (require 'promela-mode)
+  (add-to-list 'auto-mode-alist '("\\.pml\\'" . promela-mode))
+
+  (add-hook 'org-mode-hook (lambda ()
+                             (set (make-local-variable 'company-backends)
+                                  (add-to-list 'company-backends #'company-tabnine))))
+#+END_SRC

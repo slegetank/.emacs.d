@@ -270,7 +270,9 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
     (local-set-key (kbd "s-k") 'outline-previous-visible-heading)
     (local-set-key (kbd "s-j") 'outline-next-visible-heading)
     (local-set-key (kbd "<s-return>") 'org-meta-return)
-    )
+
+    (set (make-local-variable 'company-backends)
+         (add-to-list 'company-backends #'company-tabnine)))
 
   (add-hook 'org-mode-hook 'my-org-config)
 
