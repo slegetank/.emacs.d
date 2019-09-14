@@ -374,7 +374,7 @@ http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
   (dumb-jump-mode)
   (slegetank/leader-define-key "gg" 'dumb-jump-go "Go to definition"
                                "gb" 'dumb-jump-back "Go back"
-                               "go" 'dumb-jump-go-other-window "Go back")
+                               "go" 'dumb-jump-go-other-window "Go to def other window")
 #+END_SRC
 ** popup
 #+BEGIN_SRC emacs-lisp

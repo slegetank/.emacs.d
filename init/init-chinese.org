@@ -146,5 +146,9 @@ emacs中文字体配置工具。可以快速方便的的实现中文字体和英
   (require 'cnfonts)
   (cnfonts-enable)
   (cnfonts-set-spacemacs-fallback-fonts)
+
+  (define-key global-map (kbd "s-=") 'cnfonts-increase-fontsize)
+  (define-key global-map (kbd "s--") 'cnfonts-decrease-fontsize)
+  (define-key global-map (kbd "s-0") 'cnfonts-reset-fontsize)
 #+END_SRC
 

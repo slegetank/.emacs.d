@@ -1,6 +1,13 @@
 显示UI相关
 
 * Default
+colors
+#+BEGIN_SRC emacs-lisp
+  (setq slegetank/color-green "#00CA49"
+        slegetank/color-red "#FF4A49"
+        slegetank/color-yellow "#FFB63E")
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (when (>= emacs-major-version 26)
     (pixel-scroll-mode)
@@ -75,7 +82,7 @@ mac下更好的鼠标滚动：
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config)
 
-  (setq doom-font (font-spec :family "Fantasque Sans Mono" :size 25))
+  (setq doom-font (font-spec :family "Fantasque Sans Mono" :size 100))
 
   ;; (require-package 'doom-modeline)
   ;; (require 'doom-modeline)
@@ -83,24 +90,25 @@ mac下更好的鼠标滚动：
 #+END_SRC
 
 * dashboard
+花里胡哨的，关掉
 #+BEGIN_SRC emacs-lisp
-  (require-package 'dashboard)
-  (require 'dashboard)
-  (dashboard-setup-startup-hook)
+  ;; (require-package 'dashboard)
+  ;; (require 'dashboard)
+  ;; (dashboard-setup-startup-hook)
 
-  ;; Set the title
-  (setq dashboard-banner-logo-title "Good day commander! Happy Hacking!")
-  (setq dashboard-footer "Life is short, use python!")
+  ;; ;; Set the title
+  ;; (setq dashboard-banner-logo-title "Good day commander! Happy Hacking!")
+  ;; (setq dashboard-footer "Life is short, use python!")
 
-  (setq dashboard-show-shortcuts nil)
+  ;; (setq dashboard-show-shortcuts nil)
 
-  (setq dashboard-items '((recents  . 5)
-                          (bookmarks . 5)
-                          (projects . 5)
-                          (registers . 5)))
+  ;; (setq dashboard-items '((recents  . 5)
+  ;;                         (bookmarks . 5)
+  ;;                         (projects . 5)
+  ;;                         (registers . 5)))
 
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
+  ;; (setq dashboard-set-heading-icons t)
+  ;; (setq dashboard-set-file-icons t)
 
-  (setq dashboard-set-navigator t)
+  ;; (setq dashboard-set-navigator t)
 #+END_SRC

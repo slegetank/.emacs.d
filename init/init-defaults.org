@@ -77,7 +77,7 @@
 
   ;; 更改显示字体大小 16pt
   ;; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
-  (set-face-attribute 'default nil :height 140)
+  (set-face-attribute 'default nil :height 150)
 
   (setq ring-bell-function 'ignore)
 
@@ -401,15 +401,16 @@ Narrow修饰：
   (add-hook 'after-init-hook 'mode-line-bell-mode)
 #+END_SRC
 ** default-text-scale
+放弃，改用cnfont的方法
 #+BEGIN_SRC emacs-lisp
-  (require-package 'default-text-scale)
-  (require 'default-text-scale)
+  ;; (require-package 'default-text-scale)
+  ;; (require 'default-text-scale)
 
-  (add-hook 'after-init-hook 'default-text-scale-mode)
+  ;; (add-hook 'after-init-hook 'default-text-scale-mode)
 
-  (define-key default-text-scale-mode-map (kbd "s-=") 'default-text-scale-increase)
-  (define-key default-text-scale-mode-map (kbd "s--") 'default-text-scale-decrease)
-  (define-key default-text-scale-mode-map (kbd "s-0") 'default-text-scale-reset)
+  ;; (define-key default-text-scale-mode-map (kbd "s-=") 'default-text-scale-increase)
+  ;; (define-key default-text-scale-mode-map (kbd "s--") 'default-text-scale-decrease)
+  ;; (define-key default-text-scale-mode-map (kbd "s-0") 'default-text-scale-reset)
 #+END_SRC
 
 ** exec-path-from-shell

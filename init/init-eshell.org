@@ -291,15 +291,15 @@ ivy搜索历史
 ** advice switch buffer
 直接切换buffer到eshell下会打乱顺序，修饰之：
 #+BEGIN_SRC emacs-lisp
-  (defun slegetank/eshell-advice-switch-buffer (oldfunc &rest args)
-    (let ((destbuf (apply oldfunc args)))
-      (with-current-buffer (get-buffer destbuf)
-        (when (bound-and-true-p eshell-mode)
-          (rswitcher--delete sswitcher--ring
-                             (cl-position (current-buffer) (rswitcher--elements sswitcher--ring)))
-          (rswitcher-add sswitcher--ring (current-buffer))))))
+  ;; (defun slegetank/eshell-advice-switch-buffer (oldfunc &rest args)
+  ;;   (let ((destbuf (apply oldfunc args)))
+  ;;     (with-current-buffer (get-buffer destbuf)
+  ;;       (when (bound-and-true-p eshell-mode)
+  ;;         (rswitcher--delete sswitcher--ring
+  ;;                            (cl-position (current-buffer) (rswitcher--elements sswitcher--ring)))
+  ;;         (rswitcher-add sswitcher--ring (current-buffer))))))
 
-  (advice-add 'ivy-switch-buffer :around 'slegetank/eshell-advice-switch-buffer)
+  ;; (advice-add 'ivy-switch-buffer :around 'slegetank/eshell-advice-switch-buffer)
 #+END_SRC
 ** async shell buffer q->quit
 #+BEGIN_SRC emacs-lisp

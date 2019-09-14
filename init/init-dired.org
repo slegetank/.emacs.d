@@ -57,15 +57,11 @@ dired会被加入recentf-list:
   ;; only use one buffer
   (diredp-toggle-find-file-reuse-dir 1)
 #+END_SRC
-** dired-filetype-face
-#+BEGIN_SRC emacs-lisp
-  (require-package 'dired-filetype-face)
-  (require 'dired-filetype-face)
-#+END_SRC
 ** stripe-buffer
+奇偶行颜色区分
 #+BEGIN_SRC emacs-lisp
-  (require-package 'stripe-buffer)
-  (add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
+  ;; (require-package 'stripe-buffer)
+  ;; (add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
 #+END_SRC
 ** ivy-dired-history
 #+BEGIN_SRC emacs-lisp

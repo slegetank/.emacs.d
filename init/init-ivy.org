@@ -19,11 +19,11 @@ ivy是强大的查找文件、搜索代码、执行命令的补全工具。
                 ivy-initial-inputs-alist nil)
 
   (custom-set-faces
-   '(ivy-current-match
+   `(ivy-current-match
      ((((class color) (background light))
-       :background "orange" :foreground "white")
+       :background ,slegetank/color-red :foreground "white")
       (((class color) (background dark))
-       :background "orange" :foreground "black"))))
+       :background ,slegetank/color-green :foreground "black"))))
 #+END_SRC
 ** ivy-rich
 #+BEGIN_SRC emacs-lisp
