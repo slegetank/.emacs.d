@@ -12,7 +12,7 @@ patch:
       - simplification
       - extended_charset
   menu:
-    page_size: 30                 # 候选词数量
+    page_size: 50                 # 候选词数量
 
   schema_list:
     - schema: luna_pinyin_simp

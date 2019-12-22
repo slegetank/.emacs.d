@@ -1,0 +1,6 @@
+#+BEGIN_SRC emacs-lisp
+  (require-package 'ox-reveal)
+  (require 'ox-reveal)
+
+  (setq org-reveal-root (file-truename "~/ScriptHelper/reveal.js"))
+#+END_SRC

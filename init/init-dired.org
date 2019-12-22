@@ -63,19 +63,6 @@ dired会被加入recentf-list:
   ;; (require-package 'stripe-buffer)
   ;; (add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
 #+END_SRC
-** ivy-dired-history
-#+BEGIN_SRC emacs-lisp
-  ;; (require-package 'ivy-dired-history)
-  ;; (require 'savehist)
-  ;; (add-to-list 'savehist-additional-variables 'ivy-dired-history-variable)
-  ;; (savehist-mode 1)
-
-  ;; (with-eval-after-load 'dired
-  ;;   (require 'ivy-dired-history)
-  ;;   ;; if you are using ido,you'd better disable ido for dired
-  ;;   ;; (define-key (cdr ido-minor-mode-map-entry) [remap dired] nil) ;in ido-setup-hook
-  ;;   (define-key dired-mode-map "," 'dired))
-#+END_SRC
 ** direfl
 #+BEGIN_SRC emacs-lisp
   (require-package 'diredfl)
@@ -86,6 +73,14 @@ dired会被加入recentf-list:
 #+BEGIN_SRC emacs-lisp
   (require-package 'diff-hl)
   (with-eval-after-load 'dired (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
+#+END_SRC
+** dired-git-info
+#+BEGIN_SRC emacs-lisp
+  (require-package 'dired-git-info)
+
+  (with-eval-after-load 'dired
+  (setq dgi-commit-message-format "%an\t%s\t%cr")
+    (define-key dired-mode-map ")" 'dired-git-info-mode))
 #+END_SRC
 
 * Inside

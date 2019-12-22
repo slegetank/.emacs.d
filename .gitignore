@@ -49,3 +49,4 @@ projectile-bookmarks.eld
 /pyim/rime/*
 !/pyim/rime/default.custom.yaml
 /transient/*
+/image-dired/*

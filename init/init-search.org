@@ -97,9 +97,19 @@ evil-mc与evil-find-char-pinyin有冲突，暂时屏蔽：
         " [C-c C-c]-commit, [C-c C-k]-cancel, [q]-quit")))
     (ivy-wgrep-change-to-wgrep-mode))
 
+  (defun slegetank/winnow-exclude-current-line ()
+    "Ignore current line content from wgrep mode"
+    (interactive)
+    (let ((line-content
+           (regexp-quote
+            (buffer-substring-no-properties (line-beginning-position) (line-end-position)))))
+      (save-excursion
+        (winnow-exclude-lines line-content))))
+
   (add-hook 'ivy-occur-grep-mode-hook (lambda ()
                                         (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "e") 'slegetank/wgrep-mode-setup)
                                         (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "x") 'winnow-exclude-lines)
+                                        (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "X") 'slegetank/winnow-exclude-current-line)
                                         (evil-define-key 'normal ivy-occur-grep-mode-map (kbd "m") 'winnow-match-lines)
                                         (evil-define-key 'normal wgrep-mode-map (kbd "q") (lambda ()
                                                                                             (interactive)

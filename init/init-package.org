@@ -1,33 +1,27 @@
 * 未分类
 未分类的包都暂时放到这里；使用package-autoremove来清理垃圾包
   #+BEGIN_SRC emacs-lisp
-    (setq package-selected-packages (append package-selected-packages '(smex
-                                                                        smartparens
+    (setq package-selected-packages (append package-selected-packages '(smartparens
                                                                         popwin
                                                                         reveal-in-osx-finder
                                                                         rainbow-delimiters
                                                                         recentf-ext
                                                                         nyan-mode
-                                                                        skewer-mode
                                                                         sr-speedbar
-                                                                        flycheck
+                                                                        ;; flycheck
                                                                         yasnippet
                                                                         imenu-list
                                                                         neotree
                                                                         auto-highlight-symbol
                                                                         json-mode
                                                                         simpleclip
-                                                                        ggtags
                                                                         xah-get-thing
                                                                         protobuf-mode
-                                                                        pos-tip
-                                                                        quickrun
                                                                         popup
-                                                                        htmlize
-                                                                        vdiff
                                                                         yaml-mode
                                                                         powershell
                                                                         dumb-jump
+                                                                        fast-scroll
                                                                       )))
   #+END_SRC
 
@@ -76,7 +70,6 @@
         popwin:special-display-config
         '(("*Miniedit Help*" :noselect t)
           (help-mode :noselect nil)
-          ("*quickrun*" :stick t)
           (completion-list-mode :noselect t)
           (compilation-mode :noselect nil)
           (grep-mode :noselect t)
@@ -164,31 +157,25 @@ C-c o 打开当前文件所在的Finder;
 #+END_SRC
 ** flycheck
 #+BEGIN_SRC emacs-lisp
-  (require 'flycheck)
+  ;; (require 'flycheck)
 
-  ;; turn on flychecking globally
-  (add-hook 'after-init-hook #'global-flycheck-mode)
+  ;; ;; turn on flychecking globally
+  ;; (add-hook 'after-init-hook #'global-flycheck-mode)
 
-  ;; customize flycheck temp file prefix
-  (setq-default flycheck-temp-prefix ".flycheck")
+  ;; ;; customize flycheck temp file prefix
+  ;; (setq-default flycheck-temp-prefix ".flycheck")
 
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  ;; (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
 
-  (slegetank/leader-define-key "c" nil "Check"
-    "cn" 'flycheck-next-error "Next error"
-    "cp" 'flycheck-previous-error "Previous error"
-    "cl" 'flycheck-list-errors "List errors")
+  ;; (slegetank/leader-define-key "c" nil "Check"
+  ;;   "cn" 'flycheck-next-error "Next error"
+  ;;   "cp" 'flycheck-previous-error "Previous error"
+  ;;   "cl" 'flycheck-list-errors "List errors")
 #+END_SRC
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
   (require 'yasnippet)
   (yas-global-mode 1)
-#+END_SRC
-** skewer-mode
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'css-mode-hook 'skewer-css-mode)
-  (add-hook 'web-mode-hook 'skewer-html-mode)
-
 #+END_SRC
 ** auto-highlight-symbol
 #+BEGIN_SRC emacs-lisp
@@ -322,13 +309,6 @@ C-c o 打开当前文件所在的Finder;
   (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") 'imenu-list-quit-window)
   (evil-define-key 'normal imenu-list-major-mode-map (kbd "g") 'imenu-list-refresh)
 #+END_SRC
-** ggtags
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-                (ggtags-mode 1))))
-#+END_SRC
 ** xah-get-thing
 http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
 #+BEGIN_SRC emacs-lisp
@@ -344,19 +324,6 @@ http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
 
   (add-hook 'protobuf-mode-hook
             (lambda () (c-add-style "my-style" my-protobuf-style t)))
-#+END_SRC
-** quickrun
-#+BEGIN_SRC emacs-lisp
-  ;; (require 'quickrun)
-  ;; (defun slegetank/quickrun ()
-  ;;   "Custom quickrun command"
-  ;;   (interactive) 
-  ;;   (if (region-active-p)
-  ;;       (call-interactively 'quickrun-region)
-  ;;     (call-interactively 'quickrun)))
-
-  ;; (global-set-key (kbd "s-r") 'slegetank/quickrun)
-  ;; (evil-define-key 'normal quickrun--mode-map (kbd "q") 'quit-window)
 #+END_SRC
 ** yaml-mode
 #+BEGIN_SRC emacs-lisp
@@ -380,5 +347,15 @@ http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
 #+BEGIN_SRC emacs-lisp
   (define-key popup-menu-keymap "\C-j" 'popup-next)
   (define-key popup-menu-keymap "\C-k" 'popup-previous)
+#+END_SRC
+** fast-scroll
+#+BEGIN_SRC emacs-lisp
+  (require 'fast-scroll)
+  ;; If you would like to turn on/off other modes, like flycheck, add
+  ;; your own hooks.
+  (add-hook 'fast-scroll-start-hook (lambda () (flycheck-mode -1)))
+  (add-hook 'fast-scroll-end-hook (lambda () (flycheck-mode 1)))
+  (fast-scroll-config)
+  (fast-scroll-mode 1)
 #+END_SRC
 
