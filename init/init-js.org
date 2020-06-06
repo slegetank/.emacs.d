@@ -29,6 +29,46 @@
   (add-hook 'web-mode-hook 'xah-syntax-color-hex)
   (add-hook 'js-mode-hook 'xah-syntax-color-hex)
 #+END_SRC
+imenu
+#+BEGIN_SRC emacs-lisp
+  ;; js-mode imenu enhancement
+  ;; @see http://stackoverflow.com/questions/20863386/idomenu-not-working-in-javascript-mode
+  (defun mo-js-imenu-make-index ()
+    (save-excursion
+      (imenu--generic-function javascript-common-imenu-regex-list)))
+
+  (setq javascript-common-imenu-regex-list
+        '(("Attribute" " \\([a-z][a-zA-Z0-9-_]+\\) *= *\{[a-zA-Z0-9_.(), ]+\}\\( \\|$\\)" 1)
+          ("Controller" "[. \t]controller([ \t]*['\"]\\([^'\"]+\\)" 1)
+          ("Controller" "[. \t]controllerAs:[ \t]*['\"]\\([^'\"]+\\)" 1)
+          ("Filter" "[. \t]filter([ \t]*['\"]\\([^'\"]+\\)" 1)
+          ("State" "[. \t]state[(:][ \t]*['\"]\\([^'\"]+\\)" 1)
+          ("Factory" "[. \t]factory([ \t]*['\"]\\([^'\"]+\\)" 1)
+          ("Global" "^\\(export const\\|const\\) \\([a-zA-Z][a-zA-Z0-9]*\\) =" 2)
+          ("Service" "[. \t]service([ \t]*['\"]\\([^'\"]+\\)" 1)
+          ("Module" "[. \t]module( *['\"]\\([a-zA-Z0-9_.]+\\)['\"], *\\[" 1)
+          ("ngRoute" "[. \t]when(\\(['\"][a-zA-Z0-9_\/]+['\"]\\)" 1)
+          ("Directive" "[. \t]directive([ \t]*['\"]\\([^'\"]+\\)" 1)
+          ("Event" "[. \t]\$on([ \t]*['\"]\\([^'\"]+\\)" 1)
+          ("Config" "[. \t]config([ \t]*function *( *\\([^\)]+\\)" 1)
+          ("Config" "[. \t]config([ \t]*\\[ *['\"]\\([^'\"]+\\)" 1)
+          ("OnChange" "[ \t]*\$(['\"]\\([^'\"]*\\)['\"]).*\.change *( *function" 1)
+          ("OnClick" "[ \t]*\$([ \t]*['\"]\\([^'\"]*\\)['\"]).*\.click *( *function" 1)
+          ("Watch" "[. \t]\$watch( *['\"]\\([^'\"]+\\)" 1)
+          ("Function" "function[ \t]+\\([a-zA-Z0-9_$.]+\\)[ \t]*(" 1)
+          ("Function" "^[ \t]*\\([a-zA-Z0-9_$.]+\\)[ \t]*=[ \t]*function[ \t]*(" 1)
+          ;; {{ es6 beginning
+          ("Function" "^[ \t]*\\([A-Za-z_$][A-Za-z0-9_$]+\\)[ \t]*([a-zA-Z0-9, ]*) *\{ *$" 1) ;; es6 fn1 () { }
+          ("Function" "^[ \t]*\\([A-Za-z_$][A-Za-z0-9_$]+\\)[ \t]*=[ \t]*(?[a-zA-Z0-9, ]*)?[ \t]*=>" 1) ;; es6 fn1 = (e) =>
+          ;; }}
+          ("Task" "[. \t]task([ \t]*['\"]\\([^'\"]+\\)" 1)
+          ))
+
+  (defun mo-js-mode-hook ()
+    (setq imenu-create-index-function 'mo-js-imenu-make-index))
+  (add-hook 'js-mode-hook 'mo-js-mode-hook)
+#+END_SRC
+
 * packages
 #+BEGIN_SRC emacs-lisp
   (require-package 'js2-mode)
@@ -118,38 +158,20 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
 #+END_SRC
 * rjsx-mode
 #+BEGIN_SRC emacs-lisp
-  (require-package 'rjsx-mode)
-  (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
-  (add-to-list 'auto-mode-alist '("\\.ts$" . rjsx-mode))
-
-  ;; jsx缩进4
-  (setq sgml-basic-offset 4)
-
-  (defun my-js-config ()
-    (local-set-key (kbd "<S-tab>") 'js2-mode-toggle-hide-functions)
-    (evil-define-key 'normal rjsx-mode-map (kbd "<tab>") 'js2-mode-toggle-element))
-
-  (add-hook 'rjsx-mode-hook 'my-js-config)
-#+END_SRC
-* js-jsx-mode
-# 暂时放弃原生的，非继承js2，不是很方便
-# 高亮也不好
-#+BEGIN_SRC emacs-lisp
-  ;; (add-to-list 'auto-mode-alist '("\\.js$" . js-jsx-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.jsx$" . js-jsx-mode))
-  ;; (add-to-list 'auto-mode-alist '("\\.ts$" . js-jsx-mode))
+  ;; (require-package 'rjsx-mode)
+  ;; (add-to-list 'auto-mode-alist '("\\.js$" . rjsx-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
+  ;; (add-to-list 'auto-mode-alist '("\\.ts$" . rjsx-mode))
 
   ;; ;; jsx缩进4
   ;; (setq sgml-basic-offset 4)
 
   ;; (defun my-js-config ()
   ;;   (local-set-key (kbd "<S-tab>") 'js2-mode-toggle-hide-functions)
-  ;;   (evil-define-key 'normal js-mode-map (kbd "<tab>") 'js2-mode-toggle-element))
+  ;;   (evil-define-key 'normal rjsx-mode-map (kbd "<tab>") 'js2-mode-toggle-element))
 
-  ;; (add-hook 'js-mode-hook 'my-js-config)
+  ;; (add-hook 'rjsx-mode-hook 'my-js-config)
 #+END_SRC
-
 * web-mode
 #+BEGIN_SRC emacs-lisp
   (require-package 'web-mode)
@@ -183,10 +205,8 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
   ;; (add-hook 'web-mode-hook 'prettier-js-mode)
   (add-hook 'js-mode-hook 'prettier-js-mode)
   (setq prettier-js-args '(
-                           "--trailing-comma" "all"
                            "--bracket-spacing" "true"
                            "--tab-width" "4"
-                           "--print-width" "120"
                            ))
   (defun enable-minor-mode (my-pair)
     "Enable minor mode if filename match the regexp.  MY-PAIR is a cons cell (regexp . minor-mode)."
@@ -225,27 +245,6 @@ tsserver返回的消息有时太长，忽略太长的minibuffer信息：
   ;;       (setq-local flycheck-javascript-eslint-executable eslint))))
 
   ;; (add-hook 'flycheck-mode-hook #'custom-use-eslint-from-node-modules)
-#+END_SRC
-* react
-** init env
-#+BEGIN_SRC emacs-lisp
-  ;;   (evil-leader/set-key
-  ;;     "jr" 'custom-browse-this-html-and-back
-  ;;     "jw" 'custom-init-react-window)
-
-  ;; (defun custom-init-react-window ()
-  ;;   "Device emacs & firefox"
-  ;;   (interactive)
-  ;;   (shell-command (format "osascript %s" (expand-file-name "init/reactenv.scpt" user-emacs-directory))))
-
-
-    ;; (defun custom-init-react-IDE ()
-    ;;   "Init react IDE"
-    ;;   (interactive)
-    ;;   (let ((project-dir (directory-file-name ))))
-    ;;   (when (= (string-to-int (shell-command-to-string "ps | grep \"react-scripts start\" | wc -l | tr -d \' \n\'")) 0)
-    ;;     (shell-command "npm start"))
-    ;;   )
 #+END_SRC
 * keys
 #+BEGIN_SRC emacs-lisp

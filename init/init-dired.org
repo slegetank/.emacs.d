@@ -53,16 +53,11 @@ dired会被加入recentf-list:
   ;; (require-package 'dired+)
   (add-to-list 'load-path (expand-file-name "dired+" user-emacs-directory))
   (require 'dired+)
-  
+
   ;; only use one buffer
   (diredp-toggle-find-file-reuse-dir 1)
 #+END_SRC
-** stripe-buffer
-奇偶行颜色区分
-#+BEGIN_SRC emacs-lisp
-  ;; (require-package 'stripe-buffer)
-  ;; (add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
-#+END_SRC
+
 ** direfl
 #+BEGIN_SRC emacs-lisp
   (require-package 'diredfl)
@@ -174,12 +169,6 @@ dired会被加入recentf-list:
                   (and (file-exists-p directory) (concat directory "/")))
                 (split-string (shell-command-to-string "cat ~/.z | sort -r -n -k 2 -t \"|\" | cut -f 1 -d \"|\" | head -n 20") "\n" t))))))
 
-  ;; (defun slegetank/dired-do-rename (&optional arg)
-  ;;   "Modify `dired-do-rename'"
-  ;;   (interactive "P")
-  ;;   (slegetank/dired-do-create-files 'move #'dired-rename-file
-  ;;                          "Move" arg dired-keep-marker-rename "Rename"))
-
   (defun slegetank/dired-do-copy (&optional arg)
     "Modify `dired-do-copy'"
     (interactive "P")
@@ -239,9 +228,6 @@ dired会被加入recentf-list:
                (expand-file-name (file-name-nondirectory from) target))
            (lambda (_from) target))
          marker-char))))
-
-  ;; (define-key dired-mode-map (kbd "C") 'slegetank/dired-do-copy)
-  ;; (define-key dired-mode-map (kbd "R") 'slegetank/dired-do-rename)
 #+END_SRC
 
 ** zip

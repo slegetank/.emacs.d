@@ -39,6 +39,8 @@
                                   "regex"
                                   "minibuffer"
                                   "promela"
+                                  "c"
+                                  "markdown"
                                   ))
 
 ;; mu4e

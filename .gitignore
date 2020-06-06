@@ -50,3 +50,5 @@ projectile-bookmarks.eld
 !/pyim/rime/default.custom.yaml
 /transient/*
 /image-dired/*
+/persp-confs/*
+/.perspective

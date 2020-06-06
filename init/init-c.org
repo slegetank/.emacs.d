@@ -1,5 +1,6 @@
 暂时不用考虑c/c++/oc开发相关的开发配置，只把折腾过的东西存在这里。
 * irony
+https://github.com/Sarcasm/irony-mode/issues/167
 mac上先brew install cmake，再执行下面的语句再执行M-x irony-install-server:
 #+BEGIN_SRC shell
   ### create /usr/local if not there yet
@@ -24,11 +25,13 @@ mac上先brew install cmake，再执行下面的语句再执行M-x irony-install
     :config
     ;; replace the `completion-at-point' and `complete-symbol' bindings in
     ;; irony-mode's buffers by irony-mode's function
+
     (defun my-irony-mode-hook ()
       (define-key irony-mode-map [remap completion-at-point]
         'irony-completion-at-point-async)
       (define-key irony-mode-map [remap complete-symbol]
         'irony-completion-at-point-async))
+
     (add-hook 'irony-mode-hook 'my-irony-mode-hook)
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
     )
@@ -37,5 +40,5 @@ mac上先brew install cmake，再执行下面的语句再执行M-x irony-install
 #+BEGIN_SRC emacs-lisp
   (require-package 'company-irony)
   (with-eval-after-load "company"
-    (add-to-list 'company-backends '(company-irony company-gtags)))
+    (add-to-list 'company-backends '(company-tabnine company-irony company-gtags)))
 #+END_SRC

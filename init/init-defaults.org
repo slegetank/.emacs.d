@@ -388,7 +388,7 @@ Narrow修饰：
 #+BEGIN_SRC emacs-lisp
   (defun custom-writeCurrentDirToCahceFile ()
     (with-temp-file  (concat user-emacs-directory  "currentDir") (insert (expand-file-name (directory-file-name default-directory)))))
-    (add-hook 'focus-out-hook 'custom-writeCurrentDirToCahceFile)
+  (add-hook 'focus-out-hook 'custom-writeCurrentDirToCahceFile)
 #+END_SRC
 * scheme
 #+BEGIN_SRC emacs-lisp

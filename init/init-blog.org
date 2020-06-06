@@ -400,7 +400,11 @@
           (destname fromname))
       (when (and (string-match img-regexp fromname) (slegetank/org-blog-p))
         (let ((filebasename (file-name-base (buffer-file-name))))
-          (setq destname (concat slegetank/blog-post-base "/static/" filebasename "-" (progn (goto-char (point-min)) (number-to-string (count-matches (format "%s-" filebasename)))) "." (file-name-extension fromname)))
+          (setq destname
+                (concat slegetank/blog-post-base "/static/" filebasename "-"
+                        (progn (goto-char (point-min))
+                               (number-to-string
+                                (count-matches (format "%s-" filebasename)))) "." (file-name-extension fromname)))
           (rename-file fromname destname t)))
 
       (goto-char (nth 1 (event-start event)))
