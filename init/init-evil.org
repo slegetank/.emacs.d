@@ -6,7 +6,11 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
 * evil
 #+BEGIN_SRC emacs-lisp
   ;; (setq evil-want-integration nil)
+  (setq evil-want-keybinding nil)
   (require-package 'evil)
+  (require 'undo-tree)
+  (global-undo-tree-mode)
+ ;; (setq evil-undo-system 'undo-tree)
 #+END_SRC
 * package
 ** which-key
@@ -100,11 +104,11 @@ M-x customize-group -> 默认触发为\，改为SPC
 #+END_SRC
 ** evil-collection
 #+BEGIN_SRC emacs-lisp
-  ;; (require-package 'evil-collection)
-  ;; (require 'evil-collection)
-  ;; ;; (evil-collection-init)
+  (require-package 'evil-collection)
+  (require 'evil-collection)
+  (evil-collection-init)
 
-  ;; (evil-collection-init 'notmuch)
+  (evil-collection-init '(notmuch 'mc 'magit))
 #+END_SRC
 ** evil-nerd-commenter
 注释

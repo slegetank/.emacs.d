@@ -13,6 +13,14 @@
             (simpleclip-get-contents)
           thing-at-point))))
 #+END_SRC
+
+timestamp
+#+BEGIN_SRC emacs-lisp
+  (defun slegetank/timestamp ()
+    (interactive)
+    (insert (format-time-string "%Y-%m-%d %H:%M:%S")))
+#+END_SRC
+
 * terminal
 改用eshell，废弃
 ** make-term version

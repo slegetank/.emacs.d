@@ -15,7 +15,6 @@
                                                                         auto-highlight-symbol
                                                                         json-mode
                                                                         simpleclip
-                                                                        xah-get-thing
                                                                         protobuf-mode
                                                                         popup
                                                                         yaml-mode
@@ -291,26 +290,26 @@ C-c o 打开当前文件所在的Finder;
 
 ** imenu-list
 #+BEGIN_SRC emacs-lisp
-  (setq imenu-list-focus-after-activation t)
-  (setq imenu-list-auto-resize t)
-  (setq imenu-list-idle-update-delay-time 0.1)
+  ;; (setq imenu-list-focus-after-activation t)
+  ;; (setq imenu-list-auto-resize t)
+  ;; (setq imenu-list-idle-update-delay-time 0.1)
 
-  (evil-define-key 'normal imenu-list-major-mode-map (kbd "v") 'imenu-list-display-entry)
-  (evil-define-key 'normal imenu-list-major-mode-map (kbd "<tab>") 'hs-toggle-hiding)
-  (defun slegetank/imenu-goto-and-quit ()
-    (interactive)
-    (with-current-buffer (current-buffer)
-      (imenu-list-goto-entry)
-      (imenu-list-quit-window)))
+  ;; (evil-define-key 'normal imenu-list-major-mode-map (kbd "v") 'imenu-list-display-entry)
+  ;; (evil-define-key 'normal imenu-list-major-mode-map (kbd "<tab>") 'hs-toggle-hiding)
+  ;; (defun slegetank/imenu-goto-and-quit ()
+  ;;   (interactive)
+  ;;   (with-current-buffer (current-buffer)
+  ;;     (imenu-list-goto-entry)
+  ;;     (imenu-list-quit-window)))
 
-  (global-set-key (kbd "s-i") 'imenu-list-smart-toggle)
+  ;; (global-set-key (kbd "s-i") 'imenu-list-smart-toggle)
 
-  (evil-define-key 'normal imenu-list-major-mode-map (kbd "<return>") 'slegetank/imenu-goto-and-quit)
-  (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") 'imenu-list-quit-window)
-  (evil-define-key 'normal imenu-list-major-mode-map (kbd "g") 'imenu-list-refresh)
+  ;; (evil-define-key 'normal imenu-list-major-mode-map (kbd "<return>") 'slegetank/imenu-goto-and-quit)
+  ;; (evil-define-key 'normal imenu-list-major-mode-map (kbd "q") 'imenu-list-quit-window)
+  ;; (evil-define-key 'normal imenu-list-major-mode-map (kbd "g") 'imenu-list-refresh)
 #+END_SRC
 ** xah-get-thing
-http://ergoemacs.org/emacs/elisp_get-selection-or-unit.html
+http://xahlee.info/emacs/emacs/elisp_get-selection-or-unit.html
 #+BEGIN_SRC emacs-lisp
 (require 'xah-get-thing)
 #+END_SRC

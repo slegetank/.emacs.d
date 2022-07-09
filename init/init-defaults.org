@@ -164,13 +164,18 @@ emacs way's cursor dealing method, 如果需要像其他编辑器那样，翻页
 
 高亮括号
 #+BEGIN_SRC emacs-lisp
-  (require-package 'highlight-parentheses)
-  (global-highlight-parentheses-mode)
+;;(require-package 'gnu-elpa-keyring-update)
+ ;; (require-package 'highlight-parentheses)
+  ;;(global-highlight-parentheses-mode)
 #+END_SRC
 
 emacs 26 以上 insert-string 调整为insert
 #+BEGIN_SRC emacs-lisp
   (defalias 'insert-string 'insert)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (global-so-long-mode 1)
 #+END_SRC
 
 ** recentf
@@ -277,7 +282,9 @@ emacs 26 以上 insert-string 调整为insert
           ;; remove \n in command if exist
           (goto-char (point-min))
           (let* ((first-line-end (search-forward "\n" nil :noerror))
-                 (first-line (buffer-substring-no-properties 1 (- first-line-end 1))))
+                 (first-line (if first-line-end
+                                 (buffer-substring-no-properties 1 (- first-line-end 1))
+                               "")))
             (when (and (> (length first-line) 2) (s-starts-with? first-line command))
               (replace-match "")))
 

@@ -52,3 +52,6 @@ projectile-bookmarks.eld
 /image-dired/*
 /persp-confs/*
 /.perspective
+places
+.*undo-tree~
+.lsp*

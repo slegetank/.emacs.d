@@ -1,6 +1,5 @@
 #+BEGIN_SRC emacs-lisp
   (require-package 'markdown-mode)
   (require 'markdown-mode)
-  (add-to-list 'load-path "~/.emacs.d")
   (require 'evil-markdown)
 #+END_SRC

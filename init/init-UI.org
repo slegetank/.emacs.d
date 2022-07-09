@@ -55,6 +55,7 @@ mac下更好的鼠标滚动：
   ;; (require-package 'zerodark-theme)
   ;; (load-theme 'zerodark t)
   ;; (zerodark-setup-modeline-format)
+   (require-package 'berrys-theme)
 
   (slegetank/leader-define-key "tu" 'customize-themes "Custom theme")
 #+END_SRC

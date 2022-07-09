@@ -2,7 +2,7 @@
 (require 'init-utility)
 
 ;; 暂时去掉
-(require-package 'org-plus-contrib)
+;;(require-package 'org-plus-contrib)
 
 (eval-when-compile
   (require 'use-package))
@@ -22,7 +22,6 @@
                                   "org"
                                   "company"
                                   "ivy"
-                                  "search"
                                   "blog"
                                   "python"
                                   "dired"
@@ -39,8 +38,10 @@
                                   "regex"
                                   "minibuffer"
                                   "promela"
+                                  "lsp"
                                   "c"
                                   "markdown"
+                                  "search"
                                   ))
 
 ;; mu4e

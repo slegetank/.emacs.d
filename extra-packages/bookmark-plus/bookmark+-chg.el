@@ -4,16 +4,15 @@
 ;; Description: Change logs for Bookmark+ libraries.
 ;; Author: Drew Adams
 ;; Maintainer: Drew Adams (concat "drew.adams" "@" "oracle" ".com")
-;; Copyright (C) 2000-2017, Drew Adams, all rights reserved.
+;; Copyright (C) 2000-2022, Drew Adams, all rights reserved.
 ;; Created: Fri Sep 15 07:58:41 2000
-;; Last-Updated: Mon Nov 27 15:04:44 2017 (-0800)
+;; Last-Updated: Tue Jun 21 19:35:15 2022 (-0700)
 ;;           By: dradams
-;;     Update #: 16364
+;;     Update #: 16863
 ;; URL: https://www.emacswiki.org/emacs/download/bookmark%2b-chg.el
-;; Doc URL: http://www.emacswiki.org/BookmarkPlus
+;; Doc URL: https://www.emacswiki.org/emacs/BookmarkPlus
 ;; Keywords: bookmarks, bookmark+
-;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x, 24.x, 25.x
-;;
+;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x, 24.x, 25.x, 26.
 ;; Features that might be required by this library:
 ;;
 ;;   None
@@ -48,7 +47,7 @@
 ;;       Web'.
 ;;
 ;;    2. From the Emacs-Wiki Web site:
-;;       http://www.emacswiki.org/BookmarkPlus.
+;;       https://www.emacswiki.org/emacs/BookmarkPlus.
 ;;
 ;;    3. From the Bookmark+ group customization buffer:
 ;;       `M-x customize-group bookmark-plus', then click link
@@ -135,10 +134,11 @@
 ;;  navigate around the sections of this doc.  Linkd mode will
 ;;  highlight this Index, as well as the cross-references and section
 ;;  headings throughout this file.  You can get `linkd.el' here:
-;;  http://www.emacswiki.org/emacs/download/linkd.el.
+;;  https://www.emacswiki.org/emacs/download/linkd.el.
 ;;
 ;;  (@> "CHANGE LOG FOR `bookmark+-1.el'")
 ;;  (@> "CHANGE LOG FOR `bookmark+-bmu.el'")
+;;  (@> "CHANGE LOG FOR `bookmark+-doc.el'")
 ;;  (@> "CHANGE LOG FOR `bookmark+-key.el'")
 ;;  (@> "CHANGE LOG FOR `bookmark+-lit.el'")
 ;;  (@> "CHANGE LOG FOR `bookmark+-mac.el'")
@@ -146,6 +146,193 @@
  
 ;;;(@* "CHANGE LOG FOR `bookmark+-1.el'")
 ;;
+;; 2022/06/21 dadams
+;;     bmkp-edit-tags: Use prin1 for bookmark name, in case of embedded " chars etc.
+;;                     Strip properties from bookmark name, and historicize it.
+;; 2022/06/09 dadams
+;;     bmkp-bookmark-description: Added list of explicit files, for Dired snapshots.
+;; 2022/06/05 dadams
+;;     bmkp-sort-comparer: Updated default value to what's used in bmkp-bmenu-sort-by-bookmark-type.
+;; 2021/09/19 dadams
+;;     Everywhere: Use bmkp-bmenu-buffer, not vanilla bookmark-bmenu-buffer.
+;;     bmkp-bmenu-barf-if-not-in-menu-list: Test mode with derived-mode-p; don't test buffer name.
+;; 2020/08/21 dadams
+;;     bookmark-set: Moved making bmk temporary before bookmark-store, and pass RECORD, not BNAME.
+;;     bmkp(*)-automatic*: Put defvaralias symbols in right order.
+;; 2021/08/18 dadams
+;;     Added: bmkp-set-automatic-bookmark.
+;;     Renamed: bmkp(*)-auto-idle* to bmkp(*)-automatic*.  Added defvaralias for old names.
+;; 2021/04/18 dadams
+;;     Added back a redefinition of bookmark-get-bookmark, as bmkp-get-bookmark with NO-NAME-CHECK-P.
+;;     bookmark-set-name, bookmark-location:
+;;       Replaced (bmkp-get-bookmark BMK nil 'NO-NAME-CHECK-P) with (bookmark-get-bookmark BMK).
+;;     Doc string and comment improvements, vis a vis uses of bookmark|bmkp-get-bookmark.
+;; 2021/04/16 dadams
+;;     bookmark-get-bookmark-record, bookmark-set-name, bookmark-prop-set, bookmark-location,
+;;       bookmark-delete, bookmark-show-annotation:
+;;         Use bmkp-get-bookmark, not bookmark-get-bookmark, but in vanilla-compatible way.
+;; 2021/04/13 dadams
+;;     Added: bmkp-get-bookmark.  Removed redefinition of vanilla bookmark-get-bookmark.
+;;       Problem was that some 3rd-party code uses bookmark-prop-set with unfinished bookmark record
+;;       that has no name.  Thx to Daniel Fleischer.
+;;     bookmark-prop-set: Added optional arg REQUIRE-NAME-P.  Pass it to bmkp-get-bookmark.
+;;     bookmark-handle-bookmark, bookmark-default-handler, bmkp-jump-1,
+;;      bmkp-show-this-annotation-read-only, bmkp-edit-this-annotation, bmkp-clone-bookmark,
+;;      bmkp-update-autonamed-bookmark, bmkp-*-bookmark-p, bmkp-*-(c)p, bmkp-insert-bookmark-link,
+;;      bmkp-describe-bookmark(-internals), bmkp-bookmark-description, bmkp-handle-region-default,
+;;      bmkp-set-sequence-bookmark, bmkp-set-eww-bookmark-here, bmkp-jump-man,
+;;      bmkp-cycle(-1|-this-(file|buffer)):
+;;        Use bmkp-get-bookmark, not bookmark-get-bookmark.
+;; 2021/03/17 dadams
+;;      Use buffer-string, not buffer-substring, for whole buffer.
+;; 2021/03/09 dadams
+;;     bmkp-handle-region-default: Set region and activate it at the end.
+;; 2021/03/05 dadams
+;;     Added: bmkp-read-buffers, bmkp-read-files.
+;;     bmkp(autofile|file(-this-dir))-(all|some)-tags(-regexp)-alist-only,
+;;       bmkp-specific-(buffers|files)-alist-only: Put property bmkp-read-arg with read-fn value.
+;;     bmkp-read-regexp: Made PROMPT arg optional.
+;;     bmkp-specific-(buffers|files)-jump(-other-window): Use bmkp-read-(buffers|files).
+;;     bmkp-set-autonamed-regexp-(buffer|region): Removed prompt from call to bmkp-read-regexp.
+;;     bmkp-annotate-bookmark-this-file/buffer, bmkp-edit-bookmark-record-file/buffer:
+;;       Fixed format spec.
+;; 2021/03/04 dadams
+;;     Added bmkp-types-alist.  The def is also in bookmark+-mac.el.
+;; 2020/11/28 dadams
+;;     Removed:
+;;       bmkp-bookmark-type-valid-p, variable (defconst) bmkp-types-alist, and all history variables.
+;;     Replaced all occurrences of variable bmkp-types-alist with function bmkp-types-alist.
+;;     Invoke macro bmkp-define-history-variables to define history vars, after defining filter fns.
+;;     Moved filter-function definitions to beginning of Bookmark+ functions section.
+;;     bmkp-edit-tags-send: Don't use bmkp-bookmark-type-valid-p - needs to work with unknown types.
+;; 2020/11/23 dadams
+;;     bmkp-url-target-set: Use read-from-minibuffer, not read-file-name, as fallback if no ffap.
+;;                          TEMPORARILY work around Emacs bug #44822 with phony default URL.
+;; 2020/08/30 dadams
+;;     Added: Info-bookmark-use-only-node-not-file-flag, redefinition of Info-bookmark-jump.
+;; 2020/07/04 dadams
+;;     Same commands as 7/03: Remove bmkp-propertize-*-flag as part of test for getting full bmk.
+;;     Changed all references to `C-x p' to `C-x x'.
+;;     Replaced string *Bookmark List* with bookmark-bmenu-buffer (for Emacs 28).
+;;     bookmark-(edit|show)-annotation, bmkp-annotate-bookmark,
+;;       bmkp-(edit|show)-this-annotation(-read-only):
+;;         Replaced set make-local-variable bookmark-annotation-name by setq (auto-local in Emacs 28).
+;; 2020/07/03 dadams
+;;     bmkp-read-bookmark-for-type:
+;;       Use bmkp-bookmark-record-from-name to return full bookmark from ALIST.
+;;     bmkp-(choose-navlist-from-bookmark-list|bookmark-file(-load|-switch)-jump|
+;;       snippet-to-kill-ring|desktop-delete|
+;;       (autonamed(-*)|dired(-*)|eww|(local|remote(-*)-|non-dir-)file(-*)|gnus|image|info|man|
+;;       non-file|specific-(buffers|files)|temporary|this-buffer|url|w3m|autofile)-jump*|
+;;       (bookmark-list|desktop|variable-list|w32-browser)-jump):
+;;         Use bmkp-get-bookmark-in-alist to get full bmk.
+;;     bmkp-jump-to-type*: Raise error if bookmark name, not record.
+;; 2020/07/02 dadams
+;;     bmkp-specific-files-alist-only: Don't use member, use bmkp-same-file-p as equality test.
+;; 2020/06/20 dadams
+;;     Added: bmkp-set-grep-command-bookmark.
+;; 2020/01/31 dadams
+;;     bmkp-dired-remember-*-marks:
+;;       Wrap dired--unhide with with-silent-modifications.  Thx to Tino Calancha. 
+;; 2020/01/26 dadams
+;;     Added: bmkp-annotated-cp.
+;; 2020/01/25 dadams
+;;     Added: bmkp-edit-bookmark-record-file/buffer.
+;; 2020/01/24 dadams
+;;     Added: bmkp-annotate-bookmark-this-file/buffer, bmkp-annotate-all-bookmarks-this-file/buffer.
+;; 2020/01/22 dadams
+;;     Added: bmkp-write-alist-bookmarks-to-file, bmkp-save-bookmarks-this-file/buffer,
+;;            bmkp-switch-to-bookmark-file-this-file/buffer.
+;;     bmkp-switch-bookmark-file-create: Added optional arg SWITCH-TO-LASTP (C-u behavior).
+;;     bmkp-save-menu-list-state: Save also last-previous-bookmark-file.
+;; 2020/01/15 dadams
+;;     bmkp-specific-files-alist-only: If no FILES arg and buffer is not visiting a file, use ().
+;; 2020/01/12 dadams
+;;     Added: bmkp-make-obsolete, bmkp-make-obsolete-variable.  Use everywhere instead of vanilla.
+;;     bookmark-completing-read, bmkp-completing-read-(1|bookmarks|lax):
+;;       Added optional arg USE-NIL-ALIST-P.
+;;     bmkp-completing-read-1: Made all args except PROMPT optional.
+;;     Protect defvaralias for bmkp-w3m-allow-multi-tabs-flag, for Emacs 20-21.
+;;     bookmark-edit-annotation: If no prefix arg, pass non-nil USE-NIL-ALIST-P arg.
+;;     bookmark-set: If numeric prefix arg, pass non-nil USE-NIL-ALIST-P arg.
+;;     bookmark-show-annotation, bmkp-retrieve-icicle-search-hits-1, bmkp-set-sequence-bookmark:
+;;       Pass non-nil USE-NIL-ALIST-P arg.
+;;     Renamed bmkp-bookmark-valid-p to bmkp-bookmark-type-valid-p.
+;;     bmkp-bookmark-type-valid-p: Restored missing definition (was bmkp-bookmark-type).
+;; 2019/08/13 dadams
+;;     Added bmkp-clone-bookmark, bmkp-copy-bookmark (alias).
+;; 2019/07/13 dadams
+;;     bookmark-edit-annotation: Added &rest _IGNORED, to accommodate vanilla change for bug #20150.
+;; 2019/06/08 dadams
+;;     bmkp-set-kmacro-bookmark: Do not use read-kbd-macro.
+;;     bmkp-repeat-command: Same as in zz-repeat-command in zones.el now.
+;;       Require repeat.el.  Bind repeat-previous-repeated-command.
+;;     bmkp-(next|previous)(-*)-bookmark(-*)-repeat: Removed require of repeat.el. 
+;; 2019/05/21 dadams
+;;     bmkp-dired-remember-*-marks: Updated per dired-remember-marks, for Emacs 27+.
+;; 2019/05/19 dadams
+;;     Bind print-gensym wherever we bind print-circle.
+;; 2019/05/11 dadams
+;;     Added bmkp-jump-to-list-button button type.  Forgot it on 2019-05-02.
+;; 2019/05/09 dadams
+;;     bmkp-this-buffer-bmenu-list: Call bookmark-maybe-load-default-file at outset.
+;; 2019/05/02 dadams
+;;     Added: bmkp-add-jump-to-list-button.
+;;     bmkp-describe-bookmark(-internals): Use bmkp-add-jump-to-list-button.
+;; 2019/05/01 dadams
+;;     Added bmkp-jump-to-list.
+;; 2019/04/23 dadams
+;;     Added bmkp-annotation-or-bookmark-description, bmkp-propertize.
+;; 2019/04/21 dadams
+;;     bmkp-temporary-bookmarking-mode: When enable mode reset bmkp-temporary-bookmarking-mode to nil.
+;; 2019/02/18
+;;     bmkp-autofile-bookmark-p, bmkp-file-target-set, bmkp-autofile-add-tags,
+;;       bmkp-get-autofile-bookmark:
+;;         Handle a directory like a file.
+;; 2018/12/23 dadams
+;;     Added: bmkp-bookmark-type-valid-p, bmkp-buffer-bookmark-p, bmkp-buffer-alist-only.
+;;     Removed: bmkp-bookmark-type - use bmkp-bookmark-type-valid-p instead.
+;;     bmkp-edit-tags-send: Use bmkp-bookmark-type-valid-p.
+;; 2018/11/22 dadams
+;;     bookmark-load: Return the list of bookmarks read from FILE.
+;;     bmkp-set-izones-bookmark: Include zone EXTRA info in bookmark record.
+;; 2018/11/09 dadams
+;;     Removed: bmkp-line-number-at-pos (not used).
+;; 2018/10/10 dadams
+;;     Added: bookmark-jump-other-frame.
+;; 2018/09/21 dadams
+;;     bmkp-show-this-annotation-read-only, bmkp-edit-this-annotation, bmkp-desktop-read,
+;;       bmkp-jump-man, bmkp-jump-dired, bmkp-jump-to-type, bmkp-*-jump, bmkp-jump-in-navlist:
+;;         Use bmkp--pop-to-buffer-same-window, not switch-to-buffer.
+;;       bmkp-image-jump-other-window, bmkp-autofile-jump-other-window:
+;;         Use bmkp-select-buffer-other-window, not switch-to-buffer (typo).
+;; 2018/08/30 dadams
+;;     Added defmacro for with-coding-priority at compile time.
+;; 2018/04/24 dadams
+;;     Added: bmkp-cycle-eww, bmkp-cycle-eww-other-window, bmkp-next-eww-bookmark,
+;;       bmkp-next-eww-bookmark-other-window, bmkp-next-eww-bookmark-other-window-repeat,
+;;       bmkp-next-eww-bookmark-repeat, bmkp-previous-eww-bookmark,
+;;       bmkp-previous-eww-bookmark-other-window, bmkp-previous-eww-bookmark-other-window-repeat,
+;;       bmkp-previous-eww-bookmark-repeat.
+;; 2018/04/22 dadams
+;;     Added: bmkp-bookmark-file-load-jump, bmkp-bookmark-file-switch-jump.  Not bound to keys.
+;; 2018/02/23 dadams
+;;     Changes to EWW support - thx to Charles Roelli.
+;;      Added: bmkp-eww-generate-buffer-flag.
+;;      Removed: bmkp-jump-eww-in-buffer-*eww*, bmkp-jump-eww-renaming-buffer,
+;;               bmkp-eww-sans-pop-to-buffer, bmkp-get-eww-mode-buffer.
+;;      Renamed: bmkp-eww-buffer-handling to bmkp-eww-buffer-renaming.
+;;      bmkp-eww-new-buf-name and bmkp-eww-jumping-p are now buffer-local.
+;;      bmkp-jump-eww: Respect bmkp-eww-generate-buffer-flag.  Use buffer-local eww-after-render-hook.
+;;                     Integrate code from removed functions.
+;;      bmkp-eww-rename-buffer: Rename to generated name if rename attempt fails and either
+;;                              bmkp-eww-generate-buffer-flag or not bmkp-eww-jumping-p.
+;; 2018/02/12 dadams
+;;     bookmark-write-file, bmkp-regexp-filtered-bookmark-name-alist-only:
+;;      Use bookmark-name-from-full-record, not car.
+;; 2018/02/10 dadams
+;;     bookmark-rename: No need to propertize name here - done in call to bookmark-set-name.
+;;     bookmark-alist-from-buffer: Use bmkp-bookmark-name-from-record, not car.
 ;; 2017/11/27 dadams
 ;;     bookmark-write-file:
 ;;       Corrected change made on 2017/01/10 (fix for bug #25365).
@@ -1336,6 +1523,85 @@
  
 ;;;(@* "CHANGE LOG FOR `bookmark+-bmu.el'")
 ;;
+;; 2022/05/26 dadams
+;;     bmkp-bmenu-menubar-menu: Added bmkp-send-bug-report.
+;; 2022/01/14 dadams
+;;     bmkp-bmenu-edit-marked: Enable undo inside with-current-buffer (not significant).
+;; 2021/09/19 dadams
+;;     Moved defgroup from here to bookmark+.el, for new defcustom bmkp-bmenu-buffer.
+;;     Everywhere: Use bmkp-bmenu-buffer, not vanilla bookmark-bmenu-buffer.
+;;     bmkp-bmenu-barf-if-not-in-menu-list: Test mode with derived-mode-p; don't test buffer name.
+;; 2021/08/18 dadams
+;;     Applied renaming of bmkp-auto-idle-bookmark-mode to bmkp-automatic-bookmark-mode.
+;; 2021/04/16 dadams
+;;     bookmark-bmenu-execute-deletions:
+;;       Use bmkp-get-bookmark, not bookmark-get-bookmark, but in vanilla-compatible way.
+;;     bmkp-bmenu-make-sequence-from-marked, bmkp-bmenu-remove-tags-from-marked,
+;;       bmkp-bmenu-propertize-item, bmkp-bmenu-marked-or-this-or-all:
+;;         Use bmkp-get-bookmark, not bookmark-get-bookmark.
+;; 2021/03/05 dadams
+;;     Face bmkp-no-local: changed default to orange background, from yellow foreground.
+;; 2021/03/04 dadams
+;;     bmkp-bmenu-describe-marked: Typo - bmkp-describe-bookmark-marked -> bmkp-bmenu-describe-marked.
+;; 2020/12/29 dadams
+;;     Wrap soft-require of menu-bar+.el in null condition-case, because it soft-requires Bookmark+.
+;; 2020/11/27 dadams
+;;     bmkp-bmenu-define-command, bmkp-bmenu-define-full-snapshot-command:
+;;       Use copy-sequence for lists, because some code modifies the list structure.
+;;       If command already defined then prompt to overwrite its definition (replace all existing).
+;;     bmkp-bmenu-define-full-snapshot-command:
+;;       Bind bookmark-alist to non-nil bmkp-latest-bookmark-alist. NB: Contradicts 2015-02-22 change.
+;; 2020/11/26 dadams
+;;     bmkp-bmenu-read-filter-input:
+;;       Set, don't bind, bmkp-bmenu-filter-(title|function).  Restore them and the pattern, if C-g.
+;; 2020/11/06 dadams
+;;     bmkp-bmenu-read-filter-input:
+;;       Bind prefix-command-echo-keystrokes-functions to nil.  See Emacs bug #44500.
+;; 2020/07/04 dadams
+;;     Changed all references to `C-x p' to `C-x x'.
+;;     Replaced string *Bookmark List* with bookmark-bmenu-buffer (for Emacs 28).
+;; 2020/01/26 dadams
+;;     Added: bmkp-bmenu-sort-annotated-before-unannotated (bound to s a).
+;; 2020/01/22 dadams
+;;     bookmark-bmenu-list: Restore bookmark-bmenu-list to saved value, last-previous-bookmark-file.
+;;     bookmark-bmenu-mode: Added to doc: *-(switch-to-bookmark-file|save-bookmarks)-this-file/buffer.
+;;     bmkp-bmenu-bookmark-file-menu: Added bmkp-switch(-to-last)-bookmark-file(-create).  Reordered.
+;; 2020/01/15 dadams
+;;     Added: bmkp-bmenu-edit-annotations-for-marked.
+;;     Bind bookmark-bmenu-(show|edit)-annotation, bookmark-bmenu-show-all-annotations,
+;;          bmkp-bmenu-edit-annotations-for-marked to new prefix key a (a, e, A, >) and in
+;;          bmkp-bmenu-(edit|show)-menu and bmkp-bmenu-mouse-3-menu.
+;;     No longer bind bmkp-bmenu-show-or-edit-annotation.
+;; 2019/10/29 dadams
+;;     bookmark-bmenu-relocate: Ensure that arg to bookmark-relocate is not nil.
+;;     bookmark-bmenu-bookmark: Mention in doc: nil return if no bookmark.
+;;     bookmark-bmenu-show-annotation, bmkp-bmenu-w32-open-with-mouse: Raise error if no bookmark.
+;;     bmkp-bmenu-show-menu: Enable bookmark-bmenu-show-annotation only if there is a bookmark.
+;; 2019/08/13 dadams
+;;     Added bmkp-bmenu-clone-bookmark, bmkp-bmenu-copy-bookmark (alias).  Bound to M-n in bmk list.
+;;       Added it to bmkp-bmenu-menubar-menu, bmkp-bmenu-mouse-3-menu.
+;; 2019/08/09 dadams
+;;     bmkp-file-handler: Changed default to LightBlue background.
+;; 2019/05/19 dadams
+;;     Bind print-gensym wherever we bind print-circle.
+;; 2019/04/23 dadams
+;;     Added bmkp-bmenu-edit-menu.
+;;     Moved bmkp-bmenu-edit-marked to bmkp-bmenu-edit-menu from main Bookmark+ menu.
+;;     bmkp-bmenu-show-menu: Added bookmark-bmenu-show-annotation.
+;; 2018/11/24 dadams
+;;     bookmark-bmenu-other-(window|frame):
+;;       Added missing bookmark-name arg to b-j-o-(window|frame).  Thx to Alan Wehmann.
+;;     Added: bmkp-bmenu-load-marking,  bmkp-bmenu-load-marking-unmark-first.
+;;     bmkp-bmenu-(bookmark-file|mark)-menu: Added bmkp-bmenu-load-marking(-unmark-first).
+;; 2018/10/10 dadams
+;;     Added: bookmark-bmenu-other-frame.
+;;     bookmark-bmenu-mode: Added bookmark-bmenu-other-frame to doc string.
+;; 2018/09/21 dadams
+;;     Added: bmkp--pop-to-buffer-same-window.  (Added also to bookmark+-lit.el.)
+;;     bookmark-bmenu-2-window, bookmark-bmenu-this-window:
+;;       Use bmkp--pop-to-buffer-same-window, not switch-to-buffer.
+;; 2018/08/28 dadams
+;;     bmkp-bmenu-read-filter-input: Do not pass non-characterp value to text-char-description.
 ;; 2017/10/27 dadams
 ;;     bookmark-bmenu-mode: Added to doc string: bmkp-bmenu-paste-(add|replace)-tags.
 ;; 2017/10/14 dadams
@@ -1969,8 +2235,65 @@
 ;; 2010/07/14 dadams
 ;;     Created from bookmark+.el code.
  
+;;;(@* "CHANGE LOG FOR `bookmark+-doc.el'")
+;;
+;; 2020/07/04 dadams
+;;     Changed all references to `C-x p' to `C-x x'.
+ 
 ;;;(@* "CHANGE LOG FOR `bookmark+-key.el'")
 ;;
+;; 2022/05/26 dadams
+;;     menu-bar-bookmark-map:
+;;       Added bmkp-send-bug-report.
+;;       Corrected position of Insert Bookmark Contents to after bmkp-list-defuns-in-commands-file.
+;; 2021/09/19 dadams
+;;     Everywhere: Use bmkp-bmenu-buffer, not vanilla bookmark-bmenu-buffer.
+;; 2021/02/12 dadams
+;;     Typo in eval-after-load for EWW: previous -> next.
+;; 2020/07/04 dadams
+;;     Changed all `C-x p' to `C-x x'.
+;;     Replaced string *Bookmark List* with bookmark-bmenu-buffer (for Emacs 28).
+;; 2020/06/20 dadams
+;;     Correctly added bmkp-compilation-target-set(-all) to compilation and grep maps.
+;; 2020/01/27 dadams
+;;     Bind bookmark-jump-other-frame to 5 in bookmark-map.
+;; 2020/01/25 dadams
+;;     bmkp-bookmarks-here-menu-command-entries:
+;;       Added bmkp-edit-bookmark-record-file/buffer, bmkp-set-lighting-for-this-buffer,
+;;             bmkp-unlight-this-buffer, bmkp-(un)light-(non-)autonamed-this-buffer
+;;       Use bmkp-light-this-buffer, not bmkp-light-bookmarks.
+;;       menu-bar-bookmark-map > bmkp-here-menu: Rename; use bmkp-exists-this-file/buffer-bookmarks-p.
+;; 2020/01/24 dadams
+;;     Added: bmkp-annotate-map, bmkp-annotate-menu.
+;;     bmkp-bookmarks-here-menu-command-entries, bmkp-highlight-menu:
+;;       Added: bmkp-describe-bookmark-lighted-here.
+;;     bmkp-bookmarks-here-menu-command-entries:
+;;       Added: bmkp-light-bookmarks, bmkp-bookmarks-lighted-at-point,
+;;              bmkp-annotate-bookmark-this-file/buffer, bmkp-annotate-all-bookmarks-this-file/buffer.
+;;     Bind annotation commands to prefix C-x p a (bmkp-annotate-map).
+;;     Move Here submenu before Highlight submenu.
+;;     Typo in name when binding: bmkp-this-file/buffer-bmenu-list.
+;; 2020/01/22 dadams
+;;     Bind bmkp-switch-to-bookmark-file-this-file/buffer to C-x p C-l,
+;;          bmkp-save-bookmarks-this-file/buffer to C-x p C-s.
+;;     Change bmkp-jump-to-list from C-x [pj] C-l to C-x [pj] C-j.
+;;     bmkp-bookmarks-here-menu-command-entries:
+;;       Added bmkp-(switch-to-bookmark-file|save-bookmarks)-this-file/buffer.
+;; 2019/08/13 dadams
+;;     Bind bmkp-clone-bookmark to C-x p 2.
+;;     menu-bar-bookmark-map: Add bmkp-clone-bookmark.
+;; 2019/05/16 dadams
+;;     Added: bmkp-add-bookmarks-here-menu-flag, bmkp-here-menu, bmkp-exists-bookmark-satisfying-p,
+;;            bmkp-exists-this-file/buffer-bookmarks-p, bmkp-bookmarks-here-menu-command-entries,
+;;     Add bmkp-here-menu to menu-bar-bookmark-map, Buffer-menu-mode-map, Info-mode-menu,
+;;         diredp-bookmark-menu or dired-mode-map.
+;;     Add bmkp-dired-this-dir-jump to diredp-bookmark-menu or dired-mode-map.
+;; 2019/05/01 dadams
+;;     Bind bmkp-jump-to-list to C-x p C-l, C-x j C-l.
+;; 2019/04/22 dadams
+;;     Bind bmkp-describe-bookmark to C-h M, bmkp-describe-bookmark-lighted-here to C-x p ?.
+;; 2018/10/10 dadams
+;;     Bound bookmark-jump-other-frame to C-x 5 B, C-x j 5 globally, and J 5 in bookmark-list buffer.
 ;; 2017/10/14 dadams
 ;;     All EWW stuff is for Emacs 25+, not Emacs 24.4+.
 ;; 2017/01/10 dadams
@@ -2114,6 +2437,32 @@
  
 ;;;(@* "CHANGE LOG FOR `bookmark+-lit.el'")
 ;;
+;; 2021/09/19 dadams
+;;     Everywhere: Use bmkp-bmenu-buffer, not vanilla bookmark-bmenu-buffer.
+;; 2021/04/16 dadams
+;;     bmkp-unlight-bookmark, bmkp-light-bookmarks, bmkp-cycle-lighted-this-buffer, bmkp-light-face,
+;;       bmkp-light-style, bmkp-light-when, bmkp-lighting-attribute, bmkp-overlay-of-bookmark:
+;;         Use bmkp-get-bookmark, not bookmark-get-bookmark, but in vanilla-compatible way.
+;;     bmkp-bookmarks-lighted-at-point, bmkp-light-bookmark, bmkp-a-bookmark-lighted-on-this-line:
+;;       Use bmkp-get-bookmark, not bookmark-get-bookmark.
+;; 2020/07/04 dadams
+;;     Replaced string *Bookmark List* with bookmark-bmenu-buffer (for Emacs 28).
+;; 2020/01/12 dadams
+;;     bmkp-lighted-jump-to-list: Raise error if no highlighted bookmarks at point.
+;;     bmkp-(un)light-bookmark-this-buffer: Pass non-nil USE-NIL-ALIST-P to bookmark-completing-read.
+;; 2019/08/21 dadams
+;;     bmkp-toggle-auto-light-when-(jump|set): Fix message: symbol-name, not symbol-value.
+;; 2019/05/01 dadams
+;;     Added bmkp-lighted-jump-to-list.
+;; 2019/04/23 dadams
+;;     Added bmkp-tooltip-content-function.
+;;     bmkp-make/move-overlay-of-style: Use bmkp-tooltip-content-function.
+;; 2019/04/22 dadams
+;;     Added bmkp-describe-bookmark-lighted-here.
+;;     bmkp-make/move-overlay-of-style: Put bookmark description on overlay help-echo property.
+;; 2018/09/21 dadams
+;;     Added: bmkp--pop-to-buffer-same-window.  (Added also to bookmark+-bmu.el.)
+;;     bmkp-lighted-jump: Use bmkp--pop-to-buffer-same-window, not switch-to-buffer.
 ;; 2017/01/08 dadams
 ;;     Use the term "entry", not "property" everywhere, for bookmark entries (fields).
 ;; 2016/10/25 dadams
@@ -2198,6 +2547,12 @@
 ;;       that depends on macros needs to be byte-compiled anew after loading the updated macros.
 ;; **************************************************************************************************
 ;;
+;; 2021/04/16 dadams
+;;     bmkp-define-file-sort-predicate: Use bmkp-get-bookmark, not bookmark-get-bookmark.
+;; 2021/03/04 dadams
+;;     Removed autoload cookie for bmkp-types-alist.  Its def is also in bookmark+-1.el now.
+;; 2020/11/28 dadams
+;;     Added: bmkp-define-history-variables, funtion bmkp-types-alist.
 ;; 2017/03/31 dadams
 ;;     bmkp-define-next+prev-cycle-commands: Added optional arg OTHERP.
 ;; 2015/04/03 dadams
@@ -2244,6 +2599,35 @@
  
 ;;;(@* "CHANGE LOG FOR `bookmark+.el'")
 ;;
+;; 2021/09/19 dadams
+;;     Version 2021.09.19
+;;     Added option bmkp-bmenu-buffer.
+;;     Autoload bookmark-bmenu-buffer.
+;;     Moved defgroup here, from bookmark+-bmu.el.  Added autoload cookie.
+;; 2021/04/18 dadams
+;;     Version 2021.04.18
+;; 2021/03/04 dadams
+;;     Version 2021.03.04
+;; 2021/02/12 dadams
+;;     Version 2021.02.12
+;; 2020/07/04 dadams
+;;     Version 2020.07.04
+;;     Added defconst for bookmark-bmenu-buffer (Emacs 28).
+;;     Added defvar, make-variable-buffer-local declaration for bookmark-annotation-name (Emacs 28).
+;; 2020/07/03 dadams
+;;     Version 2020.07.03
+;; 2020/01/22 dadams
+;;     Version 2020.01.22
+;; 2020/01/12 dadams
+;;     Version 2020.01.12
+;; 2019/04/22 dadams
+;;     Version 2019.04.22
+;; 2019/04/22 dadams
+;;     Version 2019.02.18
+;; 2018/10/17 dadams
+;;     Version 2018.10.17.
+;; 2018/09/21 dadams
+;;     Version 2017.09.21.
 ;; 2017/03/31 dadams
 ;;     Version 2017.03.31.  Fixed cycling bookmarks across buffers.  Added other-window cycling cmds.
 ;; 2017/02/26 dadams
@@ -3330,4 +3714,3 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; bookmark+-chg.el ends here
-

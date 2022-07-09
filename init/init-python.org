@@ -2,98 +2,10 @@
 #+BEGIN_SRC emacs-lisp
   (setq python-indent-offset 4)
 #+END_SRC
-* elpy
-卡
-#+BEGIN_SRC emacs-lisp
-  ;; (require-package 'elpy)
-  ;; (setq eldoc-idle-delay 1)
-
-  ;; (defun my-elpy-mode ()
-  ;;   (make-variable-buffer-local 'elpy-modules)
-  ;;   (setq elpy-modules
-  ;;         '(elpy-module-sane-defaults
-  ;;           ;; elpy-module-company
-  ;;           elpy-module-eldoc
-  ;;           elpy-module-flymake
-  ;;           ;; This eat too much CPU cycle
-  ;;           ;; elpy-module-highlight-indentation
-  ;;           elpy-module-pyvenv
-  ;;           elpy-module-yasnippet))
-  ;;   (setq elpy-eldoc-show-current-function nil)
-  ;;   (evil-define-key 'normal elpy-mode-map (kbd "s-.") 'elpy-goto-definition)
-  ;;   (elpy-mode)
-
-  ;;   (company-mode)
-  ;;   (set (make-local-variable 'company-backends)
-  ;;        (list
-  ;;         '(company-tabnine elpy-company-backend))))
-
-  ;; (elpy-enable)
-  ;; (add-hook 'python-mode-hook 'my-elpy-mode)
 
 #+END_SRC
-* anaconda
-#+BEGIN_SRC emacs-lisp
-  (require-package 'anaconda-mode)
-  ;; (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
 
-  (defun anaconda-key-bind-method ()
-    "Custom key binding"
-    (evil-define-key 'normal anaconda-mode-map (kbd "s-.") 'anaconda-mode-find-definitions)
-    (evil-define-key 'normal anaconda-mode-map (kbd "s-?") 'anaconda-mode-show-doc))
-
-  (add-hook 'anaconda-mode-hook 'anaconda-key-bind-method)
-#+END_SRC
-** company-anaconda
-#+BEGIN_SRC emacs-lisp
-  (require-package 'company-anaconda)
-
-  ;; (defun slegetank/anaconda-custom-method ()
-  ;;   (set (make-local-variable 'company-backends)
-  ;;        (list
-  ;;         '(company-tabnine company-anaconda))))
-
-  (defun slegetank/anaconda-custom-method ()
-    (set (make-local-variable 'company-backends)
-         (list
-          '(company-tabnine company-anaconda))))
-
-  (add-hook 'python-mode-hook 'slegetank/anaconda-custom-method)
-#+END_SRC
 * packages
-** flycheck-pyflakes
-语法检查
-#+BEGIN_SRC emacs-lisp
-  (require-package 'flycheck-pyflakes)
-  (require 'flycheck-pyflakes)
-#+END_SRC
-** importmagic
-修正import错误。
-前置：
-#+BEGIN_SRC python
-  pip3 install importmagic epc
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (require-package 'importmagic)
-  (add-hook 'python-mode-hook (lambda ()
-                                (importmagic-mode)
-                                (slegetank/leader-define-key "pyi" 'importmagic-fix-symbol-at-point "Fix import issues")))
-#+END_SRC
-** py-yapf
-美化python缩进；暂时不需要
-前置：
-#+BEGIN_SRC python
-  pip3 install yapf
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  ;; (require-package 'py-yapf)
-  ;; (require 'py-yapf)
-  ;; (add-hook 'python-mode-hook 'py-yapf-enable-on-save)
-#+END_SRC
-
 ** sphinx-doc
 #+BEGIN_SRC emacs-lisp
   (require-package 'sphinx-doc)
@@ -102,6 +14,7 @@
                                 (sphinx-doc-mode t)
                                 (slegetank/leader-define-key "pyd" 'sphinx-doc "Doc for method")))
 #+END_SRC
+
 * debug
 断点快捷键来自于XCode；有ipdb用ipdb，没有用pdb。高亮断点行。
 前置：

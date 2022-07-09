@@ -4,19 +4,19 @@
 ;; Description: Macros for Bookmark+.
 ;; Author: Drew Adams
 ;; Maintainer: Drew Adams
-;; Copyright (C) 2000-2017, Drew Adams, all rights reserved.
+;; Copyright (C) 2000-2022, Drew Adams, all rights reserved.
 ;; Created: Sun Aug 15 11:12:30 2010 (-0700)
-;; Last-Updated: Fri Mar 31 15:12:03 2017 (-0700)
+;; Last-Updated: Fri Jan 14 12:34:20 2022 (-0800)
 ;;           By: dradams
-;;     Update #: 206
+;;     Update #: 223
 ;; URL: https://www.emacswiki.org/emacs/download/bookmark%2b-mac.el
-;; Doc URL: http://www.emacswiki.org/BookmarkPlus
+;; Doc URL: https://www.emacswiki.org/emacs/BookmarkPlus
 ;; Keywords: bookmarks, bookmark+, placeholders, annotations, search, info, url, eww, w3m, gnus
-;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x, 24.x, 25.x
+;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x, 24.x, 25.x, 26.x
 ;;
 ;; Features that might be required by this library:
 ;;
-;;   `bookmark', `pp'.
+;;   None
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -46,7 +46,7 @@
 ;;       Web'.
 ;;
 ;;    2. From the Emacs-Wiki Web site:
-;;       http://www.emacswiki.org/BookmarkPlus.
+;;       https://www.emacswiki.org/emacs/BookmarkPlus.
 ;;
 ;;    3. From the Bookmark+ group customization buffer:
 ;;       `M-x customize-group bookmark-plus', then click link
@@ -85,7 +85,7 @@
 ;;  navigate around the sections of this doc.  Linkd mode will
 ;;  highlight this Index, as well as the cross-references and section
 ;;  headings throughout this file.  You can get `linkd.el' here:
-;;  http://www.emacswiki.org/emacs/download/linkd.el.
+;;  https://www.emacswiki.org/emacs/download/linkd.el.
 ;;
 ;;  (@> "Things Defined Here")
 ;;  (@> "Functions")
@@ -98,7 +98,7 @@
 ;;
 ;;  Macros defined here:
 ;;
-;;    `bmkp-define-cycle-command',
+;;    `bmkp-define-cycle-command', `bmkp-define-history-variables',
 ;;    `bmkp-define-next+prev-cycle-commands',
 ;;    `bmkp-define-show-only-command', `bmkp-define-sort-command',
 ;;    `bmkp-define-file-sort-predicate', `bmkp-menu-bar-make-toggle',
@@ -109,7 +109,7 @@
 ;;
 ;;    `bmkp-bookmark-data-from-record',
 ;;    `bmkp-bookmark-name-from-record',
-;;    `bmkp-replace-regexp-in-string',
+;;    `bmkp-replace-regexp-in-string', `bmkp-types-alist',
 ;;    `bookmark-name-from-full-record', `bookmark-name-from-record'.
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -137,7 +137,7 @@
 
 (require 'bookmark)
 ;; bookmark-bmenu-bookmark, bookmark-bmenu-ensure-position,
-;; bookmark-bmenu-surreptitiously-rebuild-list, bookmark-get-bookmark,
+;; bookmark-bmenu-surreptitiously-rebuild-list, bmkp-get-bookmark,
 ;; bookmark-get-filename
 
  
@@ -414,8 +414,8 @@ Treat remote file bookmarks like non-file bookmarks.
 B1 and B2 are full bookmarks (records) or bookmark names.
 If either is a record then it need not belong to `bookmark-alist'."
              att-nb)
-    (setq b1  (bookmark-get-bookmark b1))
-    (setq b2  (bookmark-get-bookmark b2))
+    (setq b1  (bmkp-get-bookmark b1))
+    (setq b2  (bmkp-get-bookmark b2))
     (let (a1 a2)
       (cond (;; Both are file bookmarks.
              (and (bmkp-file-bookmark-p b1) (bmkp-file-bookmark-p b2))
@@ -468,6 +468,36 @@ If either is a record then it need not belong to `bookmark-alist'."
              '(nil))
             (t;; Neither is a file.
              nil)))))
+
+;;; This is also defined in `bookmark+-1.el'.  It is used here to produce the code for
+;;; `bmkp-define-history-variables' and `bmkp-define-sort-command'.
+;;;
+(defun bmkp-types-alist ()
+  "Alist of bookmark types used by `bmkp-jump-to-type'.
+Keys are bookmark type names.  Values are corresponding history variables.
+The alist is used in commands such as `bmkp-jump-to-type'."
+  (let ((entries  ()))
+    (mapatoms
+     (lambda (sym)
+       (let ((name  (symbol-name sym)))
+         (when (string-match "\\`bmkp-\\(.+\\)-alist-only\\'" name)
+           (push (cons (match-string 1 name)
+                       (intern (format "bmkp-%s-history" (match-string 1 name))))
+                 entries)))))
+    entries))
+
+;; Macro that defines Bookmark+ history variables.
+;; Use this after you define any new filter function, `bmkp-*-alist-only',
+;; for a new kind of bookmark.
+;;
+;;;###autoload (autoload 'bmkp-define-history-variables "bookmark+")
+(defmacro bmkp-define-history-variables ()
+  "Create and eval defvars for Bookmark+ history variables.
+The variables are the cdrs of `bmkp-types-alist'.  They are used in
+commands such as `bmkp-jump-to-type'."
+  (dolist (entry  (bmkp-types-alist))
+    `(defvar,(cdr entry) ()
+       ,(format "History for %s bookmarks." (car entry)))))
 
 ;; This is compatible with Emacs 20 and later.
 ;;;###autoload (autoload 'bmkp-menu-bar-make-toggle "bookmark+")

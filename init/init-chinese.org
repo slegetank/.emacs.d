@@ -24,7 +24,7 @@ https://github.com/tumashu/pyim
 
   ;; 使用 pupup-el 来绘制选词框
   (if (>= emacs-major-version 26)
-      (setq pyim-page-tooltip 'child-frame)
+      (setq pyim-page-tooltip 'posframe)
     (setq pyim-page-tooltip 'popup))
 
   ;; 选词框显示10个候选词
@@ -75,7 +75,7 @@ https://gitlab.com/liberime/liberime
 #+BEGIN_SRC emacs-lisp
   (when (file-exists-p (file-truename "~/ScriptHelper/liberime.so"))
     (setq load-path (cons (file-truename "~/ScriptHelper") load-path))
-    (require 'liberime)
+    (require 'liberime nil t)
     (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
     (liberime-select-schema "luna_pinyin_simp")
     (setq pyim-default-scheme 'rime-quanpin))

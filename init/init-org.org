@@ -28,8 +28,6 @@
           (not (string= lang "ditaa"))) ; don't ask for ditaa
         (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)))
 
-    ;; for confluence
-    (require 'ox-confluence)
   #+END_SRC
 ** bullets
 #+BEGIN_SRC emacs-lisp
@@ -177,7 +175,7 @@ org mode code blocks supported languages: http://orgmode.org/manual/Languages.ht
     (x-focus-frame nil)
     (let* ((payload (car (last event)))
            (type (car payload))
-           (fromname (cadr payload)))
+           (fromname (car (last payload))))
       (when (and (eq 'drag-n-drop (car event))
                   (eq 'file type))
         (cond ((and (fboundp 'slegetank/blog-drag-image) (slegetank/org-blog-p)) (slegetank/blog-drag-image fromname)) ; blog

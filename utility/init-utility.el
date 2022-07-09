@@ -4,12 +4,14 @@
 ;; You may delete these explanatory comments.
 
 ;; source point to China
-(when (>= emacs-major-version 24)
-  (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
-                           ("melpa"   . "http://elpa.emacs-china.org/melpa/")
-                           ("org" . "http://orgmode.org/elpa/") ;; org mode的elpa总是不稳定
-                           )))
+ (when (>= emacs-major-version 24)
+   (setq package-archives '(
+                            ("melpa"   . "http://1.15.88.122/melpa/")
+                            ("gnu"   . "http://1.15.88.122/gnu/")
+                           ;;("org" . "http://orgmode.org/elpa/") ;; org mode的elpa总是不稳定
+                            )))
 
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 (package-initialize)
 
 ;;----------------------------------------------------------------------------
@@ -21,8 +23,10 @@
             (lambda () (setq gc-cons-threshold (* 50 1024 1024))))
 
 ;; 手动下org mode
-;; (let ((default-directory  "~/org-mode/"))
-;;   (normal-top-level-add-subdirs-to-load-path))
+ (let ((default-directory  "~/org-mode/"))
+   (normal-top-level-add-subdirs-to-load-path))
+
+(add-to-list 'load-path (expand-file-name "extra-packages" user-emacs-directory))
 
 ;; get from Purcell
 ;; 自动在线安装第三方包
@@ -41,6 +45,8 @@
       (progn
         (package-refresh-contents)
         (require-package package min-version t)))))
+
+(require-package 'gnu-elpa-keyring-update)
 
 ;; use-package
 (require-package 'use-package)

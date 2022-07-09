@@ -10,6 +10,11 @@ ivy是强大的查找文件、搜索代码、执行命令的补全工具。
   ;; ignore candidate
   (define-key ivy-minibuffer-map (kbd "s-<return>") 'ivy-immediate-done)
   (define-key ivy-minibuffer-map (kbd "RET") #'ivy-alt-done)
+  
+  (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
+  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
+  (define-key ivy-switch-buffer-map (kbd "C-k") 'ivy-previous-line)
+  
 
   (setq-default ivy-use-virtual-buffers t
                 ivy-display-style 'fancy
@@ -40,9 +45,6 @@ swiper提供了更优美的单文件搜索功能，支持正则：
 
   (setq counsel-find-file-at-point t)
   (setq enable-recursive-minibuffers t)
-
-  (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-  (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)
 #+END_SRC
 
 swiper还提供了询问替换的功能，y替换，n不变，!全部替换:

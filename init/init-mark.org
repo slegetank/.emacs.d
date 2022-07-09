@@ -38,7 +38,7 @@ mark跳回，高亮最后两个mark
 
 * bookmark
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path (expand-file-name "bookmark-plus" user-emacs-directory))
+  (add-to-list 'load-path (expand-file-name "extra-packages/bookmark-plus" user-emacs-directory))
   (require 'bookmark+)
 
   (setq bookmark-version-control t)
