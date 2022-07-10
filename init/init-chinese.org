@@ -4,53 +4,68 @@
 这里推荐：http://rime.im 开源，强大，最重要的是自己的输入习惯终于属于自己了！
 配置、导入、导出等见这篇博客：http://www.dreamxu.com/install-config-squirrel/
 
+
 * 输入法
+** emacs-rime
+#+BEGIN_SRC emacs-lisp
+  (require-package 'rime)
+  (use-package rime
+    :custom
+    (rime-show-candidate 'posframe)
+    (rime-posframe-style 'vertical)
+    (setq rime-cursor "˰")
+    ;; (setq rime-user-data-dir (file-truename "~/.emacs.d/pyim/rime/"))
+    (rime-librime-root "~/.emacs.d/librime/dist")
+    (default-input-method "rime"))
+#+END_SRC
+
+** pyim
 https://github.com/tumashu/pyim
 #+BEGIN_SRC emacs-lisp
-  (require-package 'pyim)
-  (require-package 'posframe)
-  (require 'posframe)
-  (require 'pyim)
-  ;; (require 'pyim-basedict)
-  ;; (pyim-basedict-enable)
+  ;; (require-package 'pyim)
+  ;; (require-package 'posframe)
+  ;; (require 'posframe)
+  ;; (require 'pyim)
+  ;; ;; (require 'pyim-basedict)
+  ;; ;; (pyim-basedict-enable)
 
-  ;; (require-package 'pyim-wbdict)
-  ;; (require 'pyim-wbdict)
-  ;; (pyim-wbdict-gb2312-enable)
+  ;; ;; (require-package 'pyim-wbdict)
+  ;; ;; (require 'pyim-wbdict)
+  ;; ;; (pyim-wbdict-gb2312-enable)
 
-  (setq default-input-method "pyim")
-  ;; (setq pyim-default-scheme 'wubi)
-  ;; (setq pyim-default-scheme 'quanpin)
+  ;; (setq default-input-method "pyim")
+  ;; ;; (setq pyim-default-scheme 'wubi)
+  ;; ;; (setq pyim-default-scheme 'quanpin)
 
-  ;; 使用 pupup-el 来绘制选词框
-  (if (>= emacs-major-version 26)
-      (setq pyim-page-tooltip 'posframe)
-    (setq pyim-page-tooltip 'popup))
+  ;; ;; 使用 pupup-el 来绘制选词框
+  ;; (if (>= emacs-major-version 26)
+  ;;     (setq pyim-page-tooltip 'posframe)
+  ;;   (setq pyim-page-tooltip 'popup))
 
-  ;; 选词框显示10个候选词
-  (setq pyim-page-length 5)
+  ;; ;; 选词框显示10个候选词
+  ;; (setq pyim-page-length 5)
 
-  (setq-default pyim-english-input-switch-functions
-                '(pyim-probe-org-structure-template))
+  ;; (setq-default pyim-english-input-switch-functions
+  ;;               '(pyim-probe-org-structure-template))
 
-  (setq-default pyim-punctuation-half-width-functions
-                '(pyim-probe-punctuation-line-beginning
-                  pyim-probe-punctuation-after-punctuation))
+  ;; (setq-default pyim-punctuation-half-width-functions
+  ;;               '(pyim-probe-punctuation-line-beginning
+  ;;                 pyim-probe-punctuation-after-punctuation))
 
-  (global-set-key (kbd "C-s-;") 'pyim-convert-string-at-point)
+  ;; (global-set-key (kbd "C-s-;") 'pyim-convert-string-at-point)
   (global-set-key (kbd "C-;") 'toggle-input-method)
-  (define-key pyim-mode-map (kbd ".") 'pyim-page-next-page)
-  (define-key pyim-mode-map (kbd ",") 'pyim-page-previous-page)
-  (define-key pyim-mode-map (kbd "C-j") 'pyim-page-next-page)
-  (define-key pyim-mode-map (kbd "C-k") 'pyim-page-previous-page)
-  (define-key pyim-mode-map (kbd "<escape>") 'pyim-quit-clear)
+  ;; (define-key pyim-mode-map (kbd ".") 'pyim-page-next-page)
+  ;; (define-key pyim-mode-map (kbd ",") 'pyim-page-previous-page)
+  ;; (define-key pyim-mode-map (kbd "C-j") 'pyim-page-next-page)
+  ;; (define-key pyim-mode-map (kbd "C-k") 'pyim-page-previous-page)
+  ;; (define-key pyim-mode-map (kbd "<escape>") 'pyim-quit-clear)
 
-  ;; 特殊词上屏
-  (defun slegetank/special-words-converter (string)
-    (if (equal string "物物")
-        "IoT"
-      string))
-  (setq pyim-magic-converter #'slegetank/special-words-converter)
+  ;; ;; 特殊词上屏
+  ;; (defun slegetank/special-words-converter (string)
+  ;;   (if (equal string "物物")
+  ;;       "IoT"
+  ;;     string))
+  ;; (setq pyim-magic-converter #'slegetank/special-words-converter)
 #+END_SRC
 
 ** 添加词库
@@ -63,22 +78,26 @@ https://github.com/tumashu/pyim
    #+END_SRC
 4. 添加加载路径
    #+BEGIN_SRC emacs-lisp
-     (setq pyim-dicts
-           `((:name "big" :file ,(expand-file-name "pyim/pyim-bigdict.pyim" user-emacs-directory))
-             (:name "sougou-develop" :file ,(expand-file-name "pyim/sougou-develop.pyim" user-emacs-directory))
-             (:name "sougou-jindaishi" :file ,(expand-file-name "pyim/sougou-jindaishi.pyim" user-emacs-directory))))
+     ;; (setq pyim-dicts
+     ;;       `((:name "big" :file ,(expand-file-name "pyim/pyim-bigdict.pyim" user-emacs-directory))
+     ;;         (:name "sougou-develop" :file ,(expand-file-name "pyim/sougou-develop.pyim" user-emacs-directory))
+     ;;         (:name "sougou-jindaishi" :file ,(expand-file-name "pyim/sougou-jindaishi.pyim" user-emacs-directory))))
    #+END_SRC
    
 ** liberime
 https://gitlab.com/liberime/liberime
 
 #+BEGIN_SRC emacs-lisp
-  (when (file-exists-p (file-truename "~/ScriptHelper/liberime.so"))
-    (setq load-path (cons (file-truename "~/ScriptHelper") load-path))
-    (require 'liberime nil t)
-    (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
-    (liberime-select-schema "luna_pinyin_simp")
-    (setq pyim-default-scheme 'rime-quanpin))
+  ;;   (when (file-exists-p (file-truename "~/ScriptHelper/liberime.so"))
+  ;;     (setq load-path (cons (file-truename "~/ScriptHelper") load-path))
+  ;;     (require 'liberime)
+  ;;     (require 'pyim-liberime)
+  ;;     (setq liberime-shared-data-dir "/Library/Input Methods/Squirrel.app/Contents/SharedSupport")
+  ;;     (setq liberime-user-data-dir (file-truename "~/.emacs.d/pyim/rime/"))
+  ;;     (liberime-start liberime-shared-data-dir liberime-user-data-dir)
+  ;;     (liberime-select-schema "luna_pinyin_simp")
+  ;;     (setq pyim-default-scheme 'rime-quanpin)
+  ;; )
 #+END_SRC
 
 * evil-find-char-pinyin

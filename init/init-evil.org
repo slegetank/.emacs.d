@@ -10,7 +10,7 @@ manual: https://bytebucket.org/lyro/evil/raw/default/doc/evil.pdf
   (require-package 'evil)
   (require 'undo-tree)
   (global-undo-tree-mode)
- ;; (setq evil-undo-system 'undo-tree)
+  (setq evil-undo-system 'undo-tree)
 #+END_SRC
 * package
 ** which-key
