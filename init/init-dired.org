@@ -52,7 +52,7 @@ dired会被加入recentf-list:
 ** dired+
 #+BEGIN_SRC emacs-lisp
   ;; (require-package 'dired+)
-  (add-to-list 'load-path (expand-file-name "dired+" user-emacs-directory))
+  (add-to-list 'load-path (expand-file-name "extra-packages/dired+" user-emacs-directory))
   (require 'dired+)
 
   ;; only use one buffer
